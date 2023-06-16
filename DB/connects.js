@@ -1,3 +1,4 @@
+require("dotenv").config();
 const Conmongoose= require('mongoose');
 const maxRetryAttempts = 3;
 const retryDelayMs = 3000;

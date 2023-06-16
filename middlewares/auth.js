@@ -1,6 +1,5 @@
 
-import { AppError } from '../lib/index';
-
+const { AppError } = require('../lib/index');
 const jwt = require('jsonwebtoken');
 const Employees = require('../DB/models/employee');
 
