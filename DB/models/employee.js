@@ -74,6 +74,25 @@ const schema = new Schema(
         message: 'Please provide a valid Egyptian national ID number'
       }
     },
+    gender:{
+      type: String,
+      required: true,
+      enum: ['male', 'female']
+    },
+    academicQualifications: {
+      degree: {
+        type: String,
+        required: true
+      },
+      institution: {
+        type: String,
+        required: true
+      },
+      year: {
+        type: Number,
+        required: true
+      }
+    },
     hireDate: {
       type: Date,
       validate: {
@@ -89,7 +108,12 @@ const schema = new Schema(
       required: true,
       trim: true
     },
-    dep_id: {
+    jobType:{
+      type: String,
+      required: true,
+      enum: ['full-time', 'part-time', 'contract', 'freelance'],
+    },
+    depId: {
       type: Schema.Types.ObjectId,
       ref: "Department",
       required: true

@@ -1,7 +1,7 @@
 const express = require('express');
 
-const employeeRoutes = require("./employee");
-const depRoutes = require("./department");
+const employeeRoutes = require("./admin_employee");
+const depRoutes = require("./admin_department");
 // const attendanceRoutes = require("./attendance");
 const router = express.Router();
 
