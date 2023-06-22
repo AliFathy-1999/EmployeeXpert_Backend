@@ -24,7 +24,8 @@ const schema = new Schema(
         tax:{
             type:Number,
             required:[true,'Tax is Required'],
-            min:0
+            min:0,
+            default:0.15,
         },
         Bonus:{
             type:Number,
@@ -36,7 +37,7 @@ const schema = new Schema(
             required:[true,'Net Salary is Required'],
             min:0,
             default: function() {
-                return this.grossSalary - this.tax + this.Bonus;
+                return this.grossSalary * this.tax + this.Bonus;
             }
         },
         employeeId:{
