@@ -14,6 +14,18 @@ const verifyToken = async (bearerToken) => {
   return user;
 };
 
+const Auth = async (req, res, next) => {
+  let bearerToken = req.headers.authorization;
+  try {
+    if (!bearerToken) throw new Error('Un-Authenticated');
+    const result = await verifyToken(bearerToken);
+    req.user = result
+    return next();
+  } catch (err) {
+    next(err);
+  }
+};
+
 const userAuth = async (req, res, next) => {
   let bearerToken = req.headers.authorization;
   try {
@@ -40,4 +52,4 @@ const adminAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { userAuth, adminAuth };
+module.exports = { userAuth, adminAuth, Auth };

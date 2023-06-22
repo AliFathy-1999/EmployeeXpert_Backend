@@ -11,12 +11,12 @@ const schema = new Schema(
       maxLength: [15, 'First name must be at less than 15 characters'],
       required: [true, 'First name is a required field'],
       trim: true,
-      validate: {
-        validator: function(value) {
-          return /^[A-Za-z]+$/.test(value);
-        },
-        message: 'Name should contain alphabetic characters only'
-      }
+      match: /^[A-Za-z]+$/,
+      validate(value) {
+        if (!value.match(/^[A-Za-z]+$/)) {
+          throw new AppError('First Name should contain alphabetic characters only' , 400);
+        }
+      },
     },
     lastName: {
       type: String,
@@ -24,12 +24,12 @@ const schema = new Schema(
       maxLength: [15, 'Last name must be at less than 15 characters'],
       required: [true, 'Last name is a required field'],
       trim: true,
-      validate: {
-        validator: function(value) {
-          return /^[A-Za-z]+$/.test(value);
-        },
-        message: 'Name should contain alphabetic characters only'
-      }
+      match: /^[A-Za-z]+$/,
+      validate(value) {
+        if (!value.match(/^[A-Za-z]+$/)) {
+          throw new AppError('Last Name should contain alphabetic characters only' , 400);
+        }
+      },
     },
     userName: {
       type: String,
@@ -66,10 +66,11 @@ const schema = new Schema(
       type: String,
       required: true,
       unique: true,
-      maxLength:14,
+      length:14,
+      match: /^(2|3)\d{1,2}(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])(0[1-9]|1[0123456789]|2[12389]|3[012]|88)(\d{4})([0-9])$/,
       validate: {
         validator: function(value) {
-          return /^[1-2]\d{13}$/.test(value);
+          return /^(2|3)\d{1,2}(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])(0[1-9]|1[0123456789]|2[12389]|3[012]|88)(\d{4})([0-9])$/.test(value);
         },
         message: 'Please provide a valid Egyptian national ID number'
       }
@@ -80,17 +81,49 @@ const schema = new Schema(
       enum: ['male', 'female']
     },
     academicQualifications: {
+      college: {
+        type: String,
+        required: true,
+        minLength:2,
+        maxLength:60,
+        match: /^[A-Za-z\s]+$/,
+        validate: {
+          validator: function (value) {
+            if (!value.match(/^[A-Za-z\s]+$/)) {
+              throw new AppError('College name cannot contain numbers' , 400);
+            }
+          },
+        }, 
+      },
       degree: {
         type: String,
-        required: true
+        required: true,
+        enum: ['bachelor', 'master','doctoral'],
       },
       institution: {
         type: String,
-        required: true
+        required: true,
+        minlength: 2, 
+        maxlength: 50,
+        match: /^[A-Za-z\s]+$/,
+        validate: {
+          validator: function (value) {
+            if (!value.match(/^[A-Za-z\s]+$/)) {
+              throw new AppError('Institution cannot contain numbers' , 400);
+            }
+          },
+        },
       },
       year: {
         type: Number,
-        required: true
+        required: true,
+        validate: {
+          validator: function (value) {
+            const currentYear = new Date().getFullYear();
+            return value <= currentYear; 
+          },
+          message: 'Year must be a valid past year',
+        },
       }
     },
     hireDate: {
@@ -106,7 +139,17 @@ const schema = new Schema(
     position: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      minlength: 2, 
+      maxlength: 50,
+      match: /^[A-Za-z\s]+$/,
+      validate: {
+        validator: function (value) {
+          if (!value.match(/^[A-Za-z\s]+$/)) {
+            throw new AppError('Position cannot contain numbers' , 400);
+          }
+        },
+      },  
     },
     jobType:{
       type: String,
@@ -127,25 +170,27 @@ const schema = new Schema(
       type: String,
       required: true,
       trim: true,
+      match:/^01([0125]{2}|15)[0-9]{8}$/,
       validate: {
-        validator: function(value) {
-          
-          return /^\d{11}$/.test(value);
+        validator: function (value) {
+          if (!value.match(/^01([0125]{2}|15)[0-9]{8}$/)) {
+            throw new AppError('Invalid Egyptian phone number' , 400);
+          }
         },
-        message: 'Please provide a valid 11-digit phone number'
-      }
+      }, 
     },
     address: {
-      street: {
-        type: String,
-        required: true,
-        trim: true
-      },
-      city: {
-        type: String,
-        required: true,
-        trim: true
-      },
+      type: String,
+      minlength: [5, 'Address must be at least 5 characters'],
+      maxLength:[150, 'Address must be at less than 150 characters'],
+      match:/[a-zA-Z]+/,
+      validate: {
+        validator: function (value) {
+          if (!value.match(/[a-zA-Z]+/)) {
+            throw new AppError('Address must contain at least one alphabetic characters' , 400);
+          }
+        },
+      }, 
   },
     pImage: {
       type: String,
