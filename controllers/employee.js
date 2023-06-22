@@ -6,7 +6,27 @@ const generateToken = (employee) => {
   const token = jwt.sign({ userName: employee.userName, userId:employee._id, role:employee.role} , process.env.TOKEN_KEY, { expiresIn: '7d' } )
   return token;
 }
-const create = (data) =>  Employee.create(data);
+
+const getEmployees = (role="USER") => Employee.find({role})
+
+const employeeDetails = (empId) => Employee.findOne({_id: empId})
+
+const getMe = (empId) => Employee.findOne({_id:empId});
+
+const createEmployee = (data) =>  Employee.create(data);
+
+const updateEmployee = (empId,data) => Employee.findOneAndUpdate({ _id : empId } , data, { runValidators:true,new: true });
+
+const deleteEmployee = (empId) => {
+  const empExist = Employee.findOne({ _id : empId })
+  console.log(empExist);
+  return Employee.findOneAndDelete({
+  $and:[
+    { _id : empId },
+    { role: 'USER' }
+  ]
+});
+}
 
 const signIn = async (employee) => {
   const user = await Employee.findOne({ userName : employee.userName})
@@ -18,6 +38,11 @@ const signIn = async (employee) => {
 }
 
 module.exports = {
-  create,
-  signIn
+  getEmployees,
+  employeeDetails,
+  getMe,
+  createEmployee,
+  updateEmployee,
+  deleteEmployee,
+  signIn,
 };
