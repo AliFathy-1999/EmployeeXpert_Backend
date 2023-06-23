@@ -28,6 +28,12 @@
           ],
           "space-infix-ops": ["warn", { "int32Hint": false }],
           "no-multi-spaces": "warn",
-          "no-multiple-empty-lines": "warn"
+          "no-multiple-empty-lines": "warn",
+          "key-spacing": ["warn", {
+            "beforeColon": true,
+            "afterColon": true,
+            "align": "value"
+          }],
+          "comma-spacing": ["warn", { "before": false, "after": true }]
     }
 }

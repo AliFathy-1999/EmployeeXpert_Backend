@@ -15,7 +15,7 @@ router.post('/signin', validate(signIn), async (req, res) => {
   try {
     const { userName, password } = req.body;    
     const data = await employeeController.signIn({ userName, password });    
-    res.status(200).json({status:'success', data })
+    res.status(200).json({status : 'success', data })
   } catch (err) {
     next(err);
   }
@@ -24,7 +24,7 @@ router.get('/user', Auth, validate(signIn), async (req, res) => {
   try {
     const myID = req.user._id   
     const data = await employeeController.getMe(myID);    
-    res.status(200).json({status:'success', data })
+    res.status(200).json({status : 'success', data })
   } catch (err) {
     next(err);
   }
