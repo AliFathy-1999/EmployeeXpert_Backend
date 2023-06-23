@@ -7,30 +7,28 @@ const generateToken = (employee) => {
   return token;
 }
 
-const getEmployees = (role="USER") => Employee.find({role})
+const getEmployees = (role='USER') => Employee.find({role})
 
 const employeeDetails = (empId) => Employee.findOne({_id: empId})
 
 const getMe = (empId) => Employee.findOne({_id:empId});
 
-const createEmployee = (data) =>  Employee.create(data);
+const createEmployee = (data) => Employee.create(data);
 
 const updateEmployee = (empId,data) => Employee.findOneAndUpdate({ _id : empId } , data, { runValidators:true,new: true });
 
-const deleteEmployee = (empId) => {
-  const empExist = Employee.findOne({ _id : empId })
-  console.log(empExist);
-  return Employee.findOneAndDelete({
+const deleteEmployee = (empId) => 
+Employee.findOneAndDelete({
   $and:[
     { _id : empId },
     { role: 'USER' }
   ]
 });
-}
+
 
 const signIn = async (employee) => {
   const user = await Employee.findOne({ userName : employee.userName})
-  if(!user)  throw new AppError('Invalid username', 400);
+  if(!user) throw new AppError('Invalid username', 400);
   const valid = user.verifyPassword(employee.password);
   if (!valid) throw new AppError('Invalid password', 400);
   return {token: generateToken(user), user}

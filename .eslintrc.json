@@ -1,0 +1,33 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "quotes": ["warn", "single"],
+        "no-unused-vars": "warn",
+        "no-console": "warn",
+        "lines-around-comment": [
+            "warn",
+            {
+              "beforeBlockComment": true,
+              "afterBlockComment": true,
+              "beforeLineComment": true,
+              "afterLineComment": true,
+              "allowBlockStart": true,
+              "allowBlockEnd": true,
+              "allowObjectStart": true,
+              "allowObjectEnd": true,
+              "allowArrayStart": true,
+              "allowArrayEnd": true
+            }
+          ],
+          "space-infix-ops": ["warn", { "int32Hint": false }],
+          "no-multi-spaces": "warn",
+          "no-multiple-empty-lines": "warn"
+    }
+}
