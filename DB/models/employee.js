@@ -2,208 +2,210 @@ let mongoose, { Schema, model } = require('mongoose');
 const { AppError } = require('../../lib');
 const validator = require('validator');
 const bcryptjs = require('bcryptjs');
-
+const mongoosePaginate = require('mongoose-paginate-v2');
 const schema = new Schema(
   {
-    firstName: {
-      type: String,
-      minLength: [3, 'First name must be at least 3 characters'],
-      maxLength: [15, 'First name must be at less than 15 characters'],
-      required: [true, 'First name is a required field'],
-      trim: true,
-      match: /^[A-Za-z]+$/,
+    firstName : {
+      type :      String,
+      minLength : [3, 'First name must be at least 3 characters'],
+      maxLength : [15, 'First name must be at less than 15 characters'],
+      required :  [true, 'First name is a required field'],
+      trim :      true,
+      match :     /^[A-Za-z]+$/,
       validate(value) {
         if (!value.match(/^[A-Za-z]+$/)) {
-          throw new AppError('First Name should contain alphabetic characters only' , 400);
+          throw new AppError('First Name should contain alphabetic characters only', 400);
         }
       },
     },
-    lastName: {
-      type: String,
-      minLength: [3, 'Last name must be at least 3 characters'],
-      maxLength: [15, 'Last name must be at less than 15 characters'],
-      required: [true, 'Last name is a required field'],
-      trim: true,
-      match: /^[A-Za-z]+$/,
+    lastName : {
+      type :      String,
+      minLength : [3, 'Last name must be at least 3 characters'],
+      maxLength : [15, 'Last name must be at less than 15 characters'],
+      required :  [true, 'Last name is a required field'],
+      trim :      true,
+      match :     /^[A-Za-z]+$/,
       validate(value) {
         if (!value.match(/^[A-Za-z]+$/)) {
-          throw new AppError('Last Name should contain alphabetic characters only' , 400);
+          throw new AppError('Last Name should contain alphabetic characters only', 400);
         }
       },
     },
-    userName: {
-      type: String,
-      minLength: [3, 'Username must be at least 3 characters'],
-      maxLength: [30, 'Username must be at less than 30 characters'],
-      required: [true, 'Username is a required field'],
-      trim: true,
-      unique: true,
+    userName : {
+      type :      String,
+      minLength : [3, 'Username must be at least 3 characters'],
+      maxLength : [30, 'Username must be at less than 30 characters'],
+      required :  [true, 'Username is a required field'],
+      trim :      true,
+      unique :    true,
     },
-    email: {
-      type: String,
-      required: [true, 'Email is a required field'],
-      unique: true,
+    email : {
+      type :     String,
+      required : [true, 'Email is a required field'],
+      unique :   true,
       validate(value) {
         if (!validator.isEmail(value)) {
-          throw new AppError('Invalid email',400);
+          throw new AppError('Invalid email', 400);
         }
       },
     },
-    password: {
-      type: String,
-      required: [true, 'Password is a required field'],
-      trim: true,
-      minlength: [6, 'Password must be at least 6 characters'],
-      match: /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/,
+    password : {
+      type :      String,
+      required :  [true, 'Password is a required field'],
+      trim :      true,
+      minlength : [6, 'Password must be at least 6 characters'],
+      match :     /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/,
+
       //@iti43OS
+
       validate(value) {
         if (!value.match(/(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/)) {
-          throw new AppError('Password must contain at least one number , Capital letter and one special character' , 400);
+          throw new AppError('Password must contain at least one number , Capital letter and one special character', 400);
         }
       },
     },
-    nationalId: {
-      type: String,
-      required: true,
-      unique: true,
-      length:14,
-      match: /^(2|3)\d{1,2}(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])(0[1-9]|1[0123456789]|2[12389]|3[012]|88)(\d{4})([0-9])$/,
-      validate: {
-        validator: function(value) {
+    nationalId : {
+      type :     String,
+      required : true,
+      unique :   true,
+      length :   14,
+      match :    /^(2|3)\d{1,2}(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])(0[1-9]|1[0123456789]|2[12389]|3[012]|88)(\d{4})([0-9])$/,
+      validate : {
+        validator : function(value) {
           return /^(2|3)\d{1,2}(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])(0[1-9]|1[0123456789]|2[12389]|3[012]|88)(\d{4})([0-9])$/.test(value);
         },
-        message: 'Please provide a valid Egyptian national ID number'
+        message : 'Please provide a valid Egyptian national ID number'
       }
     },
-    gender:{
-      type: String,
-      required: true,
-      enum: ['male', 'female']
+    gender : {
+      type :     String,
+      required : true,
+      enum :     ['male', 'female']
     },
-    academicQualifications: {
-      college: {
-        type: String,
-        required: true,
-        minLength:2,
-        maxLength:60,
-        match: /^[A-Za-z\s]+$/,
-        validate: {
-          validator: function (value) {
+    academicQualifications : {
+      college : {
+        type :      String,
+        required :  true,
+        minLength : 2,
+        maxLength : 60,
+        match :     /^[A-Za-z\s]+$/,
+        validate :  {
+          validator : function (value) {
             if (!value.match(/^[A-Za-z\s]+$/)) {
-              throw new AppError('College name cannot contain numbers' , 400);
+              throw new AppError('College name cannot contain numbers', 400);
             }
           },
         }, 
       },
-      degree: {
-        type: String,
-        required: true,
-        enum: ['bachelor', 'master','doctoral'],
+      degree : {
+        type :     String,
+        required : true,
+        enum :     ['bachelor', 'master', 'doctoral'],
       },
-      institution: {
-        type: String,
-        required: true,
-        minlength: 2, 
-        maxlength: 50,
-        match: /^[A-Za-z\s]+$/,
-        validate: {
-          validator: function (value) {
+      institution : {
+        type :      String,
+        required :  true,
+        minlength : 2, 
+        maxlength : 50,
+        match :     /^[A-Za-z\s]+$/,
+        validate :  {
+          validator : function (value) {
             if (!value.match(/^[A-Za-z\s]+$/)) {
-              throw new AppError('Institution cannot contain numbers' , 400);
+              throw new AppError('Institution cannot contain numbers', 400);
             }
           },
         },
       },
-      year: {
-        type: Number,
-        required: true,
-        validate: {
-          validator: function (value) {
+      year : {
+        type :     Number,
+        required : true,
+        validate : {
+          validator : function (value) {
             const currentYear = new Date().getFullYear();
             return value <= currentYear; 
           },
-          message: 'Year must be a valid past year',
+          message : 'Year must be a valid past year',
         },
       }
     },
-    hireDate: {
-      type: Date,
-      validate: {
-        validator: function(value) {
+    hireDate : {
+      type :     Date,
+      validate : {
+        validator : function(value) {
           return value <= Date.now(); 
         },
-        message: 'Hire date cannot be in the future'
+        message : 'Hire date cannot be in the future'
       },
-      default: Date.now,
+      default : Date.now,
     },
-    position: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 2, 
-      maxlength: 50,
-      match: /^[A-Za-z\s]+$/,
-      validate: {
-        validator: function (value) {
+    position : {
+      type :      String,
+      required :  true,
+      trim :      true,
+      minlength : 2, 
+      maxlength : 50,
+      match :     /^[A-Za-z\s]+$/,
+      validate :  {
+        validator : function (value) {
           if (!value.match(/^[A-Za-z\s]+$/)) {
-            throw new AppError('Position cannot contain numbers' , 400);
+            throw new AppError('Position cannot contain numbers', 400);
           }
         },
       },  
     },
-    jobType:{
-      type: String,
-      required: true,
-      enum: ['full-time', 'part-time', 'contract', 'freelance'],
+    jobType : {
+      type :     String,
+      required : true,
+      enum :     ['full-time', 'part-time', 'contract', 'freelance'],
     },
-    depId: {
-      type: Schema.Types.ObjectId,
-      ref: "Department",
-      required: true
+    depId : {
+      type :     Schema.Types.ObjectId,
+      ref :      'Department',
+      required : true
     },
-    salary: {
-      type: Number,
-      required: true,
-      min: 0
+    salary : {
+      type :     Number,
+      required : true,
+      min :      0
     },
-    phoneNumber: {
-      type: String,
-      required: true,
-      trim: true,
-      match:/^01([0125]{2}|15)[0-9]{8}$/,
-      validate: {
-        validator: function (value) {
+    phoneNumber : {
+      type :     String,
+      required : true,
+      trim :     true,
+      match :    /^01([0125]{2}|15)[0-9]{8}$/,
+      validate : {
+        validator : function (value) {
           if (!value.match(/^01([0125]{2}|15)[0-9]{8}$/)) {
-            throw new AppError('Invalid Egyptian phone number' , 400);
+            throw new AppError('Invalid Egyptian phone number', 400);
           }
         },
       }, 
     },
-    address: {
-      type: String,
-      minlength: [5, 'Address must be at least 5 characters'],
-      maxLength:[150, 'Address must be at less than 150 characters'],
-      match:/[a-zA-Z]+/,
-      validate: {
-        validator: function (value) {
+    address : {
+      type :      String,
+      minlength : [5, 'Address must be at least 5 characters'],
+      maxLength : [150, 'Address must be at less than 150 characters'],
+      match :     /[a-zA-Z]+/,
+      validate :  {
+        validator : function (value) {
           if (!value.match(/[a-zA-Z]+/)) {
-            throw new AppError('Address must contain at least one alphabetic characters' , 400);
+            throw new AppError('Address must contain at least one alphabetic characters', 400);
           }
         },
       }, 
   },
-    pImage: {
-      type: String,
-      default: 'https://res.cloudinary.com/dttgbrris/image/upload/v1681003634/3899618_mkmx9b.png',
+    pImage : {
+      type :    String,
+      default : 'https://res.cloudinary.com/dttgbrris/image/upload/v1681003634/3899618_mkmx9b.png',
     },
-    role: {
-      type: String,
-      enum: ['ADMIN','USER'],
-      default: 'USER',
+    role : {
+      type :    String,
+      enum :    ['ADMIN', 'USER'],
+      default : 'USER',
     },
   },
   {
-    timestamps: true,
+    timestamps : true,
   }
 );
 schema.methods.toJSON = function () {
@@ -222,7 +224,7 @@ schema.pre('save', async function () {
 schema.methods.verifyPassword = function verifyPassword(pass) {
   return bcryptjs.compareSync(pass, this.password);
 };
-
+schema.plugin(mongoosePaginate);
 const Employee = model('Employee', schema);
 
 module.exports = Employee;
