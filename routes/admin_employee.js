@@ -14,12 +14,12 @@ router.use(adminAuth)
 router.post('/', validate(employeesValidator.signUp), async (req, res, next) => {
     const { body: {
       firstName, lastName, userName, email, password, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender, address,
+      role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender, address,
       academicQualifications:{college, degree, institution, year}, pImage, 
     }} = req;
     const user = employeeController.createEmployee({
       firstName, lastName, userName, email, password, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
+      role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender,
       address, academicQualifications : {college, degree, institution, year}, pImage, 
     });
     const [err, data] = await asycnWrapper(user);
