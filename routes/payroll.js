@@ -15,6 +15,13 @@ const {body:{
 grossSalary,daysWorked,bonus,employeeId
 }}=req;
 
+const validKeys = ['grossSalary', 'daysWorked' ,'bonus' , 'employeeId'];
+const allowedKeys = Object.keys(req.body);
+const invalidKeys = allowedKeys.filter((key) => !validKeys.includes(key));
+if (invalidKeys.length > 0) {
+  return res.status(400).json({ status: 'fail', message: 'Invalid keys to be created' });
+}
+
 const employee = await Employee.findOne({ _id: employeeId });
 if (!employee) {
   return res.status(400).json({ status: 'fail', message: `No Employee with ID ${employeeId}` });
