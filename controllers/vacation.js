@@ -38,7 +38,7 @@ const getOneVacationWithUserData= async(req,res)=>{
 };
 
 
-const getOneVacationWithemployeeId = async (req, res) => {
+const getVacationWithemployeeId = async (req, res) => {
     try {
       const { employeeId } = req.params;
       const vacations = await Vacation.find({ employeeId: employeeId });
@@ -143,5 +143,5 @@ module.exports = {
         modifyVacation,
         removeVacation,
         getOneVacationWithUserData,
-        getOneVacationWithemployeeId,
+        getVacationWithemployeeId,
 };
