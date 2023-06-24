@@ -29,6 +29,23 @@ const schema = new Schema(
                 message: 'End date must be after start date'
             }
         },
+
+        totalDays: {
+            type: Number,
+            required: [true, 'Total days of vacation is required'],
+            default:0,
+            validate: {
+              validator: function(value) {
+                if (value <= 21) {
+                  return true;
+                }
+                return  'Unfortunately, you cannot take more vacations as you have crossed the limit of 21 days'
+
+              },
+            }
+          },
+
+
         status:{
             type:String,
             enum: ['Pending', 'Accepted', 'Declined'],
@@ -41,4 +58,5 @@ const schema = new Schema(
         }
     })
     const Vacation=model('Vacation',schema);
+
     module.exports=Vacation;

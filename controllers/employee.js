@@ -11,8 +11,7 @@ const getEmployees = (role = 'USER', page, limit) => {
   if (!limit) limit = 5;
   if (!page) page = 1;
  
-  return Employee.paginate({}, { page, limit });
-  // .find({role})
+  return Employee.paginate({role}, { page, limit });
 }
 
 const employeeDetails = (empId) => Employee.findOne({_id : empId})

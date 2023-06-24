@@ -15,11 +15,10 @@ const updateEmployeeSalaryTable = async (employeeId, grossSalary) => {
 
 const getAllEmployeeSalary = () => Payroll.find();
 
-const getEmployeeSalary = (userId) => Payroll.findOne({employeeId : userId})
+const getEmployeeSalary = (userId) => Payroll.findOne({employeeId : userId});
 
-const updateEmployeeSalary = (userId,data) => Payroll.findOneAndUpdate({employeeId : userId}, data , {
- runValidators:true , new:true});
-
+const updateEmployeeSalary = (userId, data) => Payroll.findOneAndUpdate({employeeId : userId}, data, {
+runValidators : true, new : true});
 
 const deleteEmployeeSalary = (userId) => Payroll.findOneAndDelete({employeeId:userId})
 
