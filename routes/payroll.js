@@ -30,10 +30,11 @@ res.status(201).json({ status:'success', data });
 })
 
 router.get('/' ,async(req,res,next)=>{
-    const employeeSalaries = payrollController.getAllEmployeeSalary();
+    const { page, limit } = req.query
+    const employeeSalaries = payrollController.getAllEmployeeSalary(page, limit);
     const[err,data] = await asycnWrapper(employeeSalaries)
     if(err) return next(err);
-    res.status(201).json({status:'success' , data});
+    res.status(200).json({status:'success' , data});
 })
 
 router.patch('/:id' , async(req,res,next)=>{
@@ -50,7 +51,7 @@ router.patch('/:id' , async(req,res,next)=>{
     const [err,data] = await asycnWrapper(employeeUpdate,employeeSalary);
     if(err) return next(err);
     if (!data) return next(new AppError (`No Employee with ID ${userId}`, 400));
-    res.status(201).json({status:'success' , data});
+    res.status(200).json({status:'success' , data});
 })
 
 router.delete('/:id' ,async(req,res,next)=>{
@@ -59,7 +60,7 @@ router.delete('/:id' ,async(req,res,next)=>{
     const [err,data] = await asycnWrapper(employeeDelete);
     if(err) return next(err);
     if (!data) return next(new AppError (`No Employee with ID ${userId}`, 400));
-    res.status(201).json({status:'success' , data});
+    res.status(204).end();
 })
 
 

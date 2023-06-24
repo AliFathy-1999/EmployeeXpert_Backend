@@ -1,4 +1,5 @@
 let mongoose, { Schema, model } = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema(
     {
@@ -60,36 +61,9 @@ const schema = new Schema(
       toJSON: { getters: true },
     }
   );
-  
-//   schema.virtual('tax').set(function() {
-//     throw new Error('Tax cannot be set directly.');
-//   });
-  
-//   schema.virtual('netSalary').set(function() {
-//     throw new Error('Net Salary cannot be set directly.');
-//   });
-    
-    // schema.pre('findOneAndUpdate', async function (next) {
-    //     const updatedFields = this.getUpdate();
-    //     if (updatedFields.hasOwnProperty('grossSalary') || updatedFields.hasOwnProperty('bonus')) {
-    //       const payroll = this;
-    //       const { grossSalary , bonus } = payroll.getUpdate();
-    //       const existingDoc = await this.model.findOne(this.getFilter());
 
-    //       if((grossSalary && bonus) || grossSalary){
-    //         const updatedPayRate = grossSalary / 25;
-    //         const updatedNetSalary = grossSalary - (grossSalary * existingDoc.tax )+ existingDoc.bonus;
-    //         payroll.set('payRate', updatedPayRate);
-    //         payroll.set('netSalary', updatedNetSalary);
-    //       }
-    //       else if(bonus){
-    //         const updatedNetSalary = existingDoc.grossSalary - (existingDoc.grossSalary * existingDoc.tax ) + bonus;
-    //         payroll.set('netSalary', updatedNetSalary);  
-    //     }
-    //     }
-    //     next();
-    //   });
 
+    schema.plugin(mongoosePaginate);
 
     const Payroll=model('Payroll',schema)
     module.exports=Payroll;

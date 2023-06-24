@@ -1,5 +1,6 @@
 const Payroll = require('../DB/models/payroll');
-const Employee = require ('../DB/models/employee')
+const Employee = require ('../DB/models/employee');
+const { paginateSubDocs } = require('mongoose-paginate-v2');
 
 const createEmployeeSalary = async (data) => {
     const payroll = await Payroll.create(data);
@@ -13,7 +14,12 @@ const updateEmployeeSalaryTable = async (employeeId, grossSalary) => {
     return salary;
 }
 
-const getAllEmployeeSalary = () => Payroll.find();
+const getAllEmployeeSalary = async (page,limit) => {
+    if (!limit) limit = 10;
+    if (!page) page = 1;
+    const paginatedPayroll = await Payroll.paginate({},{ page, limit });
+    return paginatedPayroll
+}
 
 const getEmployeeSalary = (userId) => Payroll.findOne({employeeId : userId});
 
