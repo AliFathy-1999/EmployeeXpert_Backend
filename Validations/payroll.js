@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const payroll={
-    grossSalary:Joi.number().min(0).messages({
+    grossSalary:Joi.number().min(0).required().messages({
         'number.min':'Gross Salary Cannot be less than 0'
     }),
     bonus:Joi.number().min(0).messages({
