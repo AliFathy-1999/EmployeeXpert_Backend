@@ -4,6 +4,8 @@ const payrollController = require('../controllers/payroll');
 const {adminAuth} = require('../middlewares/auth');
 const { validate } = require('../middlewares/validation');
 const {payroll} = require('../Validations/payroll')
+const Employee = require('../DB/models/employee')
+
 
 const router = express.Router();
 router.use(adminAuth);
@@ -12,6 +14,12 @@ router.post('/',validate(payroll), async(req,res,next)=>{
 const {body:{
 grossSalary,daysWorked,bonus,employeeId
 }}=req;
+
+const employee = await Employee.findOne({ _id: employeeId });
+if (!employee) {
+  return res.status(400).json({ status: 'fail', message: `No Employee with ID ${employeeId}` });
+}
+
 const salary = payrollController.createEmployeeSalary({
     grossSalary,daysWorked,bonus,employeeId   
 })
@@ -30,8 +38,14 @@ router.get('/' ,async(req,res,next)=>{
 
 router.patch('/:id' , async(req,res,next)=>{
     const userId = req.params.id;
-    const {grossSalary,daysWorked,bonus} = req.body;
-    const employeeUpdate = payrollController.updateEmployeeSalary(userId ,{grossSalary,daysWorked,bonus});
+    const {grossSalary,bonus} = req.body;
+    const validKeys = ['grossSalary', 'bonus'];
+    const allowedKeys = Object.keys(req.body);
+    const invalidKeys = allowedKeys.filter((key) => !validKeys.includes(key));
+    if (invalidKeys.length > 0) {
+      return res.status(400).json({ status: 'fail', message: 'Invalid keys to be updated' });
+    }
+    const employeeUpdate = payrollController.updateEmployeeSalary(userId ,{grossSalary,bonus});
     const employeeSalary= payrollController.updateEmployeeSalaryTable(userId,grossSalary);
     const [err,data] = await asycnWrapper(employeeUpdate,employeeSalary);
     if(err) return next(err);
