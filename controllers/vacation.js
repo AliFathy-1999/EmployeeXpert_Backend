@@ -58,8 +58,6 @@ const applyForVacation= async(req,res)=>{
         const empVacation = await Vacation.find({employeeId});
         let totalDaysSum = empVacation.reduce((sum, obj) => {
             return sum+ obj.totalDays
-             
-
           }, 0);
           let newTotalDays = totalDaysSum;
         console.log(newTotalDays);
@@ -102,27 +100,39 @@ const modifyVacation= async(req,res)=>{
 
 
 
-const removeVacation = async(req,res)=>{
-    try{
-
-        const {id} = req.params;
-        if(Date.now() >  Vacation.fromDay){
-const vacation = await Vacation.findByIdAndDelete(id,req.body);
+        const removeVacation = async(req,res)=>{
+            try{
         
-if(!vacation){
-return res.status(404).json({message:`can't find any vacation with ID ${id}`});
-}
-        }
-        else{
-            res.json({message:"sorry you can't cancel it"})
-        }
-    }
-    catch(error){
-        console.log(error.message);
-        res.status(500).json({message:error.message});
-    
-    }
-};
+                const {id} = req.params;
+                const vacation = await Vacation.findById(id);
+        
+                if (!vacation) {
+                    return res.status(404).json({message:`Can't find any vacation with ID ${id}`});
+                }
+        
+                const now = Date.now();
+                const date = new Date(now);
+                
+                if( vacation.status == 'Declined' || date < vacation.fromDay){
+                    const deletedVacation = await Vacation.findByIdAndDelete(id,req.body);
+        
+                    if(!deletedVacation){
+                        return res.status(404).json({message:`Can't find any vacation with ID ${id}`});
+                    }
+        
+                    return res.status(200).json({message:'Vacation deleted successfully'});
+                }
+                else{
+                    console.log(vacation.fromDay);
+                    console.log(vacation.toDay);
+                    res.json({message:"Sorry, you can't cancel it"});
+                }
+            }
+            catch(error){
+                console.log(error.message);
+                res.status(500).json({message:error.message});
+            }
+        };
 
 
 
