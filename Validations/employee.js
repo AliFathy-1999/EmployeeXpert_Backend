@@ -1,11 +1,13 @@
 const Joi = require('joi');
+const { AppError } = require('../lib');
 
 const signUp = {
     body : Joi.object().keys({
-        firstName : Joi.string().trim().regex(/^[a-zA-Z]+$/).min(3).max(15)
+        firstName : Joi.string().trim().pattern(/^[a-zA-Z]+$/).min(3).max(15)
         .messages({
-            'string.min' : 'First name must be at least 3 characters',
-            'string.max' : 'First name must be at most 15 characters',
+            'string.pattern.base' : 'First name must contain only alphabet letter ',
+            'string.min' :          'First name must be at least 3 characters',
+            'string.max' :          'First name must be at most 15 characters',
         }),
         lastName : Joi.string().trim().regex(/^[a-zA-Z]+$/).min(3).max(15)
         .messages({
@@ -14,25 +16,27 @@ const signUp = {
         }),
         DOB : Joi.date()
         .required()
+        .custom((birthDate) => {
+          const newyear = new Date(); 
+          const userBirthdate = new Date(birthDate);
+          const age = (newyear.getFullYear() - userBirthdate.getFullYear());
+          if(age < 16)
+            throw new AppError('Employee must be at least 16 years old.', 400)
+        })
         .messages({
           'date.base' :   'Date of Birth is a required field',
           'date.format' : 'Date of Birth must be a valid date',
-          'date.custom' : 'Date of birth is invalid, Employee must be at least 16 years old'
-        })
-        .custom((value) => {
-          if (new Date(value).getFullYear() > 2007) {
-            throw new Error('Date of birth is invalid, Employee must be at least 16 years old');
-          }
-          return true;
-        }), 
-    email : Joi.string().email() 
+          'any.custom' :  'Date of birth is invalid, Employee must be at least 16 years old'
+        }),
+        email : Joi.string().email() 
         .messages({
             'string.email' : 'Invalid email format',
         }),
-        userName : Joi.string().trim().regex(/^[a-zA-Z0-9]+$/).min(3).max(30)
+        userName : Joi.string().trim().pattern(/^[a-zA-Z0-9]+$/).min(3).max(30)
         .messages({
-            'string.min' : 'Username must be at least 3 characters',
-            'string.max' : 'Username must be at most 30 characters',
+            'string.min' :          'Username must be at least 3 characters',
+            'string.max' :          'Username must be at most 30 characters',
+            'string.pattern.base' : 'Username can only contain letters and numbers.',
         }),       
         password : Joi.string().min(8).pattern(/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]/).messages({
             'string.min' :          'Password must be at least 8 characters',
@@ -51,7 +55,9 @@ const signUp = {
               'string.max' :          'College name must be less than 60 characters',
               'string.pattern.base' : 'College name cannot contain numbers',
             }),
-            degree :      Joi.string().valid('bachelor', 'master', 'doctoral'),
+            degree : Joi.string().valid('bachelor', 'master', 'doctoral').messages({
+              'any.only' : 'Degeree must be one of the following degrees bachelor, master, doctoral',
+            }),
             institution : Joi.string().min(2).max(50).pattern(/^[A-Za-z\s]+$/).messages({
               'string.min' :          'Institution name must be at least 2 characters',
               'string.max' :          'Institution name must be less than 50 characters',
@@ -63,16 +69,27 @@ const signUp = {
               'number.max' :  'Year must be a valid past year',
             }),
           }),
-          hireDate : Joi.date().max('now').default(Date.now),
+          hireDate : Joi.date().max('now').default(Date.now).messages({
+            'date.max' : `Hire date must be not exceed ${new Date().toISOString().split('T')[0]}`,
+          }),
           position : Joi.string().min(2).max(50).pattern(/^[A-Za-z\s]+$/).messages({
             'string.min' :          'Position must be at least 2 characters',
             'string.max' :          'Position must be less than 50 characters',
             'string.empty' :        'Position is a required field',
             'string.pattern.base' : 'Position cannot contain numbers',
           }),
-          jobType :     Joi.string().valid('full-time', 'part-time', 'contract', 'freelance'),
-          depId :       Joi.string(),
-          salary :      Joi.number().min(0),
+          jobType : Joi.string().valid('full-time', 'part-time', 'contract', 'freelance').messages({
+            'any.only' : 'Job Type must be one of the following types Full time, Part time, Contract and Freelance',
+          }),
+          depId : Joi.string().pattern(/^[0-9a-fA-F]{24}$/).length(24).messages({
+            'string.empty' :        'Invalid ID',
+            'string.pattern.base' : 'Invalid ObjectID',
+          }),
+          salary : Joi.number().min(3000).max(42000)
+          .messages({
+            'string.min' : 'Salary must be at least 3000 EGP according to minimum wage in Egypt',
+            'string.max' : 'Salary must be not exceed 42000 EG pound according to maximum wage in Egypt',
+        }), 
           phoneNumber : Joi.string().pattern(/^01([0125]{2}|15)[0-9]{8}$/)
           .messages({
             'string.pattern.base' : 'Invalid Egyptian phone number',

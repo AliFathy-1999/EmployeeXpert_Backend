@@ -78,15 +78,16 @@ const schema = new Schema(
       }
     },
     DOB : {
-      type :     Date,
-      required : [true, 'Date of Birth is a required field'],
-      validate(value) {
-        if (validator.isDate(value)) {
-          if (new Date(value).getFullYear() > 2007) {
-            throw new Error('Date of birth is invalid, Employee must be at least 16 years old');
-          }
-        }
-      },
+      type :      Date,
+      required :  [true, 'Date of Birth is a required field'],
+        validator : function(birthDate) {
+          const newyear = new Date(); 
+          const userBirthdate = new Date(birthDate);
+          const age = (newyear.getFullYear() - userBirthdate.getFullYear()) - 1;
+          if(age < 16)
+            throw new AppError('Employee must be at least 16 years old.', 400)
+        },
+        message : 'Employee must be at least 16 years old.'
     },
     gender : {
       type :     String,
@@ -177,7 +178,8 @@ const schema = new Schema(
     salary : {
       type :     Number,
       required : true,
-      min :      0
+      min :      3000,
+      max :      42000
     },
     phoneNumber : {
       type :     String,

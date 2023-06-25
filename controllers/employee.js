@@ -37,7 +37,6 @@ const signIn = async (employee) => {
   const valid = user.verifyPassword(employee.password);
   if (!valid) throw new AppError('Invalid password', 400);
   return {token : generateToken(user), user}
-  
 }
 
 module.exports = {
