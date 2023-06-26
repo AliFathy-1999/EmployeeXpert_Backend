@@ -1,11 +1,32 @@
-const jwt = require('jsonwebtoken');
 const Department = require('../DB/models/department');
-const { AppError } = require('../lib/index');
+const Employee = require('../DB/models/employee');
+const createDepartment = (data) => Department.create(data);
 
+const getDepartments = (page, limit) =>{
+  if (!limit) limit = 5;
+  if (!page) page = 1;
+ 
+  return Department.paginate({}, { page, limit });
+}
+const getDepartmentDetails = (depId) => Department.findOne({ _id : depId}).populate('managerId', 'firstName lastName position')
 
-const create = (data) =>  Department.create(data);
+const updateDepartment = (depId, data) => Department.findOneAndUpdate({ _id : depId }, data, { runValidators : true, new : true });
 
+const deleteDepartment = (depId) => Department.findOneAndDelete({ _id : depId });
 
+const fetchDepEmployees = (depId, page, limit) => {
+  if (!limit) limit = 5;
+  if (!page) page = 1;
+  const selection = '_id firstName lastName userName email position pImage jobType depId' 
+  const dep = Department.findOne({ _id : depId })
+  const emp = Employee.paginate({depId}, { limit, page, select : selection });
+  return Promise.all([dep, emp])
+}
 module.exports = {
-  create,
+  createDepartment,
+  getDepartments,
+  updateDepartment,
+  deleteDepartment,
+  getDepartmentDetails,
+  fetchDepEmployees
 };
