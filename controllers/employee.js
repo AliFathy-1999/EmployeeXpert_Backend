@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Employee = require('../DB/models/employee');
 const { AppError } = require('../lib/index');
-
+const Payroll = require('../DB/models/payroll')
 const generateToken = (employee) => {
   const token = jwt.sign({ userName : employee.userName, userId : employee._id, role : employee.role}, process.env.TOKEN_KEY, { expiresIn : '7d' } )
   return token;
@@ -18,7 +18,16 @@ const employeeDetails = (empId) => Employee.findOne({_id : empId})
 
 const getMe = (empId) => Employee.findOne({_id : empId});
 
-const createEmployee = (data) => Employee.create(data);
+const createEmployee = (data) => {
+  return Employee.create(data).then((data)=>{
+    Payroll.create({ 
+      grossSalary : data.salary,
+      employeeId :  data._id,
+      daysWorked :  0,
+      tax : 0,
+     })
+  });
+}
 
 const updateEmployee = (empId, data) => Employee.findOneAndUpdate({ _id : empId }, data, { runValidators : true, new : true });
 

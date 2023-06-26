@@ -5,8 +5,10 @@ const { employeeController } = require('../controllers/index');
 const { employeesValidator } = require('../Validations/index');
 const { validate } = require('../middlewares/validation');
 const {adminAuth} = require('../middlewares/auth');
-
+const Department = require('../DB/models/department')
+const Payroll = require('../DB/models/payroll')
 const router = express.Router();
+
 router.use(adminAuth)
 
 // Add Employee
@@ -17,6 +19,13 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender, address,
       academicQualifications:{college, degree, institution, year}, pImage, 
     }} = req;
+
+    // Detect If Entered Department is existed or not
+
+    const department = await Department.findOne({_id : depId});
+    if (!department) 
+      return next(new AppError (`No Department with ID ${depId}`, 400));
+
     const user = employeeController.createEmployee({
       firstName, lastName, userName, email, password, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender,
@@ -24,7 +33,7 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
     });
     const [err, data] = await asycnWrapper(user);
     if (err) return next(err);
-    res.status(201).json({ status : 'success', data });
+    res.status(201).json({ status : 'success' });
   });
 
   // Admin update employee data
@@ -36,6 +45,11 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
       role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
       address, academicQualifications, pImage, 
     } = req.body;
+    
+    const department = await Department.findOne({_id : depId});
+    if (!department) 
+      return next(new AppError (`No Department with ID ${depId}`, 400));
+      
     const user = employeeController.updateEmployee(id, {
       firstName, lastName, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
@@ -52,6 +66,7 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
   router.delete('/:id', async (req, res, next) => {
     const { params : { id }} = req;
     const user = employeeController.deleteEmployee(id);
+    await Payroll.deleteOne({ employeeId : id });
     const [err, data] = await asycnWrapper(user);
     if (err) return next(err);
     if (!data) return next(new AppError (`No Employee with ID ${id}`, 400));

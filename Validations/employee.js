@@ -16,7 +16,6 @@ const signUp = {
             'string.max' :          'Last name must be at most 15 characters',
         }),
         DOB : Joi.date()
-        .required()
         .custom((birthDate) => {
           const newyear = new Date(); 
           const userBirthdate = new Date(birthDate);

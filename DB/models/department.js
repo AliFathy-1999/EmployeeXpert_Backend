@@ -45,6 +45,7 @@ const schema = new Schema({
     timestamps : true,
 }
 )
+
 schema.plugin(mongoosePaginate);
 const Department = model('Department', schema);
 module.exports = Department;

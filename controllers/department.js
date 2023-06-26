@@ -14,12 +14,19 @@ const updateDepartment = (depId, data) => Department.findOneAndUpdate({ _id : de
 
 const deleteDepartment = (depId) => Department.findOneAndDelete({ _id : depId });
 
-// const fetchDepEmployees = (depId) => Employee
+const fetchDepEmployees = (depId, page, limit) => {
+  if (!limit) limit = 5;
+  if (!page) page = 1;
+  const selection = '_id firstName lastName userName email position pImage jobType depId' 
+  const dep = Department.findOne({ _id : depId })
+  const emp = Employee.paginate({depId}, { limit, page, select : selection });
+  return Promise.all([dep, emp])
+}
 module.exports = {
   createDepartment,
   getDepartments,
   updateDepartment,
   deleteDepartment,
   getDepartmentDatials,
-  // fetchDepEmployees
+  fetchDepEmployees
 };
