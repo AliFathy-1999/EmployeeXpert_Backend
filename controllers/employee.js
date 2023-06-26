@@ -14,7 +14,7 @@ const getEmployees = (role = 'USER', page, limit) => {
   return Employee.paginate({role}, { page, limit });
 }
 
-const employeeDetails = (empId) => Employee.findOne({_id : empId})
+const employeeDetails = (empId) => Employee.findOne({_id : empId}).populate('depId', 'name')
 
 const getMe = (empId) => Employee.findOne({_id : empId});
 
