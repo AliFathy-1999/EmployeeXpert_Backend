@@ -5,21 +5,21 @@ const Communications = require('../DB/models/comunications');
 const create                = (data) =>  Communications.create(data);
 const findEmpMessages  =  async (data) => {
     
-                              const messages = await Communications.find({ recieverEmp: data.empId });
+                              const messages = await Communications.find({ Emp: data });
                               return messages
 
 }
 
 const findDepMessages  =  async (data) => {
     
-    const messages = await Communications.find({ recieverDep: data.depId });
+    const messages = await Communications.find({ Dep: data });
     return messages
 
 }
 
-const findAllMessages  =  async (data) => {
+const findAllMessages  =  async () => {
     
-    const messages = await Communications.find({ recieverEmp: data.all});
+    const messages = await Communications.find({ All: true});
     return messages
 
 }
