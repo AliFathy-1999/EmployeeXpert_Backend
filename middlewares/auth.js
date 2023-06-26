@@ -15,7 +15,7 @@ const verifyToken = async (bearerToken) => {
 };
 
 const userAuth = async (req, res, next) => {
-  let bearerToken = req.headers.authorization;
+  let bearerToken = req.headers.authorization; 
   try {
     if (!bearerToken) throw new Error('Un-Authenticated');
     const result = await verifyToken(bearerToken);
