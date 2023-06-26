@@ -1,6 +1,5 @@
 const express = require('express');
 const { asycnWrapper, AppError } = require('../lib/index');
-
 const { departmentController } = require('../controllers/index');
 const { departmentValidator } = require('../Validations');
 const {adminAuth} = require('../middlewares/auth');
