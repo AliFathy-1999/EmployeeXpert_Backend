@@ -3,28 +3,28 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 
 const schema = new Schema(
     {
-      grossSalary: {
-        type: Number,
-        required: [true, 'Gross Salary of Employee is Required'],
-        min: 0,
+      grossSalary : {
+        type :     Number,
+        required : [true, 'Gross Salary of Employee is Required'],
+        min :      0,
       },
-      payRate: {
-        type: Number,
-        min: 0,
-        get: function() {
+      payRate : {
+        type : Number,
+        min :  0,
+        get :  function() {
           return this.grossSalary / 25;
         },
       },
-      daysWorked: {
-        type: Number,
-        required: [true, 'Days Employee Worked is Required'],
-        min: 0,
-        max: 25,
+      daysWorked : {
+        type :     Number,
+        required : [true, 'Days Employee Worked is Required'],
+        min :      0,
+        max :      25,
       },
-      tax: {
-        type: Number,
-        min: 0,
-        get: function() {
+      tax : {
+        type : Number,
+        min :  0,
+        get :  function() {
           if (this.grossSalary < 10000) {
             return 0;
           } else if (this.grossSalary < 15000) {
@@ -36,34 +36,34 @@ const schema = new Schema(
           }
         },
       },
-      bonus: {
-        type: Number,
-        required: [true, 'Bonus is Required'],
-        min: 0,
-        default: 0,
+      bonus : {
+        type :     Number,
+        required : [true, 'Bonus is Required'],
+        min :      0,
+        default :  0,
       },
-      netSalary: {
-        type: Number,
-        min: 0,
-        get: function() {
+      netSalary : {
+        type : Number,
+        min :  0,
+        get :  function() {
           return this.grossSalary - this.grossSalary * this.tax + this.bonus;
         },
       },
-      employeeId: {
-        type: Schema.Types.ObjectId,
-        ref: 'Employee',
-        required: true,
+      employeeId : {
+        type :     Schema.Types.ObjectId,
+        ref :      'Employee',
+        required : true,
       },
     },
     {
-      timestamps: true,
-      toObject: { getters: true },
-      toJSON: { getters: true },
+      timestamps : true,
+      toObject :   { getters : true },
+      toJSON :     { getters : true },
     }
   );
 
 
     schema.plugin(mongoosePaginate);
 
-    const Payroll=model('Payroll',schema)
-    module.exports=Payroll;
+    const Payroll = model('Payroll', schema)
+    module.exports = Payroll;

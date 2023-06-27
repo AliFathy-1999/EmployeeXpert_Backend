@@ -49,7 +49,7 @@ router.get('/', async (req, res, next) => {
 // Delete Department
 
 router.delete('/:id', async (req, res, next) => {
-  const { params: { id }} = req;
+  const { params: { id } } = req;
   const department = departmentController.deleteDepartment(id);
   const [err, data] = await asycnWrapper(department);
   if (err) return next(err);

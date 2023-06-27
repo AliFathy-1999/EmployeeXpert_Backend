@@ -24,7 +24,6 @@ const createEmployee = (data) => {
       grossSalary : data.salary,
       employeeId :  data._id,
       daysWorked :  0,
-      tax : 0,
      })
   });
 }
