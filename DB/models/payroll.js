@@ -6,7 +6,7 @@ const schema = new Schema(
       grossSalary : {
         type :     Number,
         required : [true, 'Gross Salary of Employee is Required'],
-        min :      0,
+        min :      3500,
       },
       payRate : {
         type : Number,

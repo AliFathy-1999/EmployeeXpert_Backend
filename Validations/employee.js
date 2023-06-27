@@ -86,9 +86,9 @@ const signUp = {
             'string.empty' :        'Invalid ID',
             'string.pattern.base' : 'Invalid ObjectID',
           }),
-          salary : Joi.number().min(3000).max(42000)
+          salary : Joi.number().min(3500).max(42000)
           .messages({
-            'number.min' : 'Salary must be at least 3000 EGP according to minimum wage in Egypt',
+            'number.min' : 'Salary must be at least 3500 EGP according to minimum wage in Egypt',
             'number.max' : 'Salary must be not exceed 42000 EG pound according to maximum wage in Egypt',
         }), 
           phoneNumber : Joi.string().pattern(/^01([0125]{2}|15)[0-9]{8}$/)
