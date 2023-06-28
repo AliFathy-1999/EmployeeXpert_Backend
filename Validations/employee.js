@@ -20,13 +20,13 @@ const signUp = {
           const newyear = new Date(); 
           const userBirthdate = new Date(birthDate);
           const age = (newyear.getFullYear() - userBirthdate.getFullYear());
-          if(age < 16)
-            throw new AppError('Employee must be at least 16 years old.', 400)
+          if(age < 18)
+            throw new AppError('Employee must be at least 18 years old.', 400)
         })
         .messages({
           'date.base' :   'Date of Birth is a required field',
           'date.format' : 'Date of Birth must be a valid date',
-          'any.custom' :  'Date of birth is invalid, Employee must be at least 16 years old'
+          'any.custom' :  'Date of birth is invalid, Employee must be at least 18 years old'
         }),
         email : Joi.string().email() 
         .messages({
@@ -58,8 +58,8 @@ const signUp = {
               'string.max' :          'College name must be less than 60 characters',
               'string.pattern.base' : 'College name cannot contain numbers',
             }),
-            degree : Joi.string().valid('bachelor', 'master', 'doctoral').messages({
-              'any.only' : 'Degeree must be one of the following degrees bachelor, master, doctoral',
+            degree : Joi.string().valid('bachelor', 'master', 'doctoral', 'PhD').messages({
+              'any.only' : 'Degeree must be one of the following degrees bachelor, master, doctoral and PhD',
             }),
             institution : Joi.string().min(2).max(50).pattern(/^[A-Za-z\s]+$/).messages({
               'string.min' :          'Institution name must be at least 2 characters',
@@ -86,12 +86,12 @@ const signUp = {
             'string.empty' :        'Invalid ID',
             'string.pattern.base' : 'Invalid ObjectID',
           }),
-          salary : Joi.number().min(3500).max(42000)
+          salary : Joi.number().min(3500).max(200000)
           .messages({
-            'number.min' : 'Salary must be at least 3500 EGP according to minimum wage in Egypt',
-            'number.max' : 'Salary must be not exceed 42000 EG pound according to maximum wage in Egypt',
+            'number.min' : 'Salary must be at least 3500 EGP',
+            'number.max' : 'Salary must be not exceed 200000 EGP',
         }), 
-          phoneNumber : Joi.string().pattern(/^01([0125]{2}|15)[0-9]{8}$/)
+          phoneNumber : Joi.string().pattern(/^(00201|\+201|01)[0-2,5]{1}[0-9]{8}$/)
           .messages({
             'string.pattern.base' : 'Invalid Egyptian phone number',
           }),
