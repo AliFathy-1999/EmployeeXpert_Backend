@@ -43,7 +43,7 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
     const {  
       firstName, lastName, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
-      address, academicQualifications : {college, degree, institution, year}, pImage, 
+      address, academicQualifications, pImage, 
     } = req.body;
     if(depId){
       const department = await Department.findOne({_id : depId});
@@ -53,7 +53,7 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
     const user = employeeController.updateEmployee(id, {
       firstName, lastName, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
-      address, academicQualifications : {college, degree, institution, year}, pImage
+      address, academicQualifications, pImage
     });
     const [err, data] = await asycnWrapper(user);
     if (err) return next(err);
