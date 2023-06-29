@@ -9,7 +9,7 @@ const employeeVacationsRoutes = require('./vacation');
 const salaryRoutes = require ('./payroll');
 const EmployeeSalaryRoutes = require ('./userSalary');
 
-router.use('/emp/', employeeRoutes);
+router.use('/', employeeRoutes);
 router.use('/dep', depRoutes);
 router.use('/communications', commRoute)
 router.use('/admin/emp/', adminEmpRoutes);
