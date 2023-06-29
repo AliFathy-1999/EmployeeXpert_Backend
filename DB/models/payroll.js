@@ -7,12 +7,13 @@ const schema = new Schema(
         type :     Number,
         required : [true, 'Gross Salary of Employee is Required'],
         min :      3500,
+        max: 200000
       },
       payRate : {
         type : Number,
         min :  0,
         get :  function() {
-          return this.grossSalary / 25;
+          return this.grossSalary / 30;
         },
       },
       daysWorked : {
@@ -39,6 +40,12 @@ const schema = new Schema(
       bonus : {
         type :     Number,
         required : [true, 'Bonus is Required'],
+        min :      0,
+        default :  0,
+      },
+      deduction:{
+        type :     Number,
+        required : [true, 'Deduction is Required'],
         min :      0,
         default :  0,
       },
