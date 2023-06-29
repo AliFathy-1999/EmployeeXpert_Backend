@@ -1,13 +1,14 @@
 const express = require('express');
 
 const router = express.Router();
+const {Auth} = require('../middlewares/auth');
 
 const { getAllVacations,getVacationWithemployeeId, getOneVacation , getOneVacationWithUserData, applyForVacation , modifyVacation , removeVacation } = require('../controllers/vacation');
 
 
 router.get('/:id',getOneVacation);
 
-router.post('/',applyForVacation);
+router.post('/',Auth,applyForVacation);
 
 router.get('/',getAllVacations);
 

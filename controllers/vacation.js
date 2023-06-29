@@ -1,5 +1,4 @@
 const Vacation = require('../DB/models/vacation');
-// const Employee = require('../DB/models/employee');
 
 const getAllVacations = async (req,res) => {
     try{
@@ -54,8 +53,9 @@ const getVacationWithemployeeId = async (req, res) => {
 
 const applyForVacation= async(req,res)=>{
     try{
-        const {employeeId} = req.body;
+        const {employeeId} = req.user._id;
         const empVacation = await Vacation.find({employeeId});
+        // let maxTotalDays=21;
         let totalDaysSum = empVacation.reduce((sum, obj) => {
             return sum+ obj.totalDays
           }, 0);
@@ -67,6 +67,11 @@ const applyForVacation= async(req,res)=>{
     console.log(newTotalDays);
     return res.status(200).json(Vacations);
   } else {
+        // let maxTotalDaysSum = empVacation.reduce((sum, obj) => {
+        //     return sum+ obj.totalDays
+        //   }, 0);
+        //   let newTotalDays = totalDaysSum;
+        // console.log(newTotalDays);
     res.json({
       message:
         "Unfortunately, you cannot take more vacations as you have crossed the limit of 21 days",
