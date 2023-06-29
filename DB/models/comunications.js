@@ -1,6 +1,4 @@
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
-
+let mongoose, { Schema, model } = require('mongoose');
 
 const CommunicationSchema = new Schema({
   message : {
@@ -32,5 +30,5 @@ const CommunicationSchema = new Schema({
 }
 )
   
-const communications = model('CommunicationSchema', CommunicationSchema);
+const communications = model('Communication', CommunicationSchema);
 module.exports = communications;

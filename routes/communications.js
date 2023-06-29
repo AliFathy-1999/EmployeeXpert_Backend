@@ -6,24 +6,18 @@ const { validate } = require('../middlewares/validation');
 const {message} = require('../Validations/communications')
 const Employee = require('../DB/models/employee')
 const Department = require('../DB/models/department')
-const { AppError } = require('../lib/index');
+const { AppError,asycnWrapper } = require('../lib/index');
+const {adminAuth} = require('../middlewares/auth');
 
-router.post('/toemployee', validate(message), async(req, res, next)=>{
-    const data = req.body
-    console.log(data.sender)
-    const sender = await Employee.findOne({_id : data.sender})
-
-    if (!sender) 
-    return next(new AppError(' cant found this sender'), 400)
-
-    if(('Emp' in data)){ 
-        const employee = await Employee.findOne({_id : data.Emp});
-        if (!employee) 
-            return next(new AppError(' cant found this employee'), 400) 
-    }else{
-        return res.status(400).json({ status : 'fail', message : 'employee id should be added'});  
-    }
-    const sentMessage = await communicationsController.create(data);
+router.post('/toemployee', adminAuth, validate(message), async(req, res, next)=>{
+    const { body: { Emp, message } } = req
+    const sender = req.user._id
+    const employee = await Employee.findOne({_id: Emp});
+    if (!employee) 
+        return next(new AppError(' cant found this employee'), 400) 
+    const sentMessage = communicationsController.create({ Emp, sender : sender.toString(), message });
+    const [err, data] = await asycnWrapper(sentMessage);
+    if (err) return next(err);    
     res.status(201).json({ status : 'success', data });
 })
 
@@ -52,14 +46,12 @@ router.post('/toall', validate(message), async(req, res)=>{
     }
     else{
         const sentMessage = await communicationsController.create(data);
-        console.log(sentMessage)
     }
     res.status(201).json({ status : 'success', data }); 
 })
 
 router.get('/Anouncements', async(req, res)=>{
     data = await communicationsController.findAllMessages()
-    console.log(data)
     res.status(201).json({ status : 'success', data }); 
 })
 
