@@ -20,14 +20,14 @@ const CommunicationSchema = new Schema({
     trim :      true,
     minlength : [5, 'Message must be at least 5 character long'],
     maxlength : [300, 'Message cannot exceed 300 characters'],
-    match :     /[a-zA-Z]+/,
-    validate :  {
-      validator : function (value) {
-        if (!value.match(/[a-zA-Z]+/)) {
-          throw new AppError('Message must contain at least one alphabetic characters', 400);
-        }
-      },
-    }, 
+    // match :     /[a-zA-Z0-9]+/,
+    // validate :  {
+    //   validator : function (value) {
+    //     if (!value.match(/[a-zA-Z]+/)) {
+    //       throw new AppError('Message must contain at least one alphabetic characters', 400);
+    //     }
+    //   },
+    // }, 
   },
   sender : {
     type :     Schema.Types.ObjectId,
