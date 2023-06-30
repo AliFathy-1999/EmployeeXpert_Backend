@@ -12,7 +12,7 @@ const {adminAuth , Auth} = require('../middlewares/auth');
 
 
 router.post('/toemployee', adminAuth, validate(message), async(req, res, next)=>{
-    
+
             if (req.body.Emp) {
 
                     const { body: { Emp, message } } = req
