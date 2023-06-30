@@ -111,7 +111,7 @@ const schema = new Schema(
       degree : {
         type :     String,
         required : true,
-        enum :     ['bachelor', 'master', 'doctoral', 'PhD'],
+        enum :     ['bachelor', 'master', 'doctoral', 'phd'],
       },
       institution : {
         type :      String,
