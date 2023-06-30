@@ -1,43 +1,44 @@
 const Joi = require('joi');
 
 const message = {
-    body: Joi.object().required().keys({
-        message: Joi.string()
-        .trim()
-        .required()
-        .min(1)
+    body : Joi.object().required().keys({
+        title : Joi.string().min(5).max(100).trim().pattern(/^[A-Za-z\s]+$/)
         .messages({
-            'string.empty': 'message required field',
-            'string.min': 'message required field',    
+          'string.min' :          'Title must be at least 5 characters',
+          'string.max' :          'Title must be less than 100 characters',
+          'string.pattern.base' : 'Title should contain alphabetic characters only',
         }),
-        Dep:Joi.string()
+        message : Joi.string()
+        .trim()
+        .min(5)
+        .max(300)
+        .pattern(/[a-zA-Z]+/)
+        .messages({
+            'string.min' :          'Message must be at least 5 characters long',
+            'string.max' :          'Message cannot exceed 300 characters',
+            'string.pattern.base' : 'Message must contain at least one alphabetic character',   
+        }),
+        department : Joi.string()
         .trim()
         .regex(/^[a-zA-Z0-9]+$/)
         .messages({
-            'string.empty': 'reciever required field',
-            'string.min': 'reciever required field',    
+            'string.empty' : 'reciever required field',
+            'string.min' :   'reciever required field',    
         }),
-
-        Emp:Joi.string()
+        employee : Joi.string()
         .trim()
-        .regex(/^[a-zA-Z0-9]+$/)
+        .pattern(/^[a-zA-Z0-9]+$/)
         .messages({
-            'string.empty': 'reciever required field',
-            'string.min': 'reciever required field',    
+            'string.empty' :        'reciever required field',
+            'string.min' :          'reciever required field', 
+            'string.pattern.base' : 'Invalid Employee ID',   
         }),
-
-        All : Joi.boolean()
-        .messages({
-            'string.empty ' : 'reciever required field',
-            'string.min' : 'reciever required field',    
-        }),
-
-
+        isForAll : Joi.boolean().default(false)
        
     }),
 }
 
-module.exports  = {
+module.exports = {
     message,
 }
 
