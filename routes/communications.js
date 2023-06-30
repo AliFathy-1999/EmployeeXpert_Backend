@@ -47,7 +47,6 @@ router.post('/toemployee', adminAuth, validate(message), async(req, res, next)=>
 
                     res.status(201).json({ status : 'success', data })
 
-
             }else{
                 res.status(400).json({ status : 'failed', data: "Dep is required" })
             }

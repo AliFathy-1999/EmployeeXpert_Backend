@@ -8,7 +8,7 @@ const getDepartments = (page, limit) =>{
  
   return Department.paginate({}, { page, limit });
 }
-const getDepartmentDatials = (depId) => Department.findOne({_id : depId});
+const getDepartmentDetails = (depId) => Department.findOne({ _id : depId}).populate('managerId', 'firstName lastName position')
 
 const updateDepartment = (depId, data) => Department.findOneAndUpdate({ _id : depId }, data, { runValidators : true, new : true });
 
@@ -27,6 +27,6 @@ module.exports = {
   getDepartments,
   updateDepartment,
   deleteDepartment,
-  getDepartmentDatials,
+  getDepartmentDetails,
   fetchDepEmployees
 };
