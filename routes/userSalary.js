@@ -12,7 +12,7 @@ router.get('/' , Auth, async(req,res,next)=>{
     const[err,data] = await asycnWrapper(employeeSalary);
     if(err) return next(err);
     if (!data) return next(new AppError (`No Employee with ID ${userId}`, 400));
-    res.status(201).json({status:'success' , data});
+    res.status(200).json({status:'success' , data});
 })
 
 

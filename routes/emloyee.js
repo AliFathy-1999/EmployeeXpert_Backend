@@ -11,7 +11,7 @@ const router = express.Router();
 
 // Sign in 
 
-router.post('/signin', validate(signIn), async (req, res) => {
+router.post('/signin', validate(signIn), async (req, res, next) => {
   try {
     const { userName, password } = req.body;    
     const data = await employeeController.signIn({ userName, password });    
