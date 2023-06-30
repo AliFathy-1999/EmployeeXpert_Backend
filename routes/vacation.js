@@ -3,8 +3,9 @@ const express = require('express');
 const router = express.Router();
 const {userAuth, adminAuth, Auth } = require('../middlewares/auth');
 
-const { getAllVacations,applyForVacationByAdmin, getVacationWithemployeeId, getOneVacation, getOneVacationWithUserData, applyForVacation, modifyVacation, removeVacation } = require('../controllers/vacation');
+const { getAllVacations, getVacationWithemployeeId, getOneVacation, getOneVacationWithUserData, applyForVacation, modifyVacation, removeVacation ,applyForVacationByAdmin} = require('../controllers/vacation');
 
+router.get('/all',adminAuth,getAllVacations);
 
 router.get('/:id',Auth,getOneVacation);
 
@@ -13,7 +14,6 @@ router.post('/',userAuth,applyForVacation);
 router.post('/admin',adminAuth,applyForVacationByAdmin);
 
 
-router.get('/', adminAuth,getAllVacations);
 
 router.get('/emp/:employeeId', adminAuth,getVacationWithemployeeId);
 
