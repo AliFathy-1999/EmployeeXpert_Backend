@@ -26,8 +26,10 @@ router.post('/', validate(departmentValidator.addDepartment), async (req, res, n
 router.patch('/:id', validate(departmentValidator.addDepartment), async (req, res, next) => {
   const { body: { name, description, managerId }, params: { id }} = req;
   const manager = await Employee.findOne({_id : managerId});
-  if (!manager) 
-    return next(new AppError (`No Manager with ID ${managerId}`, 400));
+  if(managerId){
+    if (!manager) 
+      return next(new AppError (`No Manager with ID ${managerId}`, 400));
+  }
   const department = departmentController.updateDepartment(id, { name, description, managerId });
   const [err, data] = await asycnWrapper(department);
   if (err) return next(err);
