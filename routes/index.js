@@ -9,12 +9,11 @@ const employeeVacationsRoutes = require('./vacation');
 const salaryRoutes = require ('./payroll');
 const EmployeeSalaryRoutes = require ('./userSalary');
 
-router.use('/dep', depRoutes);
-router.use('/communications', commRoute)
 router.use('/', employeeRoutes);
-router.use('/admin/emp/', adminEmpRoutes);
-router.use('/admin/dep/', adminDepRoutes);
-router.use('/dep/', depRoutes);
+router.use('/communications', commRoute)
+router.use('/admin/emp', adminEmpRoutes);
+router.use('/admin/dep', adminDepRoutes);
+router.use('/dep', depRoutes);
 router.use('/vacations', employeeVacationsRoutes);
 router.use('/salary', salaryRoutes);
 router.use('/employee/salary', EmployeeSalaryRoutes);

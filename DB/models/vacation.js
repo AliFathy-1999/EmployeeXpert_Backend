@@ -16,7 +16,7 @@ const schema = new Schema(
                 validator : function(value) {
                     return value <= this.toDay;
                 },
-                message : 'End date must be before end date'
+                message : 'Start date must be before end date'
             }
         },
         toDay : {
@@ -39,7 +39,21 @@ const schema = new Schema(
                 if (value <= 21) {
                   return true;
                 }
-                return 'Unfortunately, you cannot take more vacations as you have crossed the limit of 21 days'
+                return false
+
+              },
+            }
+          },
+
+          maxDays : {
+            type :     Number,
+            default :  22,
+            validate : {
+              validator : function(value) {
+                if (value >= 22) {
+                  return true;
+                }
+                return false;
 
               },
             }
@@ -56,7 +70,13 @@ const schema = new Schema(
             ref :      'Employee',
             required : true
         }
-    })
+    });
+    schema.pre('save', function(next) {
+        if (this.reasonForVacation) {
+          this.reasonForVacation = this.reasonForVacation.trim();
+        }
+        next();
+      });
     const Vacation = model('Vacation', schema);
 
     module.exports = Vacation;
