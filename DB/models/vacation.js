@@ -16,7 +16,7 @@ const schema = new Schema(
                 validator : function(value) {
                     return value <= this.toDay;
                 },
-                message : 'End date must be before end date'
+                message : 'Start date must be before end date'
             }
         },
         toDay : {
