@@ -7,62 +7,128 @@ const {message} = require('../Validations/communications')
 const Employee = require('../DB/models/employee')
 const Department = require('../DB/models/department')
 const { AppError,asycnWrapper } = require('../lib/index');
-const {adminAuth} = require('../middlewares/auth');
+const {adminAuth , Auth} = require('../middlewares/auth');
+
+
 
 router.post('/toemployee', adminAuth, validate(message), async(req, res, next)=>{
-    const { body: { Emp, message } } = req
-    const sender = req.user._id
-    const employee = await Employee.findOne({_id: Emp});
-    if (!employee) 
-        return next(new AppError(' cant found this employee'), 400) 
-    const sentMessage = communicationsController.create({ Emp, sender : sender.toString(), message });
-    const [err, data] = await asycnWrapper(sentMessage);
-    if (err) return next(err);    
-    res.status(201).json({ status : 'success', data });
-})
 
-router.post('/todepartment', validate(message), async(req, res)=>{
-    data = req.body
-    const sender = await Employee.findOne({_id : data.sender})
+            if (req.body.Emp) {
 
-    if (!sender) 
-      return res.status(400).json({ status : 'fail', message : `No Employee with ID ${data.sender}` });
+                    const { body: { Emp, message } } = req
+                    const sender = req.user._id 
+                    const sentMessage = communicationsController.create({ Emp , sender : sender.toString() , message });
+                    const [err, data] = await asycnWrapper(sentMessage);
 
-    if(('Dep' in data)){
-        const department = await Department.findOne({_id : data.Dep});
-        if (!department) 
-          return res.status(400).json({ status : 'fail', message : `No Department with ID ${data.Dep}` });    
+                    if (err) {
+                    return next(err);  
+                  
+                    }
+
+                   res.status(201).json({ status : 'success', data });  
+
+                    }else {
+                    res.status(400).json({ status : 'failed', data: "Emp is required" });
+                    }
+  });
+
+
+  router.post('/todepartment', adminAuth, validate(message), async(req, res, next)=>{
+
+            if (req.body.Dep) {
+
+                    const { body: { Dep, message } } = req
+                    const sender = req.user._id
+                    const sentMessage = communicationsController.create({ Dep , sender : sender.toString(), message });
+                    const [err, data] = await asycnWrapper(sentMessage);
+
+                    if (err) {
+                    return next(err)
+                    }
+
+                    res.status(201).json({ status : 'success', data })
+
+            }else{
+                res.status(400).json({ status : 'failed', data: "Dep is required" })
+            }
+  });
+
+
+
+router.post('/toall', adminAuth, validate(message), async(req, res, next)=>{
+
+
+      if(req.body.All ){
+            const { body: { All, message } } = req
+            const sender = req.user._id 
+            const sentMessage = communicationsController.create({ All , sender : sender.toString(), message });
+            const [err, data] = await asycnWrapper(sentMessage);
+
+            if (err) return next(err);    
+            res.status(201).json({ status : 'success',data });   
     }else{
-        return res.status(400).json({ status : 'fail', message : 'no Department has selected' });
+
+        res.status(400).json({ status : 'failed', data : 'All is required' });
     }
-    const sentMessage = await communicationsController.create(data);
-    res.status(201).json({ status : 'success', data });
+
+
 })
 
-router.post('/toall', validate(message), async(req, res)=>{
-    data = req.body
-    if(!('All' in data) || data.All == false){
-        return res.status(400).json({ status : 'fail', message : 'no Reciever has selected' });
+router.get('/lastAnouncement',Auth, async(req, res)=>{
+
+        try{
+            
+            data = await communicationsController.findLastAouncement()
+            res.status(201).json({ status : 'success', data }); 
+
+        }catch(erorr){
+            res.status(400).json({ status : 'failed', data : "no anouncements found"});  
+        }
+
+
+        })
+
+router.get('/allAnouncements',Auth, async(req, res)=>{
+
+    try{
+        
+        data = await communicationsController.findAllAnouncements()
+        res.status(201).json({ status : 'success', data }); 
+
+    }catch(erorr){
+        res.status(400).json({ status : 'failed', data : "no anouncements found"});  
     }
-    else{
-        const sentMessage = await communicationsController.create(data);
+   
+    
+})
+
+
+router.get('/DepartmentMessages/:Dep',Auth, async(req, res)=>{
+
+    try{
+            data = await communicationsController.findDepMessages(req.params.Dep)
+            res.status(201).json({ status : 'success', data});   
+    }catch(erorr){
+                res.status(400).json({ status : 'failed' , data : "not found this dep"}); 
     }
-    res.status(201).json({ status : 'success', data }); 
+    
+    
 })
 
-router.get('/Anouncements', async(req, res)=>{
-    data = await communicationsController.findAllMessages()
-    res.status(201).json({ status : 'success', data }); 
-})
+router.get('/EmpolyeeMessages/:Emp',Auth, async(req, res)=>{
 
-router.get('/DepartmentMessages/:Dep', async(req, res)=>{
-    data = await communicationsController.findDepMessages(req.params.Dep)
-    res.status(201).json({ status : 'success', data}); 
-})
+    if (req.user.role === 'ADMIN' || req.user._id.toString() === req.params.Emp )
+            try {
+                const employee = await Employee.findOne({_id : req.params.Emp });
+                data = await communicationsController.findEmpMessages(req.params.Emp ,req.user._id )
+                res.status(201).json({ status : 'success', data});
 
-router.get('/EmpolyeeMessages/:Emp', async(req, res)=>{
-    data = await communicationsController.findEmpMessages(req.params.Emp)
-    res.status(201).json({ status : 'success', data});   
+            } catch (error) {
+                return res.status(400).json({ status : 'fail', message : `No Employee with ID ${req.params.Emp }` });
+            }
+  else
+    return next(new AppError('Access denied. You do not have the privilege to perform this action.', 403));
+   
 })
 
 module.exports = router;
