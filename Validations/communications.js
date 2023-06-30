@@ -26,10 +26,10 @@ const message = {
             'string.min': 'reciever required field',    
         }),
 
-        All:Joi.boolean()
+        All : Joi.boolean()
         .messages({
-            'string.empty': 'reciever required field',
-            'string.min': 'reciever required field',    
+            'string.empty ' : 'reciever required field',
+            'string.min' : 'reciever required field',    
         }),
 
 
@@ -37,24 +37,8 @@ const message = {
     }),
 }
 
-module.exports={
+module.exports  = {
     message,
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
