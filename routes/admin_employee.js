@@ -61,18 +61,6 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
     res.status(201).json({ status : 'success', data });
   });
 
-
-  router.patch('/acad/:id', validate(employeesValidator.checkvalidID), async (req, res, next) => {
-    const { params : { id }} = req;
-    const { college, degree, institution, year} = req.body;
-    console.log(req.body);
-    const user = employeeController.updateAcademicQual(id, {college, degree, institution, year});
-    const [err, data] = await asycnWrapper(user);
-    if (err) return next(err);
-    if (!data) return next(new AppError (`No Employee with ID ${id}`, 400));
-    res.status(201).json({ status : 'success', data });
-});
-
 // Admin delete employee (USER)
 
   router.delete('/:id', validate(employeesValidator.checkvalidID), async (req, res, next) => {
@@ -95,15 +83,5 @@ router.get('/', async (req, res, next) => {
   res.status(201).json({ status : 'success', data });
 })
 
-// Get specified employee (USER or Admin)
-
-router.get('/:id', validate(employeesValidator.checkvalidID), async (req, res, next) => {
-  const { id } = req.params;
-  const user = employeeController.employeeDetails(id);
-  const [err, data] = await asycnWrapper(user);
-  if (err) return next(err); 
-  if (!data) return next(new AppError (`No Employee with ID ${id}`, 400));
-  res.status(201).json({ status : 'success', data });
-})
 module.exports = router;
 
