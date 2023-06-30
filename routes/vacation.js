@@ -1,25 +1,28 @@
 const express = require('express');
 
 const router = express.Router();
-const {Auth} = require('../middlewares/auth');
+const {userAuth, adminAuth, Auth } = require('../middlewares/auth');
 
-const { getAllVacations, getVacationWithemployeeId, getOneVacation, getOneVacationWithUserData, applyForVacation, modifyVacation, removeVacation } = require('../controllers/vacation');
-
-
-router.get('/:id', getOneVacation);
-
-router.post('/',Auth,applyForVacation);
-
-router.get('/', getAllVacations);
-
-router.get('/emp/:employeeId', getVacationWithemployeeId);
+const { getAllVacations,applyForVacationByAdmin, getVacationWithemployeeId, getOneVacation, getOneVacationWithUserData, applyForVacation, modifyVacation, removeVacation } = require('../controllers/vacation');
 
 
-router.get('/:id/employee', getOneVacationWithUserData);
+router.get('/:id',Auth,getOneVacation);
+
+router.post('/',userAuth,applyForVacation);
+
+router.post('/admin',adminAuth,applyForVacationByAdmin);
 
 
-router.put('/:id', Auth,modifyVacation);
+router.get('/', adminAuth,getAllVacations);
 
-router.delete('/:id',Auth, removeVacation);
+router.get('/emp/:employeeId', adminAuth,getVacationWithemployeeId);
+
+
+router.get('/:id/employee', Auth,getOneVacationWithUserData);
+
+
+router.put('/:id',Auth,modifyVacation);
+
+router.delete('/:id',userAuth, removeVacation);
 
 module.exports = router;
