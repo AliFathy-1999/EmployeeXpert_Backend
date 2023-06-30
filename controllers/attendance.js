@@ -78,6 +78,10 @@ const deleteAttendanceById = async (req, res, next) => {
   };
 
  // Check-in route
+ // Set the default workday start and end times
+const DEFAULT_START_TIME = 9; // 9:00 AM
+const DEFAULT_END_TIME = 22; // 6:00 PM
+
  const checkIn = async (req, res, next) => {
   try {
     // Check if the employee ID is valid
@@ -109,7 +113,80 @@ const deleteAttendanceById = async (req, res, next) => {
     }
     await newAttendance.save();
 
-    res.json(newAttendance);
+    const startTime = this.workdayStartTime || DEFAULT_START_TIME;
+    const endTime = this.workdayEndTime || DEFAULT_END_TIME;
+    const lateThreshold = new Date(newAttendance.checkIn.getTime());
+    lateThreshold.setMinutes(lateThreshold.getMinutes() + 15); // 15-minute grace period
+    if (newAttendance.checkIn > lateThreshold || newAttendance.checkIn.getHours() >= endTime) { 
+      // Check if check-in time is after workday end time or after the grace period
+      return false;
+    }
+    
+    const startOfDay = new Date(newAttendance.checkIn.getTime());
+    startOfDay.setHours(0, 0, 0, 0); // set the start of the day to midnight
+    const endOfDay = new Date(newAttendance.checkIn.getTime());
+    endOfDay.setHours(23, 59, 59, 999); // set the end of the day to 11:59 PM and 999 milliseconds
+    
+    const attendances = await Attendance.find({ employee: employee._id, checkIn: { $gte: startOfDay, $lt: endOfDay } });
+    const lateArrivals = attendances.filter((a) => a.checkIn > lateThreshold).length;
+    console.log(attendances)
+    if (lateArrivals == 0) {
+      // First late arrival - no deduction but issue a warning
+      // Increment the late counter
+      const employeeData = await Employee.findById(employee);
+      
+      if (attendances[0].lateCounter == 0) {
+        console.log("hello");
+  
+        attendances[0].lateCounter = 1;
+      } else {
+        attendances[0].lateCounter += 1;
+        console.log("hello2");
+  
+      }
+      await attendances[0].save(); // Save the updated employeeData
+      console.log("Warning: This is your first late arrival. No deductions will be calculated for now.");
+    } else {
+      // Calculate deductions based on the late counter
+      let deduction;
+      const employeeData = await Employee.findById(employee);
+      if (attendances[0].lateCounter == 0) {
+        attendances[0].lateCounter = 1;
+      } else {
+        
+        switch (attendances[0].lateCounter) {
+          case 1:
+            // Second late arrival - deduct 10%
+            deduction = 0.1;
+            break;
+          case 2:
+            // Third late arrival - deduct 20%
+            deduction = 0.2;
+            break;
+          case 3:
+            // Fourth late arrival - deduct 25%
+            deduction = 0.25;
+            break;
+          default:
+            // Fifth or more late arrival - deduct 50%
+            deduction = 0.5;
+            break;
+        }
+        // Check if the deduction exceeds the daily salary
+        const payrollId = attendances[0].payRate;
+        const payroll = await Payroll.findById(payrollId);
+        const dailySalary = payroll.payRate;
+        if (deduction * dailySalary >= dailySalary) {
+          deduction = 1; // Deduct the full day's salary
+        }
+      }
+      const payRate = payroll.payRate;
+      attendances[0].deduction = deduction;
+      // Increment the late counter
+      attendances[0].lateCounter += 1;
+      await attendances[0].save();
+    }
+    res.json(attendances[0]);
     // res.status(200).json({ message: 'Employee checked in successfully' })
   } catch (error) {
     console.error(error);

@@ -84,10 +84,9 @@ const schema = new Schema(
           const newyear = new Date(); 
           const userBirthdate = new Date(birthDate);
           const age = (newyear.getFullYear() - userBirthdate.getFullYear()) - 1;
-          if(age < 16)
-            throw new AppError('Employee must be at least 16 years old.', 400)
+          if(age < 18)
+            throw new AppError('Employee must be at least 18 years old.', 400)
         },
-        message : 'Employee must be at least 16 years old.'
     },
     gender : {
       type :     String,
@@ -112,7 +111,7 @@ const schema = new Schema(
       degree : {
         type :     String,
         required : true,
-        enum :     ['bachelor', 'master', 'doctoral'],
+        enum :     ['bachelor', 'master', 'doctoral', 'phd'],
       },
       institution : {
         type :      String,
@@ -178,17 +177,17 @@ const schema = new Schema(
     salary : {
       type :     Number,
       required : true,
-      min :      3000,
-      max :      42000
+      min :      3500,
+      max :      200000
     },
     phoneNumber : {
       type :     String,
       required : true,
       trim :     true,
-      match :    /^01([0125]{2}|15)[0-9]{8}$/,
+      match :    /^(00201|\+201|01)[0-2,5]{1}[0-9]{8}$/,
       validate : {
         validator : function (value) {
-          if (!value.match(/^01([0125]{2}|15)[0-9]{8}$/)) {
+          if (!value.match(/^(00201|\+201|01)[0-2,5]{1}[0-9]{8}$/)) {
             throw new AppError('Invalid Egyptian phone number', 400);
           }
         },

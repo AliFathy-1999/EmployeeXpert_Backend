@@ -10,8 +10,9 @@ const paginationOptions = {
 
 
 module.exports = {
-    employeesValidator :  require('./employee'),
+    employeesValidator  :  require('./employee'),
     departmentValidator : require('./department'),
+    payrollValidator : require('./payroll'),
     paginationOptions
 };
   

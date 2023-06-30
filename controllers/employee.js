@@ -14,7 +14,10 @@ const getEmployees = (role = 'USER', page, limit) => {
   return Employee.paginate({role}, { page, limit });
 }
 
-const employeeDetails = (empId) => Employee.findOne({_id : empId}).populate('depId', 'name')
+const employeeDetails = (empId) => {
+  return Employee.find({_id : empId}).populate('depId', 'name')
+}
+// Employee.findOne({_id : empId}).populate('depId', 'name')
 
 const getMe = (empId) => Employee.findOne({_id : empId});
 
@@ -24,7 +27,6 @@ const createEmployee = (data) => {
       grossSalary : data.salary,
       employeeId :  data._id,
       daysWorked :  0,
-      tax : 0,
      })
   });
 }

@@ -1,4 +1,5 @@
 require("dotenv").config();
+const { default: mongoose } = require('mongoose');
 const Conmongoose= require('mongoose');
 const maxRetryAttempts = 3;
 const retryDelayMs = 3000;
@@ -19,6 +20,5 @@ let retryAttempts = 0;
           process.exit(1);
         }
       });
-  }
-  
+  } 
   connectWithRetry();

@@ -14,6 +14,14 @@ const updateEmployeeSalaryTable = async (employeeId, grossSalary) => {
     return salary;
 }
 
+// const updateEmployeePayRate = async (employeeId, payRate) => {
+//     const payRate = await Attendence.findOneAndUpdate({ employee: employeeId },
+//       { payRate: payRate },
+//       { new: true });
+//     return payRate;
+// }
+
+
 const getAllEmployeeSalary = async (page,limit) => {
     if (!limit) limit = 10;
     if (!page) page = 1;
