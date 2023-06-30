@@ -11,7 +11,7 @@ router.use(Auth)
 
 router.get('/:id', async (req, res, next) => {
   const { params: { id }} = req;
-  const department = departmentController.getDepartmentDatials(id);
+  const department = departmentController.getDepartmentDetails(id);
   const [err, data] = await asycnWrapper(department);
   if (err) return next(err);
   if (!data) return next(new AppError (`No Department with ID ${id}`, 400));
@@ -21,7 +21,7 @@ router.get('/:id', async (req, res, next) => {
 // Get Department with Employees
 
 router.get('/emp/:id', async (req, res, next) => {
-  const { params: { id } , query:{ page, limit }} = req;
+  const { params: { id }, query:{ page, limit }} = req;
   const departmentEmps = departmentController.fetchDepEmployees(id, page, limit);
   const [err, data] = await asycnWrapper(departmentEmps);
   if (err) return next(err);

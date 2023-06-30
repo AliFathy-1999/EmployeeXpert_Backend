@@ -38,18 +38,18 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
 
   // Admin update employee data
 
-  router.patch('/:id', validate(employeesValidator.signUp), validate(employeesValidator.checkvalidID), async (req, res, next) => {
+  router.put('/:id', validate(employeesValidator.signUp), validate(employeesValidator.checkvalidID), async (req, res, next) => {
     const { params : { id }} = req;
     const {  
       firstName, lastName, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
       address, academicQualifications, pImage, 
     } = req.body;
-    
-    const department = await Department.findOne({_id : depId});
-    if (!department) 
-      return next(new AppError (`No Department with ID ${depId}`, 400));
-      
+    if(depId){
+      const department = await Department.findOne({_id : depId});
+      if (!department) 
+        return next(new AppError (`No Department with ID ${depId}`, 400));
+    }
     const user = employeeController.updateEmployee(id, {
       firstName, lastName, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
@@ -63,7 +63,7 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
 
 // Admin delete employee (USER)
 
-  router.delete('/:id', async (req, res, next) => {
+  router.delete('/:id', validate(employeesValidator.checkvalidID), async (req, res, next) => {
     const { params : { id }} = req;
     const user = employeeController.deleteEmployee(id);
     await Payroll.deleteOne({ employeeId : id });
@@ -83,15 +83,5 @@ router.get('/', async (req, res, next) => {
   res.status(201).json({ status : 'success', data });
 })
 
-// Get specified employee (USER or Admin)
-
-router.get('/:id', async (req, res, next) => {
-  const { id } = req.params;
-  const user = employeeController.employeeDetails(id);
-  const [err, data] = await asycnWrapper(user);
-  if (err) return next(err); 
-  if (!data) return next(new AppError (`No Employee with ID ${id}`, 400));
-  res.status(201).json({ status : 'success', data });
-})
 module.exports = router;
 
