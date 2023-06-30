@@ -4,7 +4,6 @@ const payrollController = require('../controllers/payroll');
 const {adminAuth} = require('../middlewares/auth');
 const { validate } = require('../middlewares/validation');
 const { payrollValidator } = require('../Validations/index');
-// const {payroll} = require('../Validations/payroll')
 const Employee = require('../DB/models/employee');
 
 
@@ -53,7 +52,6 @@ router.patch('/:id' , validate(payrollValidator.payroll), async(req,res,next)=>{
     const invalidKeys = allowedKeys.filter((key) => !validKeys.includes(key));
     if (invalidKeys.length > 0) {
       return next(new AppError ('Invalid keys to be updated', 400));
-
     }
     const employeeUpdate = payrollController.updateEmployeeSalary(userId ,{grossSalary,bonus});
     const employeeSalary= payrollController.updateEmployeeSalaryTable(userId,grossSalary);
@@ -71,6 +69,5 @@ router.delete('/:id' ,async(req,res,next)=>{
     if (!data) return next(new AppError (`No Employee with ID ${userId}`, 400));
     res.status(204).end();
 })
-
 
 module.exports=router;
