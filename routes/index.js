@@ -9,7 +9,7 @@ const employeeVacationsRoutes = require('./vacation');
 const salaryRoutes = require ('./payroll');
 const EmployeeSalaryRoutes = require ('./userSalary');
 const attendanceRoutes = require('./attendance'); // Import the attendance routes
-const lateExcuseRoutes = require ('./lateExcuse');
+const lateExcuseRoutes = require ('./excuse');
 
 router.use('/admin-emp', adminEmpRoutes);
 router.use('/admin-dep', adminDepRoutes);
