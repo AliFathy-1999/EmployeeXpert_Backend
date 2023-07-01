@@ -8,14 +8,18 @@ const Department = require("../DB/models/department");
 const { AppError, asycnWrapper } = require("../lib/index");
 const { adminAuth, Auth } = require("../middlewares/auth");
 
+
 router.post('/toemployee', adminAuth, validate(message), async (req, res, next) => {
     const { body: { title, message, employee } } = req;
       const sender = (req.user._id).toString();
-      const sentMessage = communicationsController.create({ title, message, employee, sender});
+      const sentMessage = communicationsController.create({ title, message, employee : employee.toString() , sender : sender.toString()});
+      console.log(sentMessage)
       const [err, data] = await asycnWrapper(sentMessage);
       if (err) return next(err);
+      console.log("data =>" ,data)
       res.status(201).json({ status : 'success', data });
   });
+
 
 router.post('/todepartment', adminAuth, validate(message), async (req, res, next) => {
       const { body: { title, department, message } } = req;
@@ -27,14 +31,15 @@ router.post('/todepartment', adminAuth, validate(message), async (req, res, next
 });
 
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
-  if (req.body.All) {
+  if (req.body.isForAll) {
     const {
-      body: { All, message },
+      body: { isForAll,title, message },
     } = req;
     const sender = req.user._id;
     const sentMessage = communicationsController.create({
-      All,
+      isForAll,
       sender: sender.toString(),
+      title,
       message,
     });
     const [err, data] = await asycnWrapper(sentMessage);
@@ -73,13 +78,12 @@ router.get("/DepartmentMessages/:Dep", Auth, async (req, res) => {
   }
 });
 
-router.get("/EmpolyeeMessages/:Emp", Auth, async (req, res) => {
-  if (req.user.role === "ADMIN" || req.user._id.toString() === req.params.Emp)
+router.get( '/myMessages', Auth, async (req, res , next) => {
     try {
-      const employee = await Employee.findOne({ _id: req.params.Emp });
-      data = await communicationsController.findEmpMessages(
-        req.params.Emp,
-        req.user._id
+     
+      data = await communicationsController.findMyMessages(
+
+        req.user._id.toString()
       );
       res.status(201).json({ status: "success", data });
     } catch (error) {
@@ -89,14 +93,24 @@ router.get("/EmpolyeeMessages/:Emp", Auth, async (req, res) => {
           status: "fail",
           message: `No Employee with ID ${req.params.Emp}`,
         });
-    }
-  else
-    return next(
-      new AppError(
-        "Access denied. You do not have the privilege to perform this action.",
-        403
-      )
-    );
+    }})
+
+    router.get( '/EmpolyeeMessages/:Emp', adminAuth , async (req, res , next) => {
+        try {    
+          data = await communicationsController.findEmpMessages(
+            req.params.Emp,
+            req.user._id.toString()
+          );
+          res.status(201).json({ status: "success", data });
+        } catch (error) {
+          return res
+            .status(400)
+            .json({
+              status: "fail",
+              message: `No Employee with ID ${req.params.Emp}`,
+            });
+        }
 });
+// });
 
 module.exports = router;

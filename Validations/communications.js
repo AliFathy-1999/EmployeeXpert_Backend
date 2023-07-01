@@ -12,7 +12,7 @@ const message = {
         .trim()
         .min(5)
         .max(300)
-        .pattern(/[a-zA-Z]+/)
+        .pattern(/[a-zA-Z0-9]+/)
         .messages({
             'string.min' :          'Message must be at least 5 characters long',
             'string.max' :          'Message cannot exceed 300 characters',

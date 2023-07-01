@@ -58,7 +58,7 @@ const signUp = {
               'string.max' :          'College name must be less than 60 characters',
               'string.pattern.base' : 'College name cannot contain numbers',
             }),
-            degree : Joi.string().valid('bachelor', 'master', 'doctoral', 'PhD').messages({
+            degree : Joi.string().valid('bachelor', 'master', 'doctoral', 'phd').messages({
               'any.only' : 'Degeree must be one of the following degrees bachelor, master, doctoral and PhD',
             }),
             institution : Joi.string().min(2).max(50).pattern(/^[A-Za-z\s]+$/).messages({

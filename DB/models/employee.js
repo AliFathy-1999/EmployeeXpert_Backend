@@ -167,7 +167,7 @@ const schema = new Schema(
     jobType : {
       type :     String,
       required : true,
-      enum :     ['full-time', 'part-time', 'contract', 'freelance'],
+      enum :     ['full-time', 'part-time'],
     },
     depId : {
       type :     Schema.Types.ObjectId,
@@ -220,6 +220,9 @@ const schema = new Schema(
     timestamps : true,
   }
 );
+
+schema.index({firstName : 'text'})
+
 schema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
