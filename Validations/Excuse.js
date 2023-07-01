@@ -11,13 +11,13 @@ const Excuse = {
       'string.max' :   'Reason must be less than 200 characters',
       'any.required' : 'Reason is required'
     }),
-    from : Joi.date().required().format('HH:mm')
+    from : Joi.date().required()
     .messages({
       'date.base' :    'Start time must be a valid time',
       'date.empty' :   'Start time is required',
       'any.required' : 'Start time is required',
     }),
-  to : Joi.date().required().format('HH:mm').greater(Joi.ref('from'))
+  to : Joi.date().required().greater(Joi.ref('from'))
     .messages({
       'date.base' :    'End time must be a valid time',
       'date.empty' :   'End time is required',

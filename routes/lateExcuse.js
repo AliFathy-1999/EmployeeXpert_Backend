@@ -9,10 +9,21 @@ router.post('/', userAuth , async (req,res,next)=>{
     const employeeId = req.user._id;
     console.log(req.user._id)
     console.log(employeeId)
-    const { reason, from, to } = req.body;
+    const { reason,
+        from,
+        to,
+        typeOfExcuse } = req.body;
+        
     console.log(req.body.reason)
-    const createExcuse = excuseController.createExcuse(req.user._id,{
-        reason,from,to
+    console.log(req.body.from)
+    console.log(req.body.to)
+    console.log(req.body.typeOfExcuse)
+
+    const createExcuse = excuseController.createExcuse(employeeId,{
+        reason, 
+        from, 
+        to, 
+        typeOfExcuse
     });
     const [err,data] = await asycnWrapper(createExcuse)
     if(err) return next(err);
