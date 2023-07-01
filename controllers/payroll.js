@@ -29,7 +29,13 @@ const getAllEmployeeSalary = async (page,limit) => {
     return paginatedPayroll
 }
 
-const getEmployeeSalary = (userId) => Payroll.findOne({employeeId : userId});
+const getEmployeeSalary = (userId) => {
+    const employeePayroll = Payroll.findOne({employeeId : userId}).populate({
+    path :   'employeeId',
+    select : 'firstName lastName nationalId position phoneNumber',
+  }).exec();
+  return employeePayroll;
+};
 
 const updateEmployeeSalary = (userId, data) => Payroll.findOneAndUpdate({employeeId : userId}, data, {
 runValidators : true, new : true});

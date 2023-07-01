@@ -54,7 +54,7 @@ default : 0,
 typeOfExcuse : {
     type :     String,
     enum :     ['Late', 'Leave Early'],
-    // required : true
+    required : true
 }
 
 });
