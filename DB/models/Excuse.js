@@ -23,7 +23,7 @@ from : {
     required : [true, 'Start hour of Lateness is required'],
     validate : {
         validator : function(value) {
-            return value <= this.to;
+            return value < this.to;
         },
         message : 'Start hour must be before end hour'
     }
@@ -31,11 +31,11 @@ from : {
 to : {
     type :     Date,
     default :  new Date().setHours(10, 0),
-    max :      new Date().setHours(13, 0),
+    max :      new Date().setHours(18, 0),
     required : [true, 'End hour is required'],
     validate : {
         validator : function(value) {
-            return value >= this.from;
+            return value > this.from;
         },
         message : 'End hour must be after start hour'
     }
@@ -49,6 +49,12 @@ noOfExcuses : {
 type :    Number,
 min :     0,
 default : 0,
+},
+
+typeOfExcuse : {
+    type :     String,
+    enum :     ['Late', 'Leave Early'],
+    required : true
 }
 
 });

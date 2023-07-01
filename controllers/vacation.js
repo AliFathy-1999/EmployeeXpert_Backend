@@ -151,20 +151,15 @@ const applyForVacation = async (req, res) => {
 const modifyVacation = async (req, res) => {
   try {
     const { id } = req.params;
-
-    // const validate = vacationSchema.validateAsync(req.body)
-
     const vacation = await Vacation.findByIdAndUpdate(id, req.body);
     if (!vacation) {
       return res
         .status(404)
         .json({ message : `can't find any vacation with ID ${id}` });
-    }
+    }d
     const updatedVacation = await Vacation.findById(id);
     res.status(200).json(updatedVacation);
   } catch (error) {
-    // console.log(error.message);
-
     res.status(500).json({ message : error.message });
   }
 };

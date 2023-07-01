@@ -37,6 +37,11 @@ const Excuse = {
     'number.min' :   'Number of Excuses must be at least 1',
     'any.required' : 'Number of Excuses is required'
   }),
+  typeOfExcuse : Joi.string().valid('Late', 'Leave Early').required()
+    .messages({
+      'any.only' :     'Type of excuse must be either Late or Leave Early',
+      'any.required' : 'Type of excuse is required'
+    }),
   respond : Joi.string().valid('Pending', 'Accepted', 'Rejected').default('Pending'),
 })
 }
