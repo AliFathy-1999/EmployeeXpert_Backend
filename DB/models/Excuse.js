@@ -2,8 +2,8 @@ let mongoose, { Schema, model } = require('mongoose');
 const excuse = new Schema({
 
 employeeId : {
-        type : Schema.Types.ObjectId,
-        ref : 'Employee',
+        type :     Schema.Types.ObjectId,
+        ref :      'Employee',
         required : true
     },
 reason : {
