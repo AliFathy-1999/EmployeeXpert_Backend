@@ -96,10 +96,10 @@ const DEFAULT_END_TIME = 22; // 6:00 PM
     const attendance = await Attendance.findOne({ 
       employee: employee._id,
        checkIn: { $gte: today } });
-    if (attendance) {
-      return res.status(400).json({ 
-        message: 'Employee has already checked in today' });
-    }
+    // if (attendance) {
+    //   return res.status(400).json({ 
+    //     message: 'Employee has already checked in today' });
+    // }
 
     // Create a new attendance record
     const newAttendance = new Attendance({
@@ -127,31 +127,42 @@ const DEFAULT_END_TIME = 22; // 6:00 PM
     const endOfDay = new Date(newAttendance.checkIn.getTime());
     endOfDay.setHours(23, 59, 59, 999); // set the end of the day to 11:59 PM and 999 milliseconds
     
-    const attendances = await Attendance.find({ employee: employee._id, checkIn: { $gte: startOfDay, $lt: endOfDay } });
-    const lateArrivals = attendances.filter((a) => a.checkIn > lateThreshold).length;
-    console.log(attendances)
+    const attendances = await Attendance.find({ employee: employee._id, 
+      checkIn: {
+         $gte: startOfDay,
+          $lt: endOfDay
+         } 
+        });
+    console.log(attendances[0].checkIn);
+    console.log(lateThreshold)
+    const lateArrivals = attendances.filter((a) => a.checkIn.getTime() < lateThreshold.getTime()).length;
+    console.log(`lateArrivals ${lateArrivals}`)
+    // console.log(attendances)
     if (lateArrivals == 0) {
       // First late arrival - no deduction but issue a warning
       // Increment the late counter
       const employeeData = await Employee.findById(employee);
       
       if (attendances[0].lateCounter == 0) {
-        console.log("hello");
+        // console.log("hello");
   
         attendances[0].lateCounter = 1;
+        console.log("Warning: This is your first late arrival. No deductions will be calculated for now.");
+
       } else {
         attendances[0].lateCounter += 1;
-        console.log("hello2");
+        // console.log("hello2");
   
       }
       await attendances[0].save(); // Save the updated employeeData
-      console.log("Warning: This is your first late arrival. No deductions will be calculated for now.");
+      // console.log("Warning: This is your first late arrival. No deductions will be calculated for now.");
     } else {
       // Calculate deductions based on the late counter
       let deduction;
       const employeeData = await Employee.findById(employee);
       if (attendances[0].lateCounter == 0) {
         attendances[0].lateCounter = 1;
+        console.log('tttttt')
       } else {
         
         switch (attendances[0].lateCounter) {
@@ -167,21 +178,28 @@ const DEFAULT_END_TIME = 22; // 6:00 PM
             // Fourth late arrival - deduct 25%
             deduction = 0.25;
             break;
+            case 4:
+              // Fifth late arrival - deduct 25%
+              deduction = 0.5;
+              break;
           default:
-            // Fifth or more late arrival - deduct 50%
-            deduction = 0.5;
+            // Fifth or more late arrival - deduct 100%
+            deduction = 1;
             break;
         }
         // Check if the deduction exceeds the daily salary
-        const payrollId = attendances[0].payRate;
-        const payroll = await Payroll.findById(payrollId);
-        const dailySalary = payroll.payRate;
-        if (deduction * dailySalary >= dailySalary) {
-          deduction = 1; // Deduct the full day's salary
-        }
+        console.log(`deducation" ${deduction}`)
+        console.log(`attendances[0].deduction ${attendances[0].deduction}`)
+        attendances[0].deduction = attendances[0].deduction + deduction;
+        // const payrollId = attendances[0].payRate;
+        // const payroll = await Payroll.findById(payrollId);
+        // const dailySalary = payroll.payRate;
+        // if (deduction * dailySalary >= dailySalary) {
+        //   deduction = 1; // Deduct the full day's salary
+        // }
       }
-      const payRate = payroll.payRate;
-      attendances[0].deduction = deduction;
+      // const payRate = payroll.payRate;
+      // attendances[0].deduction = deduction;
       // Increment the late counter
       attendances[0].lateCounter += 1;
       await attendances[0].save();
