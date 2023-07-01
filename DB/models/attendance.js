@@ -8,62 +8,65 @@ const DEFAULT_START_TIME = 9; // 9:00 AM
 const DEFAULT_END_TIME = 22; // 6:00 PM
 
 // Define the Attendance schema
+
 const AttendanceSchema = new mongoose.Schema({
-  employee: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Employee',
-    required: true
+  employee : {
+    type :     mongoose.Schema.Types.ObjectId,
+    ref :      'Employee',
+    required : true
   },
-  checkIn: {
-    type: Date,
-    required: true,
-    validate: {
-      validator: function(v) {
+  checkIn : {
+    type :     Date,
+    required : true,
+    validate : {
+      validator : function(v) {
         const startTime = this.workdayStartTime || DEFAULT_START_TIME;
         const endTime = this.workdayEndTime || DEFAULT_END_TIME;
         return v.getHours() >= startTime && v.getHours() < endTime;
       },
-      message: 'Check-in time must be between workday start and end times'
+      message : 'Check-in time must be between workday start and end times'
     }
   },
-  checkOut: {
-    type: Date,
-    validate: {
-      validator: function(v) {
+  checkOut : {
+    type :     Date,
+    validate : {
+      validator : function(v) {
         const startTime = this.workdayStartTime || DEFAULT_START_TIME;
         const endTime = this.workdayEndTime || DEFAULT_END_TIME;
         return v.getHours() >= startTime && v.getHours() < endTime + 4;
       },
-      message: 'Check-out time must be between workday start and end times, plus a grace period of 4 hours'
+      message : 'Check-out time must be between workday start and end times, plus a grace period of 4 hours'
     }
   },
-  lateExcuse: {
-    type: Number,
-    default: 0
+  lateExcuse : {
+    type :    Number,
+    default : 0
   },
-  deduction:{
-    type: Number,
-    default: 0 
+  deduction : {
+    type :    Number,
+    default : 0 
   },
-  payRate:{
-    type: Number,
-    ref: 'Payroll',    
-    required: false,
+  payRate : {
+    type :     Number,
+    ref :      'Payroll',    
+    required : false,
   },
+
   // Define the start and end times of the workday as comments
-  workdayStartTime: {
-    type: Number,
-    min: 0,
-    max: 23
+
+  workdayStartTime : {
+    type : Number,
+    min :  0,
+    max :  23
   },
-  workdayEndTime: {
-    type: Number,
-    min: 0,
-    max: 23
+  workdayEndTime : {
+    type : Number,
+    min :  0,
+    max :  23
   },
-  lateCounter: {
-    type: Number,
-    default: 0
+  lateCounter : {
+    type :    Number,
+    default : 0
   }
 });
 
@@ -146,6 +149,7 @@ const AttendanceSchema = new mongoose.Schema({
 // }, 'Employee arrived too late or after workday end time');
 
 // Validate the check-out time
+
 AttendanceSchema.path('checkOut').validate(function(value) {
   const startTime = this.workdayStartTime || DEFAULT_START_TIME;
   const endTime = this.workdayEndTime || DEFAULT_END_TIME;
@@ -157,8 +161,8 @@ AttendanceSchema.path('checkOut').validate(function(value) {
 
 
 AttendanceSchema.set('toJSON', {
-  virtuals: true,
-  transform: function(doc, ret, options) {
+  virtuals :  true,
+  transform : function(doc, ret, options) {
     delete ret._id;
     delete ret.__v;
     if (ret.deduction > 0) { // Check if there is a deduction applied
@@ -170,12 +174,13 @@ AttendanceSchema.set('toJSON', {
 AttendanceSchema.plugin(mongoosePaginate);
 
 // Update the attendance record every 10 minutes
+
 setInterval(() => {
   const startOfDay = new Date();
   startOfDay.setHours(0, 0, 0, 0); // set the start of the day to midnight
   const endOfDay = new Date();
   endOfDay.setHours(23, 59, 59, 999); // set the end of the day to 11:59 PM and 999 milliseconds
-  Attendance.find({checkOut: { $exists: false }, checkIn: { $gte: startOfDay, $lt: endOfDay } })
+  Attendance.find({checkOut : { $exists : false }, checkIn : { $gte : startOfDay, $lt : endOfDay } })
     .then((attendances) => {
       attendances.forEach((attendance) => {
         attendance.checkOut = new Date();
