@@ -32,7 +32,7 @@ from : {
 to : {
     type :     Date,
     default :  new Date().setHours(10, 0),
-    max :      new Date().setHours(1, 0),
+    max :      new Date().setHours(13, 0),
     required : [true, 'End hour is required'],
     validate : {
         validator : function(value) {
