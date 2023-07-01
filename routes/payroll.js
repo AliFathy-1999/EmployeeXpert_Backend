@@ -67,7 +67,7 @@ router.delete('/:id', async(req, res, next)=>{
     const [err, data] = await asycnWrapper(employeeDelete);
     if(err) return next(err);
     if (!data) return next(new AppError (`No Employee with ID ${userId}`, 400));
-    res.status(204).end();
+    res.status(204).json({ status : 'success' });
 })
 
 module.exports = router;

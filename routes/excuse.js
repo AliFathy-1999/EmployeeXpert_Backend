@@ -21,6 +21,16 @@ router.post('/', userAuth , async (req,res,next)=>{
     res.status(201).json({status:'success' , data});
 })
 
+router.delete('/:id' , userAuth , async(req,res,next)=>{
+    const excuseId = req.params.id;
+    const deleteExecuse = excuseController.deleteExecuse(excuseId);
+    const [err,data] = await asycnWrapper(deleteExecuse);
+    if(err) return next(err);
+    if (!data) return next(new AppError (`No Excuse with ID ${excuseId}`, 400));
+    res.status(200).json({ status : 'success' });
+    
+})
+
 
 module.exports=router
 
