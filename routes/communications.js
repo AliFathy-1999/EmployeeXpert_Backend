@@ -12,7 +12,7 @@ const { adminAuth, Auth } = require("../middlewares/auth");
 router.post('/toemployee', adminAuth, validate(message), async (req, res, next) => {
     const { body: { title, message, employee } } = req;
       const sender = (req.user._id).toString();
-      const sentMessage =   communicationsController.create({ title, message, employee : employee.toString() , sender : sender.toString()});
+      const sentMessage = communicationsController.create({ title, message, employee : employee.toString() , sender : sender.toString()});
       console.log(sentMessage)
       const [err, data] = await asycnWrapper(sentMessage);
       if (err) return next(err);
@@ -31,14 +31,15 @@ router.post('/todepartment', adminAuth, validate(message), async (req, res, next
 });
 
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
-  if (req.body.All) {
+  if (req.body.isForAll) {
     const {
-      body: { All, message },
+      body: { isForAll,title, message },
     } = req;
     const sender = req.user._id;
     const sentMessage = communicationsController.create({
-      All,
+      isForAll,
       sender: sender.toString(),
+      title,
       message,
     });
     const [err, data] = await asycnWrapper(sentMessage);
@@ -78,8 +79,6 @@ router.get("/DepartmentMessages/:Dep", Auth, async (req, res) => {
 });
 
 router.get( '/myMessages', Auth, async (req, res , next) => {
-
-
     try {
      
       data = await communicationsController.findMyMessages(
@@ -97,10 +96,7 @@ router.get( '/myMessages', Auth, async (req, res , next) => {
     }})
 
     router.get( '/EmpolyeeMessages/:Emp', adminAuth , async (req, res , next) => {
-
-
-        try {
-         
+        try {    
           data = await communicationsController.findEmpMessages(
             req.params.Emp,
             req.user._id.toString()
@@ -114,7 +110,6 @@ router.get( '/myMessages', Auth, async (req, res , next) => {
               message: `No Employee with ID ${req.params.Emp}`,
             });
         }
-
 });
 // });
 

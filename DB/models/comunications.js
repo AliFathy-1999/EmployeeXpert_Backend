@@ -7,7 +7,7 @@ const CommunicationSchema = new Schema({
     maxLength : [100, 'Title must be at less than 1005 characters'],
     required :  [true, 'First name is a required field'],
     trim :      true,
-    match :     /^[A-Za-z\s]+$/,
+    match :   /^[A-Za-z\s]+$/,
     validate(value) {
       if (!value.match(/^[A-Za-z\s]+$/)) {
         throw new AppError('Title should contain alphabetic characters only', 400);
