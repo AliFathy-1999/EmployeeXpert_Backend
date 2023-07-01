@@ -1,4 +1,3 @@
-
 let mongoose, { Schema, model } = require('mongoose');
 const excuse = new Schema({
 

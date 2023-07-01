@@ -7,7 +7,7 @@ const schema = new Schema(
             required :  [true, 'Reason for this Vacation is required'],
             trim :      true,
             minLength : [5, 'Reason must be at least 5 characters'],
-            maxLength : [100, 'Reason must be less than  100 characters'],
+            maxLength : [200, 'Reason must be less than  100 characters'],
         },
         fromDay : {
             type :     Date,
