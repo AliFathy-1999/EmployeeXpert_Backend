@@ -1,9 +1,8 @@
 const Excuse = require('../DB/models/Excuse')
 
-const createExcuse = async (data) =>{
-  const excuse = await Excuse.create(data);
-  return excuse;
-} 
+const createExcuse = (data) => Excuse.create(data);
+
+const deleteExecuse = (excuseId) => Excuse.findOneAndDelete({_id:excuseId})
 
 const getAllExcuses = async (req, res) => {
   try {
@@ -39,5 +38,6 @@ const getAllExcuses = async (req, res) => {
 // };
 module.exports = {
     createExcuse,
-    getAllExcuses
+    getAllExcuses,
+    deleteExecuse
 }
