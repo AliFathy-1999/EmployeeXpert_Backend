@@ -1,4 +1,8 @@
 const express = require('express');
+
+const employeeRoutes = require("./admin_employee");
+const depRoutes = require("./admin_department");
+// const attendanceRoutes = require("./attendance");
 const router = express.Router();
 const employeeRoutes = require('./emloyee');
 const depRoutes = require('./department');
@@ -13,18 +17,10 @@ const lateExcuseRoutes = require ('./excuse');
 const vacationReportRoutes = require ('./vacationReport');
 const holidayRoutes = require('./holiday');
 
-router.use('/admin-emp', adminEmpRoutes);
-router.use('/admin-dep', adminDepRoutes);
-router.use('/', employeeRoutes);
-router.use('/communications', commRoute)
-router.use('/dep', depRoutes);
-router.use('/vacations', employeeVacationsRoutes);
-router.use('/salary', salaryRoutes);
-router.use('/employee/salary', EmployeeSalaryRoutes);
-router.use('/attendance', attendanceRoutes); // Use the attendance routes
-router.use('/excuse' , lateExcuseRoutes);
-router.use('/vReport' , vacationReportRoutes);
-router.use('/holiday' , holidayRoutes);
+router.use("/", employeeRoutes);
+router.use("/dep", depRoutes);
+// router.use("/attendance",attendanceRoutes);
+// router.use("/admin", adminRoute);
 
 module.exports = router;
 

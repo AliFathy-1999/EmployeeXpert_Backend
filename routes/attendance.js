@@ -1,9 +1,9 @@
-const express = require('express');
-const { attendanceController }  = require('../controllers/index');
+// const express = require('express');
+// const { attendanceController }  = require('../controllers/index');
 
 const { adminAuth ,Auth} = require('../middlewares/auth');
 
-const router = express.Router();
+// const router = express.Router();
 
 // Create a new attendance record
 router.post('/', adminAuth, attendanceController.create);
@@ -23,4 +23,4 @@ router.post('/checkin/',adminAuth, attendanceController.checkIn);
 // Check-out route
 router.post('/checkout/',adminAuth, attendanceController.checkOut);
 
-module.exports = router;
+// module.exports = router;
