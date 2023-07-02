@@ -21,23 +21,27 @@ from : {
     type :     Date,
     default :  new Date().setHours(9, 0),
     required : [true, 'Start hour of Lateness is required'],
-    // validate : {
-    //     validator : function(value) {
-    //         return value < this.to;
+    // validate: {
+    //     validator: function(value) {
+    //       console.log('from:', value);
+    //       console.log('to:', this.to);
+    //       return new Date(value).getHours() < new Date(this.to).getHours();
     //     },
-    //     message : 'Start hour must be before end hour'
-    // }
+    //     message: 'Start hour must be before end hour'
+    //   }
 },
 to : {
     type :     Date,
     default :  new Date().setHours(10, 0),
-    max :      new Date().setHours(18, 0),
     required : [true, 'End hour is required'],
-    // validate : {
-    //     validator : function(value) {
-    //         return value > this.from;
-    //     },
-    //     message : 'End hour must be after start hour'
+    max :      new Date().setHours(18, 0),
+    // validate: {
+    //   validator: function(value) {
+    //     console.log('from:', value);
+    //     console.log('to:', this.to);
+    //     return new Date(value).getTime() > new Date(this.from).getTime();
+    //   },
+    //   message: 'End hour must be after start hour'
     // }
 },
 respond : {
