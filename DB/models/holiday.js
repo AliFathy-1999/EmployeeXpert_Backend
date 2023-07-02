@@ -1,4 +1,6 @@
 let mongoose, { Schema, model } = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
+
 
 const holiday = new Schema({
 
@@ -18,6 +20,8 @@ const holiday = new Schema({
         min:0
     }
 })
+
+holiday.plugin(mongoosePaginate);
 
 const Holiday = model('Holiday', holiday);
 
