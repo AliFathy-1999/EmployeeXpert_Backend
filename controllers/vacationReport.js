@@ -31,8 +31,8 @@ const getVacationReport = async (req, res) => {
       const { totalDays, maxDays } = vacationId;
 
       if (!employeeVacations[userName]) {
-        employeeVacations[userName] = {
-            pImage,
+        employeeVacations[userName] = {        
+          pImage,
           userName,
           firstName,
           lastName,
