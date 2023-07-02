@@ -15,7 +15,7 @@ module.exports = {
     payrollValidator :    require('./payroll'),
     vacationValidator :   require('./vacation'),
     lateValidator :       require('./Excuse'),
-
+    holidayValidator :    require('./holidays'),
     paginationOptions
 };
   

@@ -1,9 +1,16 @@
 let mongoose, { Schema, model } = require('mongoose');
+
 const excuse = new Schema({
 
 employeeId : {
         type :     Schema.Types.ObjectId,
         ref :      'Employee',
+        required : true
+    },
+
+attendaceId : {
+        type :     Schema.Types.ObjectId,
+        ref :      'Attendance',
         required : true
     },
 reason : {
@@ -18,31 +25,15 @@ day : {
    default : new Date(Date.now() + 24 * 60 * 60 * 1000),
 },
 from : {
-    type :     Date,
-    default :  new Date().setHours(9, 0),
-    required : [true, 'Start hour of Lateness is required'],
-    // validate: {
-    //     validator: function(value) {
-    //       console.log('from:', value);
-    //       console.log('to:', this.to);
-    //       return new Date(value).getHours() < new Date(this.to).getHours();
-    //     },
-    //     message: 'Start hour must be before end hour'
-    //   }
+  type :     Date,
+  default :  new Date().setHours(9, 0),
+  required : [true, 'Start hour of Lateness is required'],
 },
 to : {
-    type :     Date,
-    default :  new Date().setHours(10, 0),
-    required : [true, 'End hour is required'],
-    max :      new Date().setHours(18, 0),
-    // validate: {
-    //   validator: function(value) {
-    //     console.log('from:', value);
-    //     console.log('to:', this.to);
-    //     return new Date(value).getTime() > new Date(this.from).getTime();
-    //   },
-    //   message: 'End hour must be after start hour'
-    // }
+  type :     Date,
+  default :  new Date().setHours(10, 0),
+  required : [true, 'End hour is required'],
+  max :      new Date().setHours(18, 0),
 },
 respond : {
     type :    String,
@@ -68,6 +59,11 @@ excuse.pre('save', function(next) {
     }
     next();
   });
+
+// excuse.path('from').validate(function(value) {
+//     return this.to > value;
+//   }, 'Start hour must be before end hour');
+
 const Excuse = model('Excuse', excuse);
 
 module.exports = Excuse;

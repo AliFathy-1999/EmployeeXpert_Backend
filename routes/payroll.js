@@ -36,7 +36,7 @@ router.use(adminAuth);
 // res.status(201).json({ status:'success', data });
 // })
 
-router.get('/', async(req, res, next)=>{
+router.get('/all', async(req, res, next)=>{
     const { page, limit } = req.query
     const employeeSalaries = payrollController.getAllEmployeeSalary(page, limit);
     const[err, data] = await asycnWrapper(employeeSalaries)
