@@ -39,8 +39,8 @@ const getAllExcuses = async (page, limit) => {
 
 
 
-const updateExcussion = async(employeeId, data)=> {
-  const Excuses = await Excuse.findOneAndUpdate({employeeId : employeeId}, data, {
+const updateExcussion = async(id, data)=> {
+  const Excuses = await Excuse.findOneAndUpdate({_id : id}, data, {
     runValidators : true,
     new :           true
   }); 

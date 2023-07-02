@@ -1,7 +1,9 @@
+/* eslint-disable no-console */
 const express = require('express');
 const { asycnWrapper, AppError} = require('../lib/index');
 const {userAuth, Auth, adminAuth} = require('../middlewares/auth');
 const excuseController = require('../controllers/excuse')
+const Excuse = require('../DB/models/Excuse')
 
 const router = express.Router();
 
@@ -39,53 +41,36 @@ router.get('/all', Auth, async (req, res, next) => {
         res.status(200).json({ status : 'success', data });
       });
 
-// const updateExcussion = async(req, res)=>{
-//   try {
-//     const { id } = req.params;
-//     const Excuses = await Excuse.findByIdAndUpdate(id, req.body);
-//     if (!Excuses) {
-//       return res
-//         .status(404)
-//         .json({ message : `can't find any Excuse with ID ${id}` });
-//     }
-//     const updatedExcuses = await Excuse.findById(id);
-//     if(updatedExcuses.respond === 'Accepted'){
-//       updatedExcuses.noOfExcuses = updatedExcuses.noOfExcuses + 1;
-//       res.status(200).json(updatedExcuses);
-//     }
-//     else{res.status(200).json(updatedExcuses);}
-//   } catch (error) {
-//     res.status(500).json({ message : error.message });
-//   }
-
-// }
-
 
 router.patch('/:id', Auth, async(req, res, next)=>{
   const { id } = req.params;
-  const {reason,day, from, to, respond, typeOfExcuse} = req.body;
-  const Excuse = await excuseController.updateExcussion(id, {
+  const {reason, from, to, respond, typeOfExcuse} = req.body;
+  const Excuses = excuseController.updateExcussion(id, {
     reason,
-    day,
     from,
     to,
     respond,
     typeOfExcuse
   });
-  const [err, data] = await asycnWrapper(Excuse);
+  console.log(from)
+  const [err, data] = await asycnWrapper(Excuses);
   if(err){return next(err)}
    if (!data) {
     return next(new AppError (`can't find any Excuse with ID ${id}`, 400))
     }
+    console.log('data = ', data)
     const updatedExcuses = await Excuse.findById(id);
+
+    // console.log(updatedExcuses)
+
     if(updatedExcuses.respond === 'Accepted'){
       updatedExcuses.noOfExcuses = updatedExcuses.noOfExcuses + 1;
       res.status(200).json(updatedExcuses);
     }
     else{res.status(200).json(updatedExcuses);}
-
-
 });
+
+
 router.get('/:id', userAuth, excuseController.getOneExcuse);
 
 
