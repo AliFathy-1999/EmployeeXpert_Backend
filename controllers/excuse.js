@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-const Excuse = require('../DB/models/Excuse')
+const Excuse = require('../DB/models/Excuse');
+const Attendance = require('../DB/models/attendance');
 
 const createExcuse = (data) => Excuse.create(data);
 
@@ -46,6 +47,11 @@ const updateExcussion = async(id, data)=> {
   return Excuses;
 }
 
+const updateLateExcussion = async(employeeId, noOfExcuses)=>{
+  const excuse = await Attendance.findOneAndUpdate({employee : employeeId}, {lateExcuse : noOfExcuses});
+  return excuse;
+}
+
 
 const updateExcussionByAdmin = async(id, respond)=> {
   const Excuses = await Excuse.findOneAndUpdate({_id : id}, { $set : { respond : respond } }, {
@@ -63,5 +69,6 @@ module.exports = {
     deleteExecuse,
     updateExcussion,
     updateExcussionByAdmin,
-    getOneExcuse
+    getOneExcuse,
+    updateLateExcussion
 }

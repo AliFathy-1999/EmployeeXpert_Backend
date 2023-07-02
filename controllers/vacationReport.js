@@ -3,18 +3,18 @@ const Vacation = require('../DB/models/vacation');
 const Employee = require('../DB/models/employee');
 const VacationReport = require('../DB/models/vacationReport');
 
-
-const addingDataToReport = async(req, res)=>{
-    const vacationReport = new VacationReport(req.body);
+// const addingDataToReport = async(req, res)=>{
+//     const vacationReport = new VacationReport(req.body);
       
-      try {
-        const newVacationReport = await vacationReport.save();
-        console.log(newVacationReport);
-        res.status(200).json({status:'success',newVacationReport})
-      } catch (err) {
-        console.error(err);
-      }
-}
+//       try {
+//         const newVacationReport = await vacationReport.save();
+//         console.log(newVacationReport);
+//         res.status(200).json({status : 'success', newVacationReport})
+//       } catch (err) {
+//         console.error(err);
+//       }
+// }
+
 const getVacationReport = async (req, res) => {
     try {
       const vacationReports = await VacationReport.find({}).populate({
@@ -27,7 +27,7 @@ const getVacationReport = async (req, res) => {
     const employeeVacations = {};
     vacationReports.forEach((report) => {
       const { employeeId, vacationId } = report;
-      const { pImage,userName, firstName, lastName } = employeeId;
+      const { pImage, userName, firstName, lastName } = employeeId;
       const { totalDays, maxDays } = vacationId;
 
       if (!employeeVacations[userName]) {
@@ -36,7 +36,7 @@ const getVacationReport = async (req, res) => {
           userName,
           firstName,
           lastName,
-          vacations: []
+          vacations : []
         };
       }
 
@@ -45,16 +45,17 @@ const getVacationReport = async (req, res) => {
 
     const reportData = Object.values(employeeVacations);
 
-    res.status(200).json(reportData);
-    //   res.status(200).json(vacationReports);
+    return res.status(200).json(reportData);
+
     } catch (error) {
       res.status(500).json({ message : error.message });
     }
   };
+
   const getEmployeeVacationReport = async (req, res) => {
     try {
-        const employeeId = req.user._id;
-      const vacationReports = await VacationReport.find(employeeId).populate({
+        const {employeeId} = req.user._id;
+        const vacationReports = await VacationReport.find(employeeId).populate({
         path :   'employeeId',
         select : 'pImage userName firstName lastName',
       }).populate({
@@ -64,9 +65,10 @@ const getVacationReport = async (req, res) => {
       console.log(employeeId);
       console.log(vacationReports);
 
-      res.status(200).json(vacationReports);
+      return res.status(200).json(vacationReports);
     } catch (error) {
       res.status(500).json({ message : error.message });
     }
   };
-  module.exports = {getVacationReport, addingDataToReport,getEmployeeVacationReport}
+
+  module.exports = {getVacationReport, getEmployeeVacationReport}
