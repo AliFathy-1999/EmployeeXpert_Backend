@@ -37,10 +37,10 @@ router.delete('/:id', userAuth, async(req, res, next)=>{
 router.get('/all', async (req, res, next) => {
     const getAllExcuses = excuseController.getAllExcuses;
     const [err, data] = await asycnWrapper(getAllExcuses(req, res));
-  
     if (err) return next(err);
     res.status(200).json({ status : 'success', data });
   });
+  
 module.exports = router
 
 

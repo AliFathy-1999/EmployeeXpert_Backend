@@ -20,7 +20,7 @@ router.use('/vacations', employeeVacationsRoutes);
 router.use('/salary', salaryRoutes);
 router.use('/employee/salary', EmployeeSalaryRoutes);
 router.use('/attendance', attendanceRoutes); // Use the attendance routes
-router.use('/excuse' , lateExcuseRoutes);
+router.use('/excuse', lateExcuseRoutes);
 
 module.exports = router;
 
