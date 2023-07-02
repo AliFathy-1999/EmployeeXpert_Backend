@@ -7,6 +7,12 @@ employeeId : {
         ref :      'Employee',
         required : true
     },
+
+attendaceId : {
+        type :     Schema.Types.ObjectId,
+        ref :      'Attendance',
+        required : true
+    },
 reason : {
     type :      String,
     required :  [true, 'Reason for this Lateness is required'],
