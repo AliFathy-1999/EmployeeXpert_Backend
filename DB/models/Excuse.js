@@ -1,4 +1,5 @@
 let mongoose, { Schema, model } = require('mongoose');
+
 const excuse = new Schema({
 
 employeeId : {
@@ -17,76 +18,17 @@ day : {
    type :    Date,
    default : new Date(Date.now() + 24 * 60 * 60 * 1000),
 },
-from: {
-    type: Date,
-    required: [true, 'Start hour of lateness is required'],
-    set: function (value) {
-      return new Date(value);
-    },
-    validate: {
-      validator: function (value) {
-        const toDate = new Date(this.to);
-        const fromDate = new Date(value);
-        return validator.isBefore(fromDate, toDate);
-      },
-      message: 'Start hour of lateness must be before end hour'
-    }
-  },
-  to: {
-    type: Date,
-    max: new Date().setHours(18, 0),
-    required: [true, 'End hour is required'],
-    set: function (value) {
-      return new Date(value);
-    },
-    validate: {
-      validator: function (value) {
-        const fromDate = new Date(this.from);
-        const toDate = new Date(value);
-        return validator.isAfter(toDate, fromDate);
-      },
-      message: 'End hour must be after start hour of lateness'
-    }
-  },
-// from : {
-//     type :     Date,
-//     default :  new Date().setHours(9, 0),
-//     required : [true, 'Start hour of Lateness is required'],
-//     validate: {
-//         validator: function (value) {
-//           const toDate = new Date(this.to);
-//           const fromDate = new Date(value);
-//           return validator.isBefore(fromDate, toDate);
-//         },
-//         message: 'Start hour of Lateness must be before End hour'
-//       }
-//     // validate : {
-//     //     validator : function(value) {
-//     //         return value < this.to;
-//     //     },
-//     //     message : 'Start hour must be before end hour'
-//     // }
-// },
-// to : {
-//     type :     Date,
-//     default :  new Date().setHours(10, 0),
-//     max :      new Date().setHours(18, 0),
-//     required : [true, 'End hour is required'],
-//     validate: {
-//         validator: function (value) {
-//           const fromDate = new Date(this.from);
-//           const toDate = new Date(value);
-//           return validator.isAfter(toDate, fromDate);
-//         },
-//         message: 'End hour must be after Start hour of Lateness'
-//       }
-//     // validate : {
-//     //     validator : function(value) {
-//     //         return value > this.from;
-//     //     },
-//     //     message : 'End hour must be after start hour'
-//     // }
-// },
+from : {
+  type :     Date,
+  default :  new Date().setHours(9, 0),
+  required : [true, 'Start hour of Lateness is required'],
+},
+to : {
+  type :     Date,
+  default :  new Date().setHours(10, 0),
+  required : [true, 'End hour is required'],
+  max :      new Date().setHours(18, 0),
+},
 respond : {
     type :    String,
     enum :    ['Pending', 'Accepted', 'Rejected'],
@@ -111,6 +53,11 @@ excuse.pre('save', function(next) {
     }
     next();
   });
+
+// excuse.path('from').validate(function(value) {
+//     return this.to > value;
+//   }, 'Start hour must be before end hour');
+
 const Excuse = model('Excuse', excuse);
 
 module.exports = Excuse;

@@ -38,9 +38,8 @@ const getAllExcuses = async (page, limit) => {
 }
 
 
-
-const updateExcussion = async(employeeId, data)=> {
-  const Excuses = await Excuse.findOneAndUpdate({_id : employeeId}, data, {
+const updateExcussion = async(id, data)=> {
+  const Excuses = await Excuse.findOneAndUpdate({_id : id}, data, {
     runValidators : true,
     new :           true
   }); 
@@ -48,22 +47,21 @@ const updateExcussion = async(employeeId, data)=> {
 }
 
 
-const getOneExcuse = async(req, res)=>{
-  try {
-    const { id } = req.params;
-    const excuse = await Excuse.findById(id);
-    res.status(200).json(excuse);
-  } catch (error) {
-    res.status(500).json({ message : error.message });
-  }
-
+const updateExcussionByAdmin = async(id, respond)=> {
+  const Excuses = await Excuse.findOneAndUpdate({_id : id}, { $set : { respond : respond } }, {
+    runValidators : true,
+    new :           true
+  }); 
+  return Excuses;
 }
 
+const getOneExcuse = (id) => Excuse.findById( id)
 
 module.exports = {
     createExcuse,
     getAllExcuses,
     deleteExecuse,
     updateExcussion,
+    updateExcussionByAdmin,
     getOneExcuse
 }

@@ -1,12 +1,16 @@
+/* eslint-disable no-console */
 const express = require('express');
 const { asycnWrapper, AppError} = require('../lib/index');
 const {userAuth, Auth, adminAuth} = require('../middlewares/auth');
-const excuseController = require('../controllers/excuse')
+const excuseController = require('../controllers/excuse');
+const { validate } = require('../middlewares/validation');
+const { lateValidator } = require('../Validations/index');
+
 const Excuse = require('../DB/models/Excuse')
 
 const router = express.Router();
 
-router.post('/', userAuth, async (req, res, next)=>{
+router.post('/', userAuth, validate(lateValidator.Excuse), async (req, res, next)=>{
     const employeeId = req.user._id;
     const { reason, from, to, typeOfExcuse } = req.body;
 
@@ -40,49 +44,29 @@ router.get('/all', Auth, async (req, res, next) => {
         res.status(200).json({ status : 'success', data });
       });
 
-// const updateExcussion = async(req, res)=>{
-//   try {
-//     const { id } = req.params;
-//     const Excuses = await Excuse.findByIdAndUpdate(id, req.body);
-//     if (!Excuses) {
-//       return res
-//         .status(404)
-//         .json({ message : `can't find any Excuse with ID ${id}` });
-//     }
-//     const updatedExcuses = await Excuse.findById(id);
-//     if(updatedExcuses.respond === 'Accepted'){
-//       updatedExcuses.noOfExcuses = updatedExcuses.noOfExcuses + 1;
-//       res.status(200).json(updatedExcuses);
-//     }
-//     else{res.status(200).json(updatedExcuses);}
-//   } catch (error) {
-//     res.status(500).json({ message : error.message });
-//   }
 
-// }
-
-
-router.patch('/:id', Auth, async(req, res, next)=>{
+router.put('/:id', userAuth, async(req, res, next)=>{
   const { id } = req.params;
-  console.log(req.params)
-  const {reason,day, from, to, respond, typeOfExcuse} = req.body;
+  const {reason, from, to, respond, typeOfExcuse} = req.body;
   const Excuses = excuseController.updateExcussion(id, {
     reason,
-    day,
     from,
     to,
-    respond,
     typeOfExcuse
   });
   console.log(from)
+  console.log(to)
+
   const [err, data] = await asycnWrapper(Excuses);
   if(err){return next(err)}
    if (!data) {
     return next(new AppError (`can't find any Excuse with ID ${id}`, 400))
     }
-    console.log("data = " , data)
+    console.log('data = ', data)
     const updatedExcuses = await Excuse.findById(id);
+
     // console.log(updatedExcuses)
+
     if(updatedExcuses.respond === 'Accepted'){
       updatedExcuses.noOfExcuses = updatedExcuses.noOfExcuses + 1;
       res.status(200).json(updatedExcuses);
@@ -90,10 +74,36 @@ router.patch('/:id', Auth, async(req, res, next)=>{
     else{res.status(200).json(updatedExcuses);}
 });
 
-router.get('/:id', userAuth, excuseController.getOneExcuse);
 
+router.patch('/admin/:id', adminAuth, async(req, res, next)=>{
+  const { id } = req.params;
+  const respond = req.body.respond;
+  const Excuses = excuseController.updateExcussionByAdmin(id, respond);
 
-  
+  const [err, data] = await asycnWrapper(Excuses);
+  if(err){return next(err)}
+   if (!data) {
+    return next(new AppError (`can't find any Excuse with ID ${id}`, 400))
+    }
+    // console.log('data = ', data)
+    const updatedExcuses = await Excuse.findById(id);
+
+    // console.log(updatedExcuses.respond)
+
+    if(updatedExcuses.respond === 'Accepted'){
+      updatedExcuses.noOfExcuses = updatedExcuses.noOfExcuses + 1;
+      res.status(200).json(updatedExcuses);
+    }
+    else{res.status(200).json(updatedExcuses);}
+});
+router.get('/:id', Auth, async (req, res, next)=>{
+  const {id } = req.params;
+  const excuse = excuseController.getOneExcuse(id)
+  const [err, data] = await asycnWrapper(excuse)
+  if(err) return next(err)
+  res.status(200).json({status : 'success', data})
+})
+
 module.exports = router
 
 

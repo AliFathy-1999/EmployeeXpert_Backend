@@ -10,6 +10,8 @@ const salaryRoutes = require ('./payroll');
 const EmployeeSalaryRoutes = require ('./userSalary');
 const attendanceRoutes = require('./attendance'); // Import the attendance routes
 const lateExcuseRoutes = require ('./excuse');
+const vacationReportRoutes = require ('./vacationReport');
+const holidayRoutes = require('./holiday');
 
 router.use('/admin-emp', adminEmpRoutes);
 router.use('/admin-dep', adminDepRoutes);
@@ -20,7 +22,9 @@ router.use('/vacations', employeeVacationsRoutes);
 router.use('/salary', salaryRoutes);
 router.use('/employee/salary', EmployeeSalaryRoutes);
 router.use('/attendance', attendanceRoutes); // Use the attendance routes
-router.use('/excuse', lateExcuseRoutes);
+router.use('/excuse' , lateExcuseRoutes);
+router.use('/vReport' , vacationReportRoutes);
+router.use('/holiday' , holidayRoutes);
 
 module.exports = router;
 

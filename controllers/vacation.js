@@ -1,5 +1,6 @@
 const Vacation = require('../DB/models/vacation');
 
+const _ = require('lodash');
 
 const getAllVacations = async (req, res) => {
   try {
@@ -51,7 +52,6 @@ const getOneVacationWithUserData = async (req, res) => {
       .exec();
     res.status(200).json(vacation);
   } catch (error) {
-    // console.log(error.message);
 
     res.status(500).json({ message : error.message });
   }
@@ -93,6 +93,8 @@ const applyForVacation = async (req, res) => {
     let totalDaysSum;
     let newTotalDays;
     let TotalDays;
+    const now = Date.now();
+    const date = new Date(now);
     if (empVacation) {
       totalDaysSum = empVacation.reduce((sum, obj) => {
         return sum + obj.totalDays;
@@ -101,8 +103,8 @@ const applyForVacation = async (req, res) => {
     newTotalDays = totalDaysSum + req.body.totalDays;
     if (newTotalDays <= 21) {
       const vacation = new Vacation(req.body);
-      const now = Date.now();
-      const date = new Date(now);
+
+      console.log(date);
       if (vacation.fromDay > date) {
         vacation.employeeId = employeeId;
         TotalDays = totalDaysSum + req.body.totalDays;
@@ -118,10 +120,16 @@ const applyForVacation = async (req, res) => {
       const maxDaysLimit = 22;
       const exceededDays = newTotalDays - maxDaysLimit;
       const vacation = new Vacation(req.body);
+      if (vacation.fromDay > date) {
       vacation.employeeId = employeeId;
       vacation.maxDays += exceededDays;
       const Vacations = await vacation.save();
       return res.status(200).json(Vacations);
+      }else{
+        res.json({
+          message : 'the start date of a vacation should be after today',
+        });
+      }
     }
   } catch (error) {
     return res.status(500).json({ message : error.message });
@@ -131,17 +139,97 @@ const applyForVacation = async (req, res) => {
 const modifyVacation = async (req, res) => {
   try {
     const { id } = req.params;
-    const vacation = await Vacation.findByIdAndUpdate(id, req.body);
+  
+    const vacation = await Vacation.findByIdAndUpdate( id);
+
+    // console.log(vacation);
+
     if (!vacation) {
       return res
         .status(404)
         .json({ message : `can't find any vacation with ID ${id}` });
+    }
+    let totalDaysSum;
+    let newTotalDays;
+    let TotalDays;
+    totalDaysSum = vacation.totalDays
+
+    console.log(totalDaysSum);
+
+    newTotalDays = totalDaysSum + req.body.totalDays;
+
+    console.log(newTotalDays);
+
+    if (newTotalDays <= 21) {
+      if ( req.body.status === 'Accepted') {
+        // console.log(req.body.status);
+
+        TotalDays = totalDaysSum + req.body.totalDays;
+        vacation.totalDays = TotalDays;
+        vacation.status = req.body.status
+        const Vacations = await vacation.save();
+        return res.status(200).json(Vacations);
+      } else if ( req.body.status === 'Declined' && newTotalDays > 0) {
+        console.log(newTotalDays);
+        TotalDays = totalDaysSum - req.body.totalDays;
+        vacation.totalDays = TotalDays;
+        vacation.status = req.body.status
+        const Vacations = await vacation.save();
+        return res.status(200).json(Vacations);
+      }
+    } else {
+      if ( req.body.status === 'Accepted') {
+      const maxDaysLimit = 22;
+      const exceededDays = newTotalDays - maxDaysLimit;
+      vacation.maxDays += exceededDays;
+      vacation.status = req.body.status
+      const Vacations = await vacation.save();
+      return res.status(200).json(Vacations);
+      }
+      else if ( req.body.status === 'Declined' && newTotalDays !== 0){
+        console.log(newTotalDays);
+        const maxDaysLimit = 22;
+        const exceededDays = newTotalDays - maxDaysLimit;
+        vacation.maxDays -= exceededDays;
+        vacation.status = req.body.status
+
+        const Vacations = await vacation.save();
+        res.status(200).json(Vacations);
+      }
     }
     const updatedVacation = await Vacation.findById(id);
     if(updatedVacation.status){
 
     }
     res.status(200).json(updatedVacation);
+  } catch (error) {
+    res.status(500).json({ message : error.message });
+  }
+};
+const modifyVacationByUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const now = Date.now();
+    const date = new Date(now);
+
+    const vacation = await Vacation.findById( id);
+    if (!vacation) {
+      return res
+        .status(404)
+        .json({ message : `can't find any vacation with ID ${id}` });
+    }
+    if (vacation.fromDay > date) {
+      console.log(req.body);
+      const updates = _.pick(req.body, ['reasonForVacation', 'fromDay', 'toDay', 'totalDays', 'status']);
+      const result = await Vacation.updateOne({ _id: id }, updates);
+     console.log(result);
+      const updatedVacation = await Vacation.findById(id);
+      res.status(200).json(updatedVacation);
+  }else{
+    res.json({
+      message : 'the start date of a vacation should be after today',
+    });
+  }
   } catch (error) {
     res.status(500).json({ message : error.message });
   }
@@ -242,4 +330,5 @@ module.exports = {
   getOneVacationWithUserData,
   getVacationWithemployeeId,
   applyForVacationByAdmin,
+  modifyVacationByUser
 };

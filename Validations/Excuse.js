@@ -32,10 +32,9 @@ const Excuse = {
       'date.format' : 'Day must be in ISO format (YYYY-MM-DD)',
       'any.default' : 'Day must be set to tomorrow'
     }),
-    noOfExcuses : Joi.number().min(0).required().default(0).messages({
+    noOfExcuses : Joi.number().min(0).default(0).messages({
     'number.base' :  'Number of Excuses must be a number',
     'number.min' :   'Number of Excuses must be at least 1',
-    'any.required' : 'Number of Excuses is required'
   }),
   typeOfExcuse : Joi.string().valid('Late', 'Leave Early').required()
     .messages({

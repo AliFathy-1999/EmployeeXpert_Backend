@@ -61,16 +61,7 @@ const deleteEmployeeSalary = (userId) =>
   Payroll.findOneAndDelete({ employeeId: userId });
 
   
-  // Schedule a job to run on the first day of every month at 12:00 AM
-  const job = schedule.scheduleJob('0 0 1 * *', async function() {
-    try {
-      // Reset specific values in your schema
-      const result = await Payroll.updateMany({}, { $set: { bonus : 0 , deduction : 0} });
-      console.log(`Reset ${result.nModified} documents`);
-    } catch (error) {
-      console.error(error);
-    }
-  });
+
 
 module.exports = {
   createEmployeeSalary,
