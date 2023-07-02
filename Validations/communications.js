@@ -22,14 +22,12 @@ const message = {
         .trim()
         .regex(/^[a-zA-Z0-9]+$/)
         .messages({
-            'string.empty' : 'reciever required field',
             'string.min' :   'reciever required field',    
         }),
         employee : Joi.string()
         .trim()
         .pattern(/^[a-zA-Z0-9]+$/)
         .messages({
-            'string.empty' :        'reciever required field',
             'string.min' :          'reciever required field', 
             'string.pattern.base' : 'Invalid Employee ID',   
         }),
