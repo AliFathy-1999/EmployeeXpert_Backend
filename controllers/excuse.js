@@ -1,18 +1,21 @@
+/* eslint-disable no-console */
 const Excuse = require('../DB/models/Excuse')
 
 const createExcuse = (data) => Excuse.create(data);
 
-const deleteExecuse = (excuseId) => Excuse.findOneAndDelete({_id:excuseId})
+const deleteExecuse = (excuseId) => Excuse.findOneAndDelete({_id : excuseId})
 
-const getAllExcuses = async (req, res) => {
+const getAllExcuses = async (page, limit) => {
   try {
-    const page = req.query.page || 0;
-    let limit = req.query.limit || 10;
+
+    if(!page) page = 0;
+    if(!limit) limit = 10;
+
     if(limit > 20){
       limit = 10;
     }
     else{
-      limit = req.query.limit ;
+      limit = limit ;
     }
     const count = await Excuse.countDocuments({});
 
@@ -24,20 +27,42 @@ const getAllExcuses = async (req, res) => {
     const paginationInfo = {
       totalCount : count,
       totalPages,
-      nextPage :   nextPage ? `/excuse?page=${nextPage}` : null,
-      prevPage :   prevPage ? `/excuse?page=${prevPage}` : null,
+      nextPage :   nextPage ? `/all?page=${nextPage}` : null,
+      prevPage :   prevPage ? `/all?page=${prevPage}` : null,
     };
-    return res.status(200).json({allExcuses, paginationInfo});
+    let paginated = {allExcuses, paginationInfo};
+    return paginated ;
   } catch (error) {
-    return res.status(500).json({ message : error.message });
+    return error;
   }
 }
 
-// const getAllExcuses = async (req, res) => {
-  
-// };
+
+
+const updateExcussion = async(employeeId, data)=> {
+  const Excuses = await Excuse.findOneAndUpdate({employeeId : employeeId}, data, {
+    runValidators : true,
+    new :           true
+  }); 
+  return Excuses;
+}
+
+
+const getOneExcuse = async(req, res)=>{
+  try {
+    const { id } = req.params;
+    const excuse = await Excuse.findById(id);
+    res.status(200).json(excuse);
+  } catch (error) {
+    res.status(500).json({ message : error.message });
+  }
+
+}
+
 module.exports = {
     createExcuse,
     getAllExcuses,
-    deleteExecuse
+    deleteExecuse,
+    updateExcussion,
+    getOneExcuse
 }

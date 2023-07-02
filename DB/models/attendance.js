@@ -22,7 +22,7 @@ const AttendanceSchema = new mongoose.Schema({
       validator : function(v) {
         const startTime = this.workdayStartTime || DEFAULT_START_TIME;
         const endTime = this.workdayEndTime || DEFAULT_END_TIME;
-        return v.getHours() >= startTime && v.getHours() < endTime;
+        return v.getHours() >= startTime || v.getHours() < endTime;
       },
       message : 'Check-in time must be between workday start and end times'
     }
@@ -33,7 +33,7 @@ const AttendanceSchema = new mongoose.Schema({
       validator : function(v) {
         const startTime = this.workdayStartTime || DEFAULT_START_TIME;
         const endTime = this.workdayEndTime || DEFAULT_END_TIME;
-        return v.getHours() >= startTime && v.getHours() < endTime + 4;
+        return v.getHours() >= startTime || v.getHours() < endTime + 4;
       },
       message : 'Check-out time must be between workday start and end times, plus a grace period of 4 hours'
     }
