@@ -36,8 +36,6 @@ const getOneVacation = async (req, res) => {
     const vacation = await Vacation.findById(id);
     res.status(200).json(vacation);
   } catch (error) {
-    // console.log(error.message);
-
     res.status(500).json({ message : error.message });
   }
 };
@@ -91,24 +89,16 @@ const getVacationWithemployeeId = async (req, res) => {
 const applyForVacation = async (req, res) => {
   try {
     const employeeId = req.user._id;
-
-    // console.log(employeeId);
-
     const empVacation = await Vacation.find({ employeeId : employeeId });
     let totalDaysSum;
     let newTotalDays;
     let TotalDays;
-
-
     if (empVacation) {
       totalDaysSum = empVacation.reduce((sum, obj) => {
         return sum + obj.totalDays;
       }, 0);
     }
     newTotalDays = totalDaysSum + req.body.totalDays;
-
-    // console.log(totalDaysSum);
-
     if (newTotalDays <= 21) {
       const vacation = new Vacation(req.body);
       const now = Date.now();
@@ -118,10 +108,6 @@ const applyForVacation = async (req, res) => {
         TotalDays = totalDaysSum + req.body.totalDays;
         vacation.totalDays = TotalDays;
         const Vacations = await vacation.save();
-
-        // console.log(newTotalDays);
-        // console.log(TotalDays);
-
         return res.status(200).json(Vacations);
       } else {
         res.json({
@@ -135,15 +121,9 @@ const applyForVacation = async (req, res) => {
       vacation.employeeId = employeeId;
       vacation.maxDays += exceededDays;
       const Vacations = await vacation.save();
-
-      // console.log(exceededDays);
-      // console.log(vacation.maxDays);
-
       return res.status(200).json(Vacations);
     }
   } catch (error) {
-    // console.log(error.message);
-
     return res.status(500).json({ message : error.message });
   }
 };
@@ -156,8 +136,11 @@ const modifyVacation = async (req, res) => {
       return res
         .status(404)
         .json({ message : `can't find any vacation with ID ${id}` });
-    }d
+    }
     const updatedVacation = await Vacation.findById(id);
+    if(updatedVacation.status){
+
+    }
     res.status(200).json(updatedVacation);
   } catch (error) {
     res.status(500).json({ message : error.message });
@@ -178,7 +161,7 @@ const removeVacation = async (req, res) => {
     const now = Date.now();
     const date = new Date(now);
 
-    if (vacation.status == 'Declined' || date < vacation.fromDay) {
+    if (vacation.status === 'Declined' || date < vacation.fromDay) {
       const deletedVacation = await Vacation.findByIdAndDelete(id, req.body);
 
       if (!deletedVacation) {
@@ -189,9 +172,6 @@ const removeVacation = async (req, res) => {
 
       return res.status(200).json({ message : 'Vacation deleted successfully' });
     } else {
-      // console.log(vacation.fromDay);
-      // console.log(vacation.toDay);
-
       res.json({ message : 'Sorry, you can not cancel it' });
     }
   } catch (error) {
@@ -204,9 +184,6 @@ const removeVacation = async (req, res) => {
 const applyForVacationByAdmin = async (req, res) => {
   try {
     const { employeeId } = req.body;
-
-    // console.log(employeeId);
-
     const empVacation = await Vacation.find({ employeeId });
     let totalDaysSum;
     let newTotalDays;
@@ -247,10 +224,6 @@ const applyForVacationByAdmin = async (req, res) => {
 
 
       const Vacations = await vacation.save();
-
-      // console.log(exceededDays);
-
-      // console.log(vacation.maxDays);
 
       return res.status(200).json(Vacations);
     }
