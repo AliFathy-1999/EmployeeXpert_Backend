@@ -1,4 +1,6 @@
 const Vacation = require('../DB/models/vacation');
+const Attendance = require('../DB/models/attendance');
+const Employee = require('../DB/models/employee');
 
 const _ = require('lodash');
 
@@ -86,6 +88,8 @@ const getVacationWithemployeeId = async (req, res) => {
   }
 };
 
+
+
 const applyForVacation = async (req, res) => {
   try {
     const employeeId = req.user._id;
@@ -136,6 +140,19 @@ const applyForVacation = async (req, res) => {
   }
 };
 
+// const updateVacationDaysinAttendence = async (employeeId , totalDays) =>{
+//   const days = await Attendance.findByIdAndUpdate(employeeId, { totalDays: totalDays });
+//   return days;
+// }
+
+const updateVacationDaysinAttendence = async (employeeId, totalDays) => {
+  const employee = await Employee.findById(employeeId);
+  const attendance = await Attendance.updateMany({employee:employee._id} ,
+    { BalanceVacations : totalDays }
+  );
+  return attendance;
+}
+
 const modifyVacation = async (req, res) => {
   try {
     const { id } = req.params;
@@ -168,6 +185,8 @@ const modifyVacation = async (req, res) => {
         vacation.totalDays = TotalDays;
         vacation.status = req.body.status
         const Vacations = await vacation.save();
+        const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
+        await updateAttendence;
         return res.status(200).json(Vacations);
       } else if ( req.body.status === 'Declined' && newTotalDays > 0) {
         console.log(newTotalDays);
