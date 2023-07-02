@@ -50,7 +50,7 @@ const AttendanceSchema = new mongoose.Schema({
     type :     Number,
     ref :      'Payroll',    
     required : false,
-  },
+  },        
 
   // Define the start and end times of the workday as comments
 
