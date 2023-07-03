@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const Attendance = require("../DB/models/attendance");
 const Employee = require("../DB/models/employee");
 const Vacation = require("../DB/models/vacation");
+const Payroll = require("../DB/models/payroll");
 
 const { AppError } = require("../lib/index");
 
@@ -84,6 +85,28 @@ const deleteAttendanceById = async (req, res, next) => {
   }
 };
 
+const getAllAttendancesOfEmployee = async (req, res, next) => { 
+  try {
+    const page = parseInt(req.query.page) || 1; // Current page (default: 1)
+    const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
+
+    const skip = (page - 1) * limit; // Number of documents to skip
+
+    const attendances = await Attendance.find({ employee: req.params.employee }).skip(skip).limit(limit);
+    const totalPages = Math.ceil(attendances.length / limit);
+
+    res.status(200).json({
+      status: "success",
+      page,
+      totalPages,
+      data: attendances
+    });
+
+  }catch(error) {
+    next(error);
+  }
+} 
+
 const updateBalanceVacations = async (employeeId, BalanceVacations) => {
   const employee = await Employee.findById(employeeId);
   console.log("employee",employee);
@@ -95,10 +118,21 @@ const updateBalanceVacations = async (employeeId, BalanceVacations) => {
   return vacation;
 }
 
+const updateDeductions = async (employeeId, deduction) => {
+  const employee = await Employee.findById(employeeId);
+  console.log("employee",employee);
+  const payroll = await Payroll.findOneAndUpdate({employeeId:employee._id} ,
+    { deduction : deduction }
+  );
+  console.log("payroll",payroll);
+
+  return payroll;
+}
+
 // Check-in route
 // Set the default workday start and end times
-const DEFAULT_START_TIME = 1; // 9:00 AM
-const DEFAULT_END_TIME = 24; // 6:00 PM
+const DEFAULT_START_TIME = 3; // 9:00 AM
+const DEFAULT_END_TIME = 22; // 6:00 PM
 
 const checkIn = async (req, res, next) => {
   try {
@@ -115,12 +149,15 @@ const checkIn = async (req, res, next) => {
       employee: employee._id,
       checkIn: { $gte: today },
     });
-
-    // if (attendance) {
-    //   return res.status(400).json({
-    //     message: "Employee has already checked in today",
-    //   });
-    // }
+    const pre = await Attendance.findOne({
+      employee: employee._id,
+    }).sort({ checkIn: -1 });
+    console.log( 'pre '+ pre);
+    if (attendance) {
+      return res.status(400).json({
+        message: "Employee has already checked in today",
+      });
+    }
 
     // Create a new attendance record
     const newAttendance = new Attendance({
@@ -151,7 +188,9 @@ const checkIn = async (req, res, next) => {
 
     const endOfDay = new Date(newAttendance.checkIn.getTime());
     endOfDay.setHours(23, 59, 59, 999); // set the end of the day to 11:59 PM and 999 milliseconds
+    
 
+  
     const attendances = await Attendance.find({
       employee: employee._id,
       checkIn: {
@@ -159,15 +198,21 @@ const checkIn = async (req, res, next) => {
         $lt: endOfDay,
       },
     });
+    // console.log(attendances)
     const startWorking = new Date();
     startWorking.setHours(DEFAULT_START_TIME, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to the start time
     startWorking.setHours(startWorking.getHours() + 2);
-
+    attendances[0].lateCounter = attendances[0].lateCounter + pre.lateCounter;
+    attendances[0].deduction = attendances[0].deduction + pre.deduction;
+    attendances[0].lateExcuse = attendances[0].lateExcuse + pre.lateExcuse;
     if (attendances[0].checkIn.getTime() >= startWorking.getTime()) {
+      // console.log(pre.deduction)
+      // attendances[0].lateExcuse = attendances[0].lateExcuse + pre.lateExcuse;
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
 
       if (attendances[0].lateExcuse > 2) {
         console.log("hiiii");
+        // attendances[0].BalanceVacations = attendances[0].BalanceVacations + pre.BalanceVacations
         attendances[0].BalanceVacations = attendances[0].BalanceVacations + 0.5;
 
         const updateBalanceVacation = updateBalanceVacations(attendances[0].employee, attendances[0].BalanceVacations);
@@ -181,10 +226,11 @@ const checkIn = async (req, res, next) => {
       attendances[0].save();
     } else {
       const lateArrivals = attendances.filter(
-        (a) => a.checkIn.getTime() < lateThreshold.getTime()
+        (a) => a.checkIn.getTime() <= lateThreshold.getTime()
       ).length;
-console.log("lateArrivals",lateArrivals);
-      if (lateArrivals == 0) {
+      // console.log("lateArrivals",lateArrivals);
+      // attendances[0].lateCounter = attendances[0].lateCounter + pre.lateCounter;
+      if (lateArrivals == 1 ) {
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
           console.log(
@@ -212,7 +258,14 @@ console.log("lateArrivals",lateArrivals);
           } else {
             deduction = 1; // Fifth or more late arrival - deduct 100%
           }
+          // attendances[0].deduction = attendances[0].deduction + pre.deduction;
           attendances[0].deduction = attendances[0].deduction + deduction;
+
+          const updateDeduction = updateDeductions(attendances[0].employee, attendances[0].deduction);
+         console.log("updateDeduction",updateDeduction);
+  
+          await updateDeduction;
+        
         }
         attendances[0].lateCounter += 1;
         await attendances[0].save();
@@ -231,9 +284,14 @@ console.log("lateArrivals",lateArrivals);
 const checkOut = async (req, res, next) => {
   try {
     const employee = await Employee.findById(req.body.employee);
+    const date = new Date();
+    const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
     const attendance = await Attendance.findOne({
       employee: employee,
-    }).sort({ updatedAt: -1 });
+      checkIn: { $gte: startDate, $lt: endDate }
+    });
+    // console.log( 'testing '+ attendance)
 
     if (!attendance) {
       return res
@@ -242,11 +300,11 @@ const checkOut = async (req, res, next) => {
     }
 
     // Check if the employee has already checked out
-    // if (attendance.checkOut) {
-    //   return res
-    //     .status(400)
-    //     .json({ message: "Employee has already checked out" });
-    // }
+    if (attendance.checkOut) {
+      return res
+        .status(400)
+        .json({ message: "Employee has already checked out" });
+    }
 
     // Check if the employee has checked in
 
@@ -340,7 +398,10 @@ const checkOut = async (req, res, next) => {
           console.log(`deducation" ${deduction}`);
 
           attendances[0].deduction = attendances[0].deduction + deduction;
-
+          const updateDeduction = updateDeductions(attendances[0].employee, attendances[0].deduction);
+          console.log("updateDeduction",updateDeduction);
+   
+           await updateDeduction;
           attendances[0].lateCounter += 1;
         }
         await attendances[0].save();
@@ -360,4 +421,5 @@ module.exports = {
   deleteAttendanceById,
   checkIn,
   checkOut,
+  getAllAttendancesOfEmployee
 };
