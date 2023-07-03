@@ -158,9 +158,6 @@ const modifyVacation = async (req, res) => {
     const { id } = req.params;
   
     const vacation = await Vacation.findByIdAndUpdate( id);
-
-    // console.log(vacation);
-
     if (!vacation) {
       return res
         .status(404)
@@ -179,17 +176,15 @@ const modifyVacation = async (req, res) => {
 
     if (newTotalDays <= 21) {
       if ( req.body.status === 'Accepted') {
-        // console.log(req.body.status);
-
         TotalDays = totalDaysSum + req.body.totalDays;
         vacation.totalDays = TotalDays;
-        vacation.status = req.body.status
+        vacation.status = req.body.status;
         const Vacations = await vacation.save();
         const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
         await updateAttendence;
         return res.status(200).json(Vacations);
       } else if ( req.body.status === 'Declined' && newTotalDays > 0) {
-        console.log(newTotalDays);
+        // console.log(newTotalDays);
         TotalDays = totalDaysSum - req.body.totalDays;
         vacation.totalDays = TotalDays;
         vacation.status = req.body.status
@@ -198,10 +193,15 @@ const modifyVacation = async (req, res) => {
       }
     } else {
       if ( req.body.status === 'Accepted') {
-      const maxDaysLimit = 22;
-      const exceededDays = newTotalDays - maxDaysLimit;
+      const maxDaysLimit = 21;
+      let exceededDays = newTotalDays - maxDaysLimit;
+      console.log(newTotalDays);
+      if(exceededDays === 0){
+        exceededDays =1;
+      }
       vacation.maxDays += exceededDays;
-      vacation.status = req.body.status
+      console.log(vacation.maxDays);
+      vacation.status = req.body.status;
       const Vacations = await vacation.save();
       return res.status(200).json(Vacations);
       }
