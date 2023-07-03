@@ -31,13 +31,13 @@ router.post('/todepartment', adminAuth, validate(message), async (req, res, next
 });
 
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
-  if (req.body.All) {
+  if (req.body.isForAll) {
     const {
-      body: { All, message },
+      body: { isForAll, message },
     } = req;
     const sender = req.user._id;
     const sentMessage = communicationsController.create({
-      All,
+        isForAll:isForAll,
       sender: sender.toString(),
       message,
     });
