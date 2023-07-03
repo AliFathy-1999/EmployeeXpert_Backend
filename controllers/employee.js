@@ -14,10 +14,8 @@ const getEmployees = (role = 'USER', page, limit) => {
   return Employee.paginate({role}, { page, limit });
 }
 
-const employeeDetails = (empId) => {
-  return Employee.find({_id : empId}).populate('depId', 'name')
-}
-// Employee.findOne({_id : empId}).populate('depId', 'name')
+const employeeDetails = (empId) => Employee.find({_id : empId}).populate('depId', 'name')
+
 
 const getMe = (empId) => Employee.findOne({_id : empId});
 
@@ -34,13 +32,20 @@ const createEmployee = (data) => {
 const updateEmployee = (empId, data) => Employee.findOneAndUpdate({ _id : empId }, data, { runValidators : true, new : true });
 
 const deleteEmployee = (empId) => 
-Employee.findOneAndDelete({
-  $and : [
-    { _id : empId },
-    { role : 'USER' }
-  ]
+  Employee.findOneAndDelete({
+    $and : [
+      { _id : empId },
+      { role : 'USER' }
+    ]
 });
 
+const searchOnEmployee = (searchText, page, limit)=> {
+    return Employee.paginate(
+      {'firstName' : { $regex : searchText, $options : 'i'}},
+      { page, limit }
+  )
+  
+}
 
 const signIn = async (employee) => {
   const user = await Employee.findOne({ userName : employee.userName})
@@ -57,5 +62,6 @@ module.exports = {
   createEmployee,
   updateEmployee,
   deleteEmployee,
+  searchOnEmployee,
   signIn,
 };

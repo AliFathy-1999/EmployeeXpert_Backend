@@ -4,9 +4,9 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 const schema = new Schema(
     {
       grossSalary : {
-        type :     Number,
+        type : Number,
         required : [true, 'Gross Salary of Employee is Required'],
-        min :      3500,
+        min : 3500,
         max: 200000
       },
       payRate : {
@@ -17,7 +17,7 @@ const schema = new Schema(
         },
       },
       daysWorked : {
-        type :     Number,
+        type : Number,
         required : [true, 'Days Employee Worked is Required'],
         min :      0,
         max :      25,
@@ -38,13 +38,13 @@ const schema = new Schema(
         },
       },
       bonus : {
-        type :     Number,
+        type : Number,
         required : [true, 'Bonus is Required'],
         min :      0,
         default :  0,
       },
       deduction:{
-        type :     Number,
+        type : Number,
         required : [true, 'Deduction is Required'],
         min :      0,
         default :  0,
@@ -53,7 +53,7 @@ const schema = new Schema(
         type : Number,
         min :  0,
         get :  function() {
-          return this.grossSalary - this.grossSalary * this.tax + this.bonus;
+          return this.grossSalary - (this.grossSalary * (this.tax + this.deduction)) + this.bonus
         },
       },
       employeeId : {

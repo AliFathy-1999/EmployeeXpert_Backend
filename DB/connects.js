@@ -1,3 +1,4 @@
+require("dotenv").config();
 const { default: mongoose } = require('mongoose');
 const Conmongoose= require('mongoose');
 const maxRetryAttempts = 3;

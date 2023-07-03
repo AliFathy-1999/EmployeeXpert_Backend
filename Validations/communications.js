@@ -12,7 +12,7 @@ const message = {
         .trim()
         .min(5)
         .max(300)
-        .pattern(/[a-zA-Z]+/)
+        .pattern(/[a-zA-Z0-9]+/)
         .messages({
             'string.min' :          'Message must be at least 5 characters long',
             'string.max' :          'Message cannot exceed 300 characters',
@@ -22,14 +22,12 @@ const message = {
         .trim()
         .regex(/^[a-zA-Z0-9]+$/)
         .messages({
-            'string.empty' : 'reciever required field',
             'string.min' :   'reciever required field',    
         }),
         employee : Joi.string()
         .trim()
         .pattern(/^[a-zA-Z0-9]+$/)
         .messages({
-            'string.empty' :        'reciever required field',
             'string.min' :          'reciever required field', 
             'string.pattern.base' : 'Invalid Employee ID',   
         }),
