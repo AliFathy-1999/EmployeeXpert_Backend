@@ -2,6 +2,7 @@
 const jwt = require("jsonwebtoken");
 const Attendance = require("../DB/models/attendance");
 const Employee = require("../DB/models/employee");
+const Vacation = require("../DB/models/vacation");
 
 const { AppError } = require("../lib/index");
 
@@ -83,6 +84,17 @@ const deleteAttendanceById = async (req, res, next) => {
   }
 };
 
+const updateBalanceVacations = async (employeeId, BalanceVacations) => {
+  const employee = await Employee.findById(employeeId);
+  console.log("employee",employee);
+  const vacation = await Vacation.updateMany({employeeId:employee._id} ,
+    { totalDays : BalanceVacations }
+  );
+  console.log("vacation",vacation);
+
+  return vacation;
+}
+
 // Check-in route
 // Set the default workday start and end times
 const DEFAULT_START_TIME = 1; // 9:00 AM
@@ -104,11 +116,11 @@ const checkIn = async (req, res, next) => {
       checkIn: { $gte: today },
     });
 
-    if (attendance) {
-      return res.status(400).json({
-        message: "Employee has already checked in today",
-      });
-    }
+    // if (attendance) {
+    //   return res.status(400).json({
+    //     message: "Employee has already checked in today",
+    //   });
+    // }
 
     // Create a new attendance record
     const newAttendance = new Attendance({
@@ -153,15 +165,25 @@ const checkIn = async (req, res, next) => {
 
     if (attendances[0].checkIn.getTime() >= startWorking.getTime()) {
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
+
       if (attendances[0].lateExcuse > 2) {
+        console.log("hiiii");
         attendances[0].BalanceVacations = attendances[0].BalanceVacations + 0.5;
+
+        const updateBalanceVacation = updateBalanceVacations(attendances[0].employee, attendances[0].BalanceVacations);
+        console.log("hello");
+       console.log("attendances[0].employee",attendances[0].employee);
+       console.log("updateBalanceVacation",updateBalanceVacation);
+
+        await updateBalanceVacation;
+      
       }
       attendances[0].save();
     } else {
       const lateArrivals = attendances.filter(
         (a) => a.checkIn.getTime() < lateThreshold.getTime()
       ).length;
-
+console.log("lateArrivals",lateArrivals);
       if (lateArrivals == 0) {
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
@@ -220,11 +242,11 @@ const checkOut = async (req, res, next) => {
     }
 
     // Check if the employee has already checked out
-    if (attendance.checkOut) {
-      return res
-        .status(400)
-        .json({ message: "Employee has already checked out" });
-    }
+    // if (attendance.checkOut) {
+    //   return res
+    //     .status(400)
+    //     .json({ message: "Employee has already checked out" });
+    // }
 
     // Check if the employee has checked in
 
@@ -271,7 +293,17 @@ const checkOut = async (req, res, next) => {
     if (attendances[0].checkOut.getTime() <= endWorking.getTime()) {
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
       if (attendances[0].lateExcuse > 2) {
+
+        console.log("hiiii");
+
         attendances[0].BalanceVacations += 0.5;
+        const updateBalanceVacation = updateBalanceVacations(attendances[0].employee, attendances[0].BalanceVacations);
+        console.log("hello");
+       console.log("attendances[0].employee",attendances[0].employee);
+       console.log("updateBalanceVacation",updateBalanceVacation);
+
+        await updateBalanceVacation;
+      
       }
       attendances[0].save();
     } else {
