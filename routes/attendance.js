@@ -23,4 +23,7 @@ router.post('/checkin/', attendanceController.checkIn);
 // Check-out route
 router.post('/checkout/', attendanceController.checkOut);
 
+// get all attendances for employee 
+router.get('/get-all-attendances/:employee', attendanceController.getAllAttendancesOfEmployee);
+
 module.exports = router;
