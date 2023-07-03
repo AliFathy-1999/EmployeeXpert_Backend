@@ -7,20 +7,57 @@ const Employee = require("../DB/models/employee");
 const Department = require("../DB/models/department");
 const { AppError, asycnWrapper } = require("../lib/index");
 const { adminAuth, Auth } = require("../middlewares/auth");
+const { request } = require("../app");
 
+
+// Send a message to specific employee
+
+const empSubscriber = {};
+
+router.get('/message', Auth, async (req, res, next) => {
+  const ID = req.user._id
+  empSubscriber[ID] = res;
+  req.on('close', () => {
+    delete empSubscriber[ID];
+  });
+});
 
 router.post('/toemployee', adminAuth, validate(message), async (req, res, next) => {
     const { body: { title, message, employee } } = req;
       const sender = (req.user._id).toString();
-      const sentMessage = communicationsController.create({ title, message, employee : employee.toString() , sender : sender.toString()});
-      console.log(sentMessage)
+      const sentMessage = communicationsController.create({ title, message, employee : employee.toString(), sender : sender.toString()});
       const [err, data] = await asycnWrapper(sentMessage);
       if (err) return next(err);
-      console.log("data =>" ,data)
+      Object.keys(empSubscriber).forEach((ID) => {
+        if(ID == employee){
+          empSubscriber[ID].json(data);
+        }
+        delete empSubscriber[ID];
+      });
       res.status(201).json({ status : 'success', data });
   });
 
+// const depSubscriber = [];
 
+  router.get('/dep-message', Auth, async (req, res, next) => {
+
+    const sentMessage = communicationsController.findDepMessages();
+    const [err, data] = await asycnWrapper(sentMessage);
+    if (err) return next(err);
+    res.status(201).json({ status : 'success', data });
+    // const departmentEmployees = await Employee.find({ depId: id }).exec();
+    // const employeeIds = departmentEmployees.map(employee => employee._id.toString()); 
+    // employeeIds.forEach((employeeId) => {
+    //   depSubscriber.push({ ID: employeeId, response: res });
+    // })
+    // req.on('close', () => {
+    //   const index = depSubscriber.findIndex(subscriber => subscriber.id === employeeIds);
+    //   console.log(index);
+    //   if (index !== -1) {
+    //     depSubscriber.splice(index, 1);
+    //   }
+    // });
+  });
 router.post('/todepartment', adminAuth, validate(message), async (req, res, next) => {
       const { body: { title, department, message } } = req;
       const sender = (req.user._id).toString();
@@ -28,89 +65,80 @@ router.post('/todepartment', adminAuth, validate(message), async (req, res, next
       const [err, data] = await asycnWrapper(sentMessage);
       if (err) return next(err);
       res.status(201).json({ status : 'success', data });
+      // const { body: { title, message, department } } = req;
+      // const sender = req.user._id.toString();
+      
+      // const departmentEmployees = await Employee.find({ department: department }).exec();
+      // const employeeIds = departmentEmployees.map(employee => employee._id.toString());
+      
+      // const sentMessage = communicationsController.create({ title, message, department, sender });
+      // const [err, data] = await asycnWrapper(sentMessage);
+      // if (err) return next(err);
+      
+      // depSubscriber.forEach(subscriber => {
+      //   if(subscriber.ID == req.user.depId)
+      //   subscriber.response.json(data);
+      // });
+    
+      // res.status(201).json({ status: 'success', data });
+});
+
+// Send Announcement to all employees
+
+const allSubscribers = {};
+
+router.get('/announcement', async (req, res) => {
+    const ID = Math.ceil(Math.random() * 1000000);
+    allSubscribers[ID] = res;
+    req.on('close', () => {
+      delete allSubscribers[ID];
+    });
 });
 
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
-  if (req.body.isForAll) {
-    const {
-      body: { isForAll,title, message },
-    } = req;
-    const sender = req.user._id;
-    const sentMessage = communicationsController.create({
-      isForAll,
-      sender: sender.toString(),
-      title,
-      message,
-    });
+    const { body: { isForAll, title, message }} = req;
+    const sender = req.user._id.toString();
+    const sentMessage = communicationsController.create({ isForAll, sender, title, message });
     const [err, data] = await asycnWrapper(sentMessage);
-
     if (err) return next(err);
-    res.status(201).json({ status: "success", data });
-  } else {
-    res.status(400).json({ status: "failed", data: "All is required" });
-  }
+    Object.keys(allSubscribers).forEach((ID) => {
+      allSubscribers[ID].json(data);
+      delete allSubscribers[ID];
+    });
+    res.status(201).json({ status : 'success', data });
 });
 
 router.get("/lastAnouncement", Auth, async (req, res) => {
-  try {
-    data = await communicationsController.findLastAouncement();
-    res.status(201).json({ status: "success", data });
-  } catch (erorr) {
-    res.status(400).json({ status: "failed", data: "no anouncements found" });
-  }
+    const sentMessage = communicationsController.findLastAouncement();
+    const [err, data] = await asycnWrapper(sentMessage);
+    if (err) return next(err);
+    res.status(201).json({ status : 'success', data });
 });
 
 router.get("/allAnouncements", Auth, async (req, res) => {
-  try {
-    data = await communicationsController.findAllAnouncements();
-    res.status(201).json({ status: "success", data });
-  } catch (erorr) {
-    res.status(400).json({ status: "failed", data: "no anouncements found" });
-  }
+  const sentMessage = communicationsController.findAllAnouncements();
+  const [err, data] = await asycnWrapper(sentMessage);
+  if (err) return next(err);
+  res.status(201).json({ status : 'success', data });
 });
 
 router.get("/DepartmentMessages/:Dep", Auth, async (req, res) => {
-  try {
-    data = await communicationsController.findDepMessages(req.params.Dep);
-    res.status(201).json({ status: "success", data });
-  } catch (erorr) {
-    res.status(400).json({ status: "failed", data: "not found this dep" });
-  }
+    const messages = communicationsController.findDepMessages(req.params.Dep);
+    const [err, data] = await asycnWrapper(messages);
+    if (err) return next(err);
+    res.status(201).json({ status : 'success', data });
 });
 
-router.get( '/myMessages', Auth, async (req, res , next) => {
-    try {
-     
-      data = await communicationsController.findMyMessages(
 
-        req.user._id.toString()
-      );
-      res.status(201).json({ status: "success", data });
-    } catch (error) {
-      return res
-        .status(400)
-        .json({
-          status: "fail",
-          message: `No Employee with ID ${req.params.Emp}`,
-        });
-    }})
 
-    router.get( '/EmpolyeeMessages/:Emp', adminAuth , async (req, res , next) => {
-        try {    
-          data = await communicationsController.findEmpMessages(
-            req.params.Emp,
-            req.user._id.toString()
-          );
+router.get( '/EmpolyeeMessages/:Emp', adminAuth, async (req, res, next) => {  
+          const messages = communicationsController.findEmpMessages(req.params.Emp,req.user._id.toString());
+          const [err, data] = await asycnWrapper(messages);
+          if (err) return next(err);
+          if(!data) 
+            return res.status(400).json({status: "fail",message: `No Employee with ID ${req.params.Emp}`});
           res.status(201).json({ status: "success", data });
-        } catch (error) {
-          return res
-            .status(400)
-            .json({
-              status: "fail",
-              message: `No Employee with ID ${req.params.Emp}`,
-            });
-        }
 });
-// });
+
 
 module.exports = router;
