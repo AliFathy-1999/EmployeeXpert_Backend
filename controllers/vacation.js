@@ -140,11 +140,6 @@ const applyForVacation = async (req, res) => {
   }
 };
 
-// const updateVacationDaysinAttendence = async (employeeId , totalDays) =>{
-//   const days = await Attendance.findByIdAndUpdate(employeeId, { totalDays: totalDays });
-//   return days;
-// }
-
 const updateVacationDaysinAttendence = async (employeeId, totalDays) => {
   const employee = await Employee.findById(employeeId);
   const attendance = await Attendance.updateMany({employee:employee._id} ,
@@ -312,7 +307,8 @@ const applyForVacationByAdmin = async (req, res) => {
         TotalDays = totalDaysSum + req.body.totalDays;
         vacation.totalDays = TotalDays;
         const Vacations = await vacation.save();
-
+        const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
+        await updateAttendence;
         // console.log(newTotalDays);
         // console.log(TotalDays);
 

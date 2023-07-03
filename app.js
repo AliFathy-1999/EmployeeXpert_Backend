@@ -10,6 +10,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes/index.js');
 require('./DB/connects');
+const resetPayroll = require('./scheduledJobs/resetPayroll');
+const scheduleVacationJob = require('./scheduledJobs/vacationSchedule');
+
 
 const corsOptions = {
   origin :      'http://localhost:3000',
@@ -25,6 +28,9 @@ app.use('/', routes);
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
+
+resetPayroll();
+scheduleVacationJob();
 
 async function resetField() {
   try {

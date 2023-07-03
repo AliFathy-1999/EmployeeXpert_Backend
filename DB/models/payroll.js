@@ -53,7 +53,7 @@ const schema = new Schema(
         type : Number,
         min :  0,
         get :  function() {
-          return this.grossSalary - (this.grossSalary * this.tax ) + this.bonus;
+          return this.grossSalary - (this.grossSalary * (this.tax + this.deduction)) + this.bonus
         },
       },
       employeeId : {
