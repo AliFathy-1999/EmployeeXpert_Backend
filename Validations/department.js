@@ -14,9 +14,8 @@ const addDepartment = {
             'string.max' :          'Description must be less than 50 characters',
             'string.pattern.base' : 'Description must contains at least one letter and numbers',
           }),
-          managerId : Joi.string().pattern(/^[0-9a-fA-F]{24}$/).length(24).messages({
+          managerId : Joi.string().length(24).messages({
             'string.empty' :        'Invalid ID',
-            'string.pattern.base' : 'Invalid ObjectID',
         }),
     }),  
 }
