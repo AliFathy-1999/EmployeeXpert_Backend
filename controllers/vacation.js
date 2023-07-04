@@ -104,14 +104,14 @@ const applyForVacation = async (req, res) => {
         return sum + obj.totalDays;
       }, 0);
     }
-    newTotalDays = totalDaysSum + req.body.totalDays;
+    // newTotalDays = totalDaysSum + req.body.totalDays;
     if (newTotalDays <= 21) {
       const vacation = new Vacation(req.body);
 
       console.log(date);
       if (vacation.fromDay > date) {
         vacation.employeeId = employeeId;
-        TotalDays = totalDaysSum + req.body.totalDays;
+        // TotalDays = totalDaysSum + req.body.totalDays;
         vacation.totalDays = TotalDays;
         const Vacations = await vacation.save();
         return res.status(200).json(Vacations);
@@ -126,7 +126,7 @@ const applyForVacation = async (req, res) => {
       const vacation = new Vacation(req.body);
       if (vacation.fromDay > date) {
       vacation.employeeId = employeeId;
-      vacation.maxDays += exceededDays;
+      // vacation.maxDays += exceededDays;
       const Vacations = await vacation.save();
       return res.status(200).json(Vacations);
       }else{
@@ -234,7 +234,7 @@ const modifyVacationByUser = async (req, res) => {
     }
     if (vacation.fromDay > date) {
       console.log(req.body);
-      const updates = _.pick(req.body, ['reasonForVacation', 'fromDay', 'toDay', 'totalDays', 'status']);
+      const updates = _.pick(req.body, ['reasonForVacation', 'fromDay', 'toDay', 'totalDays']);
       const result = await Vacation.updateOne({ _id: id }, updates);
      console.log(result);
       const updatedVacation = await Vacation.findById(id);

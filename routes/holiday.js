@@ -36,4 +36,9 @@ router.get('/:id' , Auth , async(req,res,next)=>{
     res.status(200).json({ status:'success', data });
 })
 
+router.put('/:id',adminAuth,validate(holidayValidator.holiday),holidayController.updateHoliday);
+
+router.delete('/:id',adminAuth,holidayController.deleteHoliday);
+
+
 module.exports = router;
