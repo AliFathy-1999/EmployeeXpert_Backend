@@ -98,13 +98,14 @@ router.get('/announcement', async (req, res) => {
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
   if (req.body.isForAll) {
     const {
-      body: { isForAll, message },
+      body: { isForAll, message ,title },
     } = req;
     const sender = req.user._id;
     const sentMessage = communicationsController.create({
         isForAll:isForAll,
       sender: sender.toString(),
       message,
+      title
     });
     const [err, data] = await asycnWrapper(sentMessage);
     if (err) return next(err);
@@ -137,7 +138,7 @@ router.get("/DepartmentMessages/:Dep", Auth, async (req, res) => {
 });
 
 router.get( '/myMessage', Auth, async (req, res, next) => {  
-  const messages = communicationsController.findMyMessage(req.params.Emp,req.user._id.toString());
+  const messages = communicationsController.findMyMessage(req.user._id.toString());
   const [err, data] = await asycnWrapper(messages);
   if (err) return next(err);
   if(!data) 
