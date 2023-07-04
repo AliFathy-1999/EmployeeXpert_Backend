@@ -98,7 +98,7 @@ router.get('/announcement', async (req, res) => {
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
   if (req.body.isForAll) {
     const {
-      body: { isForAll, message ,title },
+      body: { isForAll, message , title },
     } = req;
     const sender = req.user._id;
     const sentMessage = communicationsController.create({
