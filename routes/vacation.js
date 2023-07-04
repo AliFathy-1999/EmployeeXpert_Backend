@@ -21,7 +21,7 @@ router.get('/emp/:employeeId', adminAuth,getVacationWithemployeeId);
 router.get('/:id/employee', Auth,getOneVacationWithUserData);
 
 
-router.put('/admin/:id',adminAuth,modifyVacation);
+// router.put('/admin/:id',adminAuth,modifyVacation);
 router.put('/:id',userAuth,validate(vacationValidator.vacation),modifyVacationByUser);
 
 router.delete('/:id',userAuth, removeVacation);
