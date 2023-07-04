@@ -16,6 +16,7 @@ router.post('/checkout/', attendanceController.checkOut);
 // get all attendances for employee 
 
 router.get('/all/', attendanceController.getAllAttendancesOfEmployee);
+router.get('/allEmployees/',adminAuth,attendanceController.getAllAttendances);
 
 // Create a new attendance record
 

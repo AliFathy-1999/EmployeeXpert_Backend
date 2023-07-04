@@ -124,6 +124,55 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
   }
 } 
 
+const getAllAttendances = async (req, res, next) => {
+  try {
+    let token;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        status :  'error',
+        message : 'Unauthorized access',
+      });
+    }
+
+    const payload = jwt.verify(token, process.env.TOKEN_KEY);
+
+    const page = parseInt(req.query.page) || 1; // Current page (default: 1)
+    const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
+    const skip = (page - 1) * limit; // Number of documents to skip
+
+    const attendances = await Attendance.find({
+      employee : payload.userId })
+      .populate({
+        path :   'employee',
+        select : 'firstName lastName',
+    })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(
+      (await Attendance.countDocuments({})) / limit
+    );
+
+    res.status(200).json({
+      status : 'success',
+      page,
+      totalPages,
+      data :   attendances,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 const updateBalanceVacations = async (employeeId, BalanceVacations) => {
   const employee = await Employee.findById(employeeId);
   console.log('employee', employee);
@@ -414,5 +463,6 @@ module.exports = {
   deleteAttendanceById,
   checkIn,
   checkOut,
+  getAllAttendances,
   getAllAttendancesOfEmployee
 };
