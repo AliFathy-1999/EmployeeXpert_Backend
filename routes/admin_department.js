@@ -47,6 +47,15 @@ router.get('/selected-dep', async (req, res, next) => {
   res.status(201).json({ status : 'success', data });
 });
 
+// Get all Managers
+
+router.get('/managers', async (req, res, next) => {
+  const managers = departmentController.getManagers();
+  const [err, data] = await asycnWrapper(managers);
+  if (err) return next(err);
+  res.status(201).json({ status : 'success', data });
+});
+
 // Get all Departments
 
 router.get('/', async (req, res, next) => {

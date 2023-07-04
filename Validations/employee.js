@@ -101,6 +101,7 @@ const signUp = {
               'string.pattern.base' : 'Address must contain at least one alphabetic characters',
           }),    
           role : Joi.string().valid('ADMIN', 'USER').default('USER'),
+          pImage: Joi.string()
     }),  
 }
 
