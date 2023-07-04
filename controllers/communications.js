@@ -8,6 +8,7 @@ const findMyMessage = async ( userId) => {
         const messages = Communications.find({ employee : userId})
         return messages  
     }
+    
 const findEmpMessages = async (data, userId) => {
     const messages = Communications.find({ employee : data, sender : userId})
     return messages   

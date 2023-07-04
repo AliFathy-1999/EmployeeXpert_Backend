@@ -32,7 +32,6 @@ const schema = new Schema(
 
         totalDays : {
             type :     Number,
-            required : [true, 'Total days of vacation is required'],
             default :  0,
             validate : {
               validator : function(value) {

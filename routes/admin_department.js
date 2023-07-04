@@ -37,6 +37,16 @@ router.patch('/:id', validate(departmentValidator.addDepartment), async (req, re
   res.status(201).json({ status : 'success', data });
 });
 
+
+// Get all Selected Departments
+
+router.get('/selected-dep', async (req, res, next) => {
+  const department = departmentController.getSelectedDepartments();
+  const [err, data] = await asycnWrapper(department);
+  if (err) return next(err);
+  res.status(201).json({ status : 'success', data });
+});
+
 // Get all Departments
 
 router.get('/', async (req, res, next) => {

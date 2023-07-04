@@ -26,7 +26,7 @@ const vacation = {
       'date.isoDate' : 'End date must be in ISO format (YYYY-MM-DD)',
       'date.greater' : 'End date must be after start date'
     }),
-  totalDays : Joi.number().min(1).max(21).required().messages({
+  totalDays : Joi.number().min(1).max(21).messages({
     'number.base' :  'Total days must be a number',
     'number.min' :   'Total days must be at least 1',
     'number.max' :   'Total days must be less than 21',
