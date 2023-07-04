@@ -16,7 +16,11 @@ const getAllVacations = async (req, res) => {
     }
     const count = await Vacation.countDocuments({});
 
-    const allVacations = await Vacation.find({}).sort({employeeId : 1}).skip(page * limit).limit(limit);
+    const allVacations = await Vacation.find({}).sort({employeeId : 1}).skip(page * limit).limit(limit).populate({
+      path :   'employeeId',
+      select : 'firstName lastName  position phoneNumber',
+    })
+    .exec();
 
     const totalPages = Math.ceil(count / limit);
     const nextPage = page < totalPages - 1 ? page + 1 : null;
