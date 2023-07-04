@@ -2,8 +2,12 @@ const Department = require('../DB/models/department');
 const Employee = require('../DB/models/employee');
 const createDepartment = (data) => Department.create(data);
 
+const getSelectedDepartments = () =>{
+  return Department.find({}).select('name');
+}
+
 const getDepartments = (page, limit) =>{
-  if (!limit) limit = 5;
+  if (!limit) limit = 10;
   if (!page) page = 1;
  
   return Department.paginate({}, { page, limit });
@@ -28,5 +32,6 @@ module.exports = {
   updateDepartment,
   deleteDepartment,
   getDepartmentDetails,
-  fetchDepEmployees
+  fetchDepEmployees,
+  getSelectedDepartments
 };
