@@ -24,6 +24,6 @@ router.post('/checkin/', adminAuth,  attendanceController.checkIn);
 router.post('/checkout/', adminAuth, attendanceController.checkOut);
 
 // get all attendances for employee 
-router.get('/all/', attendanceController.getAllAttendancesOfEmployee);
+router.get('/user',Auth, attendanceController.getAllAttendancesOfEmployee);
 
 module.exports = router;
