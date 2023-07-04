@@ -11,9 +11,9 @@ const schema = new Schema(
       maxLength : [15, 'First name must be at less than 15 characters'],
       required :  [true, 'First name is a required field'],
       trim :      true,
-      match :     /^[A-Za-z]+$/,
+      match :     /^[A-Za-z\s]+$/,
       validate(value) {
-        if (!value.match(/^[A-Za-z]+$/)) {
+        if (!value.match(/^[A-Za-z\s]+$/)) {
           throw new AppError('First Name should contain alphabetic characters only', 400);
         }
       },
@@ -24,9 +24,9 @@ const schema = new Schema(
       maxLength : [15, 'Last name must be at less than 15 characters'],
       required :  [true, 'Last name is a required field'],
       trim :      true,
-      match :     /^[A-Za-z]+$/,
+      match :     /^[A-Za-z\s]+$/,
       validate(value) {
-        if (!value.match(/^[A-Za-z]+$/)) {
+        if (!value.match(/^[A-Za-z\s]+$/)) {
           throw new AppError('Last Name should contain alphabetic characters only', 400);
         }
       },

@@ -96,9 +96,17 @@ router.get('/announcement', async (req, res) => {
 });
 
 router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
-    const { body: { isForAll, title, message }} = req;
-    const sender = req.user._id.toString();
-    const sentMessage = communicationsController.create({ isForAll, sender, title, message });
+  if (req.body.isForAll) {
+    const {
+      body: { isForAll, message , title },
+    } = req;
+    const sender = req.user._id;
+    const sentMessage = communicationsController.create({
+        isForAll:isForAll,
+      sender: sender.toString(),
+      message,
+      title
+    });
     const [err, data] = await asycnWrapper(sentMessage);
     if (err) return next(err);
     Object.keys(allSubscribers).forEach((ID) => {
@@ -106,7 +114,7 @@ router.post("/toall", adminAuth, validate(message), async (req, res, next) => {
       delete allSubscribers[ID];
     });
     res.status(201).json({ status : 'success', data });
-});
+}});
 
 router.get("/lastAnouncement", Auth, async (req, res) => {
     const sentMessage = communicationsController.findLastAouncement();
@@ -129,7 +137,14 @@ router.get("/DepartmentMessages/:Dep", Auth, async (req, res) => {
     res.status(201).json({ status : 'success', data });
 });
 
-
+router.get( '/myMessage', Auth, async (req, res, next) => {  
+  const messages = communicationsController.findMyMessage(req.params.Emp,req.user._id.toString());
+  const [err, data] = await asycnWrapper(messages);
+  if (err) return next(err);
+  if(!data) 
+    return res.status(400).json({status: "fail",message: `No Employee with ID ${req.params.Emp}`});
+  res.status(201).json({ status: "success", data });
+});
 
 router.get( '/EmpolyeeMessages/:Emp', adminAuth, async (req, res, next) => {  
           const messages = communicationsController.findEmpMessages(req.params.Emp,req.user._id.toString());

@@ -3,7 +3,7 @@ let mongoose, { Schema, model } = require('mongoose');
 const CommunicationSchema = new Schema({
   title : {
     type :      String,
-    minLength : [5, 'Title must be at least 5 characters'],
+    minLength : [1, 'Title must be at least 5 characters'],
     maxLength : [100, 'Title must be at less than 1005 characters'],
     required :  [true, 'First name is a required field'],
     trim :      true,
@@ -18,16 +18,16 @@ const CommunicationSchema = new Schema({
     type :      String,
     required :  true,
     trim :      true,
-    minlength : [5, 'Message must be at least 5 character long'],
+    minlength : [1, 'Message must be at least 5 character long'],
     maxlength : [300, 'Message cannot exceed 300 characters'],
-    match :     /[a-zA-Z\s]+/,
-    validate :  {
-      validator : function (value) {
-        if (!value.match(/[a-zA-Z\s]+/)) {
-          throw new AppError('Message must contain at least one alphabetic characters', 400);
-        }
-      },
-    }, 
+    // match :     /[a-zA-Z\s]+/,
+    // validate :  {
+    //   validator : function (value) {
+    //     if (!value.match(/[a-zA-Z\s]+/)) {
+    //       throw new AppError('Message must contain at least one alphabetic characters', 400);
+    //     }
+    //   },
+    // }, 
   },
   sender : {
     type :     Schema.Types.ObjectId,

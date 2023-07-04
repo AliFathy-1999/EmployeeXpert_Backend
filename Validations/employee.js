@@ -3,13 +3,13 @@ const { AppError } = require('../lib');
 
 const signUp = {
     body : Joi.object().keys({
-        firstName : Joi.string().trim().pattern(/^[a-zA-Z]+$/).min(3).max(15)
+        firstName : Joi.string().trim().pattern(/^[a-zA-Z\s]+$/).min(3).max(15)
         .messages({
             'string.pattern.base' : 'First name must contain only alphabet letter ',
             'string.min' :          'First name must be at least 3 characters',
             'string.max' :          'First name must be at most 15 characters',
         }),
-        lastName : Joi.string().trim().pattern(/^[a-zA-Z]+$/).min(3).max(15)
+        lastName : Joi.string().trim().pattern(/^[a-zA-Z\s]+$/).min(3).max(15)
         .messages({
             'string.pattern.base' : 'Last name must contain only alphabet letter ',
             'string.min' :          'Last name must be at least 3 characters',
@@ -32,7 +32,7 @@ const signUp = {
         .messages({
             'string.email' : 'Invalid email format',
         }),
-        userName : Joi.string().trim().pattern(/^[a-zA-Z0-9]+$/).min(3).max(30)
+        userName : Joi.string().trim().pattern(/^[a-zA-Z0-9\s]+$/).min(3).max(30)
         .messages({
             'string.min' :          'Username must be at least 3 characters',
             'string.max' :          'Username must be at most 30 characters',
@@ -82,9 +82,8 @@ const signUp = {
           jobType : Joi.string().valid('full-time', 'part-time', 'contract', 'freelance').messages({
             'any.only' : 'Job Type must be one of the following types Full time, Part time, Contract and Freelance',
           }),
-          depId : Joi.string().pattern(/^[0-9a-fA-F]{24}$/).length(24).messages({
+          depId : Joi.string().length(24).messages({
             'string.empty' :        'Invalid ID',
-            'string.pattern.base' : 'Invalid ObjectID',
           }),
           salary : Joi.number().min(3500).max(200000)
           .messages({
