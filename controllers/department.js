@@ -5,7 +5,9 @@ const createDepartment = (data) => Department.create(data);
 const getSelectedDepartments = () =>{
   return Department.find({}).select('name');
 }
-
+const getManagers = () =>{
+  return Department.find({}).populate('managerId', '_id firstName lastName').select('managerId- _id');
+}
 const getDepartments = (page, limit) =>{
   if (!limit) limit = 10;
   if (!page) page = 1;
@@ -33,5 +35,6 @@ module.exports = {
   deleteDepartment,
   getDepartmentDetails,
   fetchDepEmployees,
-  getSelectedDepartments
+  getSelectedDepartments,
+  getManagers
 };
