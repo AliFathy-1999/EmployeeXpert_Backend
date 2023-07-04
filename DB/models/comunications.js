@@ -3,7 +3,7 @@ let mongoose, { Schema, model } = require('mongoose');
 const CommunicationSchema = new Schema({
   title : {
     type :      String,
-    minLength : [5, 'Title must be at least 5 characters'],
+    minLength : [1, 'Title must be at least 5 characters'],
     maxLength : [100, 'Title must be at less than 1005 characters'],
     required :  [true, 'First name is a required field'],
     trim :      true,
