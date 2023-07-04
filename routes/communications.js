@@ -138,7 +138,7 @@ router.get("/DepartmentMessages/:Dep", Auth, async (req, res) => {
 });
 
 router.get( '/myMessage', Auth, async (req, res, next) => {  
-  const messages = communicationsController.findMyMessage(req.params.Emp,req.user._id.toString());
+  const messages = communicationsController.findMyMessage(req.user._id.toString());
   const [err, data] = await asycnWrapper(messages);
   if (err) return next(err);
   if(!data) 
