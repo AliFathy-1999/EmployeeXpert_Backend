@@ -87,12 +87,14 @@ const deleteAttendanceById = async (req, res, next) => {
 
 const getAllAttendancesOfEmployee = async (req, res, next) => { 
   try {
+    const userId=req.user._id
+     console.log(userId)
     const page = parseInt(req.query.page) || 1; // Current page (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
 
     const skip = (page - 1) * limit; // Number of documents to skip
 
-    const attendances = await Attendance.find({ employee: req.params.employee }).skip(skip).limit(limit);
+    const attendances = await Attendance.findById({ employee: userId  }).skip(skip).limit(limit);
     const totalPages = Math.ceil(attendances.length / limit);
 
     res.status(200).json({

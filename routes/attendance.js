@@ -1,7 +1,7 @@
 const express = require('express');
 const { attendanceController }  = require('../controllers/index');
 
-const { adminAuth } = require('../middlewares/auth');
+const { adminAuth, Auth } = require('../middlewares/auth');
 
 const router = express.Router();
 
@@ -18,12 +18,12 @@ router.put('/:id', adminAuth, attendanceController.updateAttendanceById);
 router.delete('/:id', adminAuth, attendanceController.deleteAttendanceById);
 
 // Check-in route
-router.post('/checkin/', attendanceController.checkIn);
+router.post('/checkin/', adminAuth,  attendanceController.checkIn);
 
 // Check-out route
-router.post('/checkout/', attendanceController.checkOut);
+router.post('/checkout/', adminAuth, attendanceController.checkOut);
 
 // get all attendances for employee 
-router.get('/get-all-attendances/:employee', attendanceController.getAllAttendancesOfEmployee);
+router.get('/all/', attendanceController.getAllAttendancesOfEmployee);
 
 module.exports = router;
