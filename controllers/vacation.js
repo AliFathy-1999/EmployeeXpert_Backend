@@ -482,6 +482,7 @@ const applyForVacationByAdmin = async (req, res) => {
         console.log("vacation.totalDays",vacation.totalDays);
 
   console.log("TotalDays",TotalDays);
+  console.log(req.body);
         const Vacations = await vacation.save();
         const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
         await updateAttendence;
@@ -502,6 +503,7 @@ const applyForVacationByAdmin = async (req, res) => {
       vacation.employeeId = employeeId;
       vacation.maxDays += exceededDays;
 
+      console.log(req.body);
 
       const Vacations = await vacation.save();
 

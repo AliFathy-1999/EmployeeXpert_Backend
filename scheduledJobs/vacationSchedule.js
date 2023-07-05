@@ -13,7 +13,7 @@ const Vacation = require('../DB/models/vacation');
 
 
 function scheduleVacationJob() {
-  schedule.scheduleJob('0 0 21 * * *', async () => {
+  schedule.scheduleJob('0 0 1 * *', async () => {
     try {
       await Vacation.deleteMany({});
       console.log('Values deleted at the start of the month');
