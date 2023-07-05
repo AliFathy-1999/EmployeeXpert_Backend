@@ -21,6 +21,7 @@ router.post('/', userAuth, validate(lateValidator.Excuse), async (req, res, next
         to, 
         typeOfExcuse
     });
+
     const [err, data] = await asycnWrapper(createExcuse)
     if(err) return next(err);
     res.status(201).json({status : 'success', data});
@@ -47,6 +48,7 @@ router.get('/all', Auth, async (req, res, next) => {
 
 router.put('/:id', userAuth, async(req, res, next)=>{
   const { id } = req.params;
+  const employeeId = req.user._id
   const {reason, from, to, respond, typeOfExcuse} = req.body;
   const Excuses = excuseController.updateExcussion(id, {
     reason,
@@ -54,9 +56,10 @@ router.put('/:id', userAuth, async(req, res, next)=>{
     to,
     typeOfExcuse
   });
+  
   console.log(from)
   console.log(to)
-
+ 
   const [err, data] = await asycnWrapper(Excuses);
   if(err){return next(err)}
    if (!data) {
@@ -78,7 +81,7 @@ router.put('/:id', userAuth, async(req, res, next)=>{
 router.patch('/admin/:id', adminAuth, async(req, res, next)=>{
   const { id } = req.params;
   const respond = req.body.respond;
-  const {employeeId} = req.user._id;
+  // const {employeeId} = req.user._id;
   const Excuses = excuseController.updateExcussionByAdmin(id, respond);
   const [err, data] = await asycnWrapper(Excuses);
   if(err){return next(err)}
@@ -88,7 +91,8 @@ router.patch('/admin/:id', adminAuth, async(req, res, next)=>{
     const updatedExcuses = await Excuse.findById(id);
     if(updatedExcuses.respond === 'Accepted'){
       updatedExcuses.noOfExcuses += updatedExcuses.noOfExcuses+1;
-      await excuseController.updateLateExcussion(employeeId, updatedExcuses.noOfExcuses);
+      const updateExcuseDaysinAttendence = excuseController.updateExcuseDaysinAttendence(data.employeeId, updatedExcuses.noOfExcuses);
+      await updateExcuseDaysinAttendence;
       res.status(200).json(updatedExcuses);
 
     }
