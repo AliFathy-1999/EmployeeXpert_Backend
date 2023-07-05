@@ -449,7 +449,7 @@ const removeVacation = async (req, res) => {
 
 const applyForVacationByAdmin = async (req, res) => {
   try {
-    console.log(req.body)
+    console.log("req",req.body)
     const { employeeId } = req.body;
     const empVacation = await Vacation.find({ employeeId });
     let totalDaysSum;
