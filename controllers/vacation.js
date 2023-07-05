@@ -474,24 +474,15 @@ const applyForVacationByAdmin = async (req, res) => {
     }
     if (newTotalDays <= 21) {
       const vacation = new Vacation(req.body);
-      const now = Date.now();
-      const date = new Date(now);
-      if (vacation.fromDay > date) {
         TotalDays = newTotalDays;
         vacation.totalDays=TotalDays;
         console.log("vacation.totalDays",vacation.totalDays);
-
   console.log("TotalDays",TotalDays);
   console.log(req.body);
         const Vacations = await vacation.save();
         const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
         await updateAttendence;
         return res.status(200).json(Vacations);
-      } else {
-        res.json({
-          message : 'the start date of a vacation should be after today',
-        });
-      }
     } else {
       const maxDaysLimit = 22;
       const exceededDays = newTotalDaysMax - maxDaysLimit;
@@ -510,8 +501,6 @@ const applyForVacationByAdmin = async (req, res) => {
       return res.status(200).json(Vacations);
     }
   } catch (error) {
-    // console.log(error.message);
-
     return res.status(500).json({ message : error.message });
   }
 };

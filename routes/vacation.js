@@ -9,7 +9,7 @@ router.get('/all',adminAuth,getAllVacations);
 
 router.get('/:id',Auth,getOneVacation);
 
-// router.post('/',userAuth,validate(vacationValidator.vacation),applyForVacation);
+router.post('/',userAuth,validate(vacationValidator.vacation),applyForVacation);
 
 router.post('/admin',adminAuth,applyForVacationByAdmin);
 
