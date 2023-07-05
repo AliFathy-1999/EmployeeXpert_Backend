@@ -74,7 +74,7 @@ const getVacationWithemployeeId = async (req, res) => {
       limit = req.query.limit ;
     }
     const count = await Vacation.countDocuments({});
-    const { employeeId } = req.params;
+    const { employeeId } = req.user._id;
     
     const vacations = await Vacation.find({ employeeId : employeeId }).skip(page * limit).limit(limit);
     const totalPages = Math.ceil(count / limit);

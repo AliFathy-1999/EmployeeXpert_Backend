@@ -15,7 +15,7 @@ router.post('/admin',adminAuth,applyForVacationByAdmin);
 
 
 
-router.get('/emp/:employeeId', adminAuth,getVacationWithemployeeId);
+router.get('/emp/all', userAuth,getVacationWithemployeeId);
 
 
 router.get('/:id/employee', Auth,getOneVacationWithUserData);
