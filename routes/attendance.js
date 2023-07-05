@@ -34,5 +34,13 @@ router.put('/:id', adminAuth, attendanceController.updateAttendanceById);
 
 router.delete('/:id', adminAuth, attendanceController.deleteAttendanceById);
 
+// Check-in route
+router.post('/checkin/', adminAuth,  attendanceController.checkIn);
+
+// Check-out route
+router.post('/checkout/', adminAuth, attendanceController.checkOut);
+
+// get all attendances for employee 
+router.get('/user',Auth, attendanceController.getAllAttendancesOfEmployee);
 
 module.exports = router;

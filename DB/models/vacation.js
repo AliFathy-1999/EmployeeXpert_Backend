@@ -11,23 +11,23 @@ const schema = new Schema(
         },
         fromDay : {
             type :     Date,
-            required : [true, 'Start date of vacation is required'],
-            validate : {
-                validator : function(value) {
-                    return value <= this.toDay;
-                },
-                message : 'Start date must be before end date'
-            }
+            // required : [true, 'Start date of vacation is required'],
+            // validate : {
+            //     validator : function(value) {
+            //         return value <= this.toDay;
+            //     },
+            //     message : 'Start date must be before end date'
+            // }
         },
         toDay : {
             type :     Date,
-            required : [true, 'End date of vacation is required'],
-            validate : {
-                validator : function(value) {
-                    return value >= this.fromDay;
-                },
-                message : 'End date must be after start date'
-            }
+            // required : [true, 'End date of vacation is required'],
+            // validate : {
+            //     validator : function(value) {
+            //         return value >= this.fromDay;
+            //     },
+            //     message : 'End date must be after start date'
+            // }
         },
 
         totalDays : {
