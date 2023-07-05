@@ -3,9 +3,6 @@ const mongoosePaginate = require('mongoose-paginate-v2');
 const Employee = require('./employee'); // import the Employee model
 const Payroll = require('./payroll'); // import the Payroll model
 
-// Set the default workday start and end times
-const DEFAULT_START_TIME = 1; // 9:00 AM
-const DEFAULT_END_TIME = 24; // 11:00 PM
 
 // Define the Attendance schema
 const AttendanceSchema = new mongoose.Schema({
@@ -48,12 +45,12 @@ const AttendanceSchema = new mongoose.Schema({
   // Define the start and end times of the workday as comments
   workdayStartTime: {
     type: Number,
-    min: 0,
+    min: 9,
     max: 23
   },
   workdayEndTime: {
     type: Number,
-    min: 0,
+    min: 18,
     max: 23
   },
     lateCounter: {

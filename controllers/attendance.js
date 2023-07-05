@@ -1,11 +1,11 @@
 /* eslint-disable no-console */
-const jwt = require("jsonwebtoken");
-const Attendance = require("../DB/models/attendance");
-const Employee = require("../DB/models/employee");
-const Vacation = require("../DB/models/vacation");
-const Payroll = require("../DB/models/payroll");
+const jwt = require('jsonwebtoken');
+const Attendance = require('../DB/models/attendance');
+const Employee = require('../DB/models/employee');
+const Vacation = require('../DB/models/vacation');
+const Payroll = require('../DB/models/payroll');
 
-const { AppError } = require("../lib/index");
+const { AppError } = require('../lib/index');
 
 const create = async (req, res, next) => {
   try {
@@ -15,21 +15,21 @@ const create = async (req, res, next) => {
 
     const employee = await Employee.findById(employeeID);
     if (!employee) {
-      throw new AppError("Invalid employee ID", 400);
+      throw new AppError('Invalid employee ID', 400);
     }
 
     // create a new attendance record
 
     const attendance = await Attendance.create({
-      employee: employee._id,
+      employee : employee._id,
       checkIn,
       checkOut,
       deduction,
     });
 
     res.status(201).json({
-      status: "success",
-      data: {
+      status : 'success',
+      data :   {
         attendance,
       },
     });
@@ -42,8 +42,8 @@ const getAttendanceById = async (req, res, next) => {
   try {
     const attendance = await Attendance.findById(req.params.id);
     res.status(200).json({
-      status: "success",
-      data: {
+      status : 'success',
+      data :   {
         attendance,
       },
     });
@@ -58,13 +58,13 @@ const updateAttendanceById = async (req, res, next) => {
       req.params.id,
       req.body,
       {
-        new: true,
-        runValidators: true,
+        new :           true,
+        runValidators : true,
       }
     );
     res.status(200).json({
-      status: "success",
-      data: {
+      status : 'success',
+      data :   {
         attendance,
       },
     });
@@ -77,8 +77,8 @@ const deleteAttendanceById = async (req, res, next) => {
   try {
     await Attendance.findByIdAndDelete(req.params.id);
     res.status(204).json({
-      status: "success",
-      data: null,
+      status : 'success',
+      data :   null,
     });
   } catch (error) {
     next(error);
@@ -87,21 +87,36 @@ const deleteAttendanceById = async (req, res, next) => {
 
 const getAllAttendancesOfEmployee = async (req, res, next) => { 
   try {
-    const userId=req.user._id
-     console.log(userId)
+        let token;
+
+        // const token = req.cookies.jwt;
+
+        if (
+            req.headers.authorization
+              && req.headers.authorization.startsWith('brearer')
+        ) {
+            // eslint-disable-next-line prefer-destructuring
+            token = req.headers.authorization.split(' ')[1];
+        }
+        if (!token) {
+            return false;
+        }
+        const payload = jwt.verify(token, process.env.TOKEN_KEY);
+       
     const page = parseInt(req.query.page) || 1; // Current page (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
 
     const skip = (page - 1) * limit; // Number of documents to skip
 
-    const attendances = await Attendance.findById({ employee: userId  }).skip(skip).limit(limit);
+    const attendances = await Attendance.find({ employee : payload.userId})
+
     const totalPages = Math.ceil(attendances.length / limit);
 
     res.status(200).json({
-      status: "success",
+      status : 'success',
       page,
       totalPages,
-      data: attendances
+      data :   attendances
     });
 
   }catch(error) {
@@ -109,31 +124,76 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
   }
 } 
 
+const getAllAttendances = async (req, res, next) => {
+  try {
+    let token;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+      return res.status(401).json({
+        status :  'error',
+        message : 'Unauthorized access',
+      });
+    }
+
+    const payload = jwt.verify(token, process.env.TOKEN_KEY);
+
+    const page = parseInt(req.query.page) || 1; // Current page (default: 1)
+    const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
+    const skip = (page - 1) * limit; // Number of documents to skip
+
+    const attendances = await Attendance.find({
+      employee : payload.userId })
+      .populate({
+        path :   'employee',
+        select : 'firstName lastName',
+    })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(
+      (await Attendance.countDocuments({})) / limit
+    );
+
+    res.status(200).json({
+      status : 'success',
+      page,
+      totalPages,
+      data :   attendances,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 const updateBalanceVacations = async (employeeId, BalanceVacations) => {
   const employee = await Employee.findById(employeeId);
-  console.log("employee",employee);
-  const vacation = await Vacation.updateMany({employeeId:employee._id} ,
+  console.log('employee', employee);
+  const vacation = await Vacation.updateMany({employeeId : employee._id},
     { totalDays : BalanceVacations }
   );
-  console.log("vacation",vacation);
 
   return vacation;
 }
 
 const updateDeductions = async (employeeId, deduction) => {
   const employee = await Employee.findById(employeeId);
-  console.log("employee",employee);
-  const payroll = await Payroll.findOneAndUpdate({employeeId:employee._id} ,
+  const payroll = await Payroll.findOneAndUpdate({employeeId : employee._id},
     { deduction : deduction }
   );
-  console.log("payroll",payroll);
-
   return payroll;
 }
 
 // Check-in route
 // Set the default workday start and end times
-const DEFAULT_START_TIME = 3; // 9:00 AM
+const DEFAULT_START_TIME = 9; // 9:00 AM
 const DEFAULT_END_TIME = 22; // 6:00 PM
 
 const checkIn = async (req, res, next) => {
@@ -142,34 +202,34 @@ const checkIn = async (req, res, next) => {
 
     const employee = await Employee.findById(req.body.employee);
     if (!employee) {
-      return res.status(400).json({ message: "Invalid employee ID" });
+      return res.status(400).json({ message : 'Invalid employee ID' });
     }
-
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set the time to midnight
     const attendance = await Attendance.findOne({
-      employee: employee._id,
-      checkIn: { $gte: today },
+      employee : employee._id,
+      checkIn :  { $gte : today },
     });
     const pre = await Attendance.findOne({
-      employee: employee._id,
-    }).sort({ checkIn: -1 });
-    console.log( 'pre '+ pre);
+      employee : employee._id,
+    }).sort({ checkIn : -1 });
+    console.log( 'pre ' + pre);
     if (attendance) {
       return res.status(400).json({
-        message: "Employee has already checked in today",
+        message : 'Employee has already checked in today',
       });
     }
 
     // Create a new attendance record
+
     const newAttendance = new Attendance({
-      employee: employee._id,
-      checkIn: new Date(),
+      employee : employee._id,
+      checkIn :  new Date(),
     });
     try {
       await newAttendance.validate();
     } catch (error) {
-      return res.status(400).json({ message: error.message });
+      return res.status(400).json({ message : error.message });
     }
     await newAttendance.save();
     const startTime = this.workdayStartTime || DEFAULT_START_TIME;
@@ -182,46 +242,36 @@ const checkIn = async (req, res, next) => {
       newAttendance.checkIn.getHours() >= endTime
     ) {
       // Check if check-in time is after workday end time or after the grace period
+
       return false;
     }
-
     const startOfDay = new Date(newAttendance.checkIn.getTime());
     startOfDay.setHours(0, 0, 0, 0); // set the start of the day to midnight
 
     const endOfDay = new Date(newAttendance.checkIn.getTime());
     endOfDay.setHours(23, 59, 59, 999); // set the end of the day to 11:59 PM and 999 milliseconds
-    
-
   
     const attendances = await Attendance.find({
-      employee: employee._id,
-      checkIn: {
-        $gte: startOfDay,
-        $lt: endOfDay,
+      employee : employee._id,
+      checkIn :  {
+        $gte : startOfDay,
+        $lt :  endOfDay,
       },
     });
-    // console.log(attendances)
     const startWorking = new Date();
     startWorking.setHours(DEFAULT_START_TIME, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to the start time
     startWorking.setHours(startWorking.getHours() + 2);
     attendances[0].lateCounter = attendances[0].lateCounter + pre.lateCounter;
     attendances[0].deduction = attendances[0].deduction + pre.deduction;
     attendances[0].lateExcuse = attendances[0].lateExcuse + pre.lateExcuse;
+    attendances[0].BalanceVacations = attendances[0].BalanceVacations + pre.BalanceVacations;
+
     if (attendances[0].checkIn.getTime() >= startWorking.getTime()) {
-      // console.log(pre.deduction)
-      // attendances[0].lateExcuse = attendances[0].lateExcuse + pre.lateExcuse;
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
 
       if (attendances[0].lateExcuse > 2) {
-        console.log("hiiii");
-        // attendances[0].BalanceVacations = attendances[0].BalanceVacations + pre.BalanceVacations
         attendances[0].BalanceVacations = attendances[0].BalanceVacations + 0.5;
-
         const updateBalanceVacation = updateBalanceVacations(attendances[0].employee, attendances[0].BalanceVacations);
-        console.log("hello");
-       console.log("attendances[0].employee",attendances[0].employee);
-       console.log("updateBalanceVacation",updateBalanceVacation);
-
         await updateBalanceVacation;
       
       }
@@ -230,21 +280,19 @@ const checkIn = async (req, res, next) => {
       const lateArrivals = attendances.filter(
         (a) => a.checkIn.getTime() <= lateThreshold.getTime()
       ).length;
-      // console.log("lateArrivals",lateArrivals);
-      // attendances[0].lateCounter = attendances[0].lateCounter + pre.lateCounter;
       if (lateArrivals == 1 ) {
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
           console.log(
-            "Warning: This is your first late arrival. No deductions will be calculated for now."
+            'Warning: This is your first late arrival. No deductions will be calculated for now.'
           );
         } else {
           attendances[0].lateCounter += 1;
         }
-
         await attendances[0].save(); // Save the updated employeeData
       } else {
         // Calculate deductions based on the late counter
+
         let deduction;
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
@@ -260,14 +308,11 @@ const checkIn = async (req, res, next) => {
           } else {
             deduction = 1; // Fifth or more late arrival - deduct 100%
           }
-          // attendances[0].deduction = attendances[0].deduction + pre.deduction;
           attendances[0].deduction = attendances[0].deduction + deduction;
 
           const updateDeduction = updateDeductions(attendances[0].employee, attendances[0].deduction);
-         console.log("updateDeduction",updateDeduction);
-  
+         console.log('updateDeduction', updateDeduction);
           await updateDeduction;
-        
         }
         attendances[0].lateCounter += 1;
         await attendances[0].save();
@@ -277,7 +322,7 @@ const checkIn = async (req, res, next) => {
     res.json(attendances[0]);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message : 'Internal server error' });
   }
 };
 
@@ -290,22 +335,22 @@ const checkOut = async (req, res, next) => {
     const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     const endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
     const attendance = await Attendance.findOne({
-      employee: employee,
-      checkIn: { $gte: startDate, $lt: endDate }
+      employee : employee,
+      checkIn :  { $gte : startDate, $lt : endDate }
     });
-    // console.log( 'testing '+ attendance)
 
     if (!attendance) {
       return res
         .status(400)
-        .json({ message: "Employee has not checked in today" });
+        .json({ message : 'Employee has not checked in today' });
     }
 
     // Check if the employee has already checked out
+
     if (attendance.checkOut) {
       return res
         .status(400)
-        .json({ message: "Employee has already checked out" });
+        .json({ message : 'Employee has already checked out' });
     }
 
     // Check if the employee has checked in
@@ -313,8 +358,9 @@ const checkOut = async (req, res, next) => {
     if (!attendance.checkIn) {
       return res
         .status(400)
-        .json({ message: "Employee has not checked in yet" });
+        .json({ message : 'Employee has not checked in yet' });
     }
+
     // Update the Attendance document with the current time as the check-out time
 
     attendance.checkOut = new Date();
@@ -330,6 +376,7 @@ const checkOut = async (req, res, next) => {
       attendance.checkOut.getHours() >= endTime
     ) {
       // Check if check-in time is after workday end time or after the grace period
+
       return false;
     }
 
@@ -339,10 +386,10 @@ const checkOut = async (req, res, next) => {
     endOfDay.setHours(23, 59, 59, 999); // set the end of the day to 11:59 PM and 999 milliseconds
 
     const attendances = await Attendance.find({
-      employee: employee._id,
-      checkOut: {
-        $gte: startOfDay,
-        $lt: endOfDay,
+      employee : employee._id,
+      checkOut : {
+        $gte : startOfDay,
+        $lt :  endOfDay,
       },
     });
 
@@ -354,14 +401,9 @@ const checkOut = async (req, res, next) => {
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
       if (attendances[0].lateExcuse > 2) {
 
-        console.log("hiiii");
 
         attendances[0].BalanceVacations += 0.5;
         const updateBalanceVacation = updateBalanceVacations(attendances[0].employee, attendances[0].BalanceVacations);
-        console.log("hello");
-       console.log("attendances[0].employee",attendances[0].employee);
-       console.log("updateBalanceVacation",updateBalanceVacation);
-
         await updateBalanceVacation;
       
       }
@@ -374,7 +416,7 @@ const checkOut = async (req, res, next) => {
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
           console.log(
-            "Warning: This is your first early leaves. No deductions will be calculated for now."
+            'Warning: This is your first early leaves. No deductions will be calculated for now.'
           );
         } else {
           attendances[0].lateCounter += 1;
@@ -382,6 +424,7 @@ const checkOut = async (req, res, next) => {
         await attendances[0].save(); // Save the updated employeeData
       } else {
         // Calculate deductions based on the late counter
+
         let deduction;
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
@@ -397,11 +440,9 @@ const checkOut = async (req, res, next) => {
           } else {
             deduction = 1; // Fifth or more late arrival - deduct 100%
           }
-          console.log(`deducation" ${deduction}`);
 
           attendances[0].deduction = attendances[0].deduction + deduction;
           const updateDeduction = updateDeductions(attendances[0].employee, attendances[0].deduction);
-          console.log("updateDeduction",updateDeduction);
    
            await updateDeduction;
           attendances[0].lateCounter += 1;
@@ -411,8 +452,7 @@ const checkOut = async (req, res, next) => {
     }
     return res.json(attendances[0]);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message : 'Internal server error' });
   }
 };
 
@@ -423,5 +463,6 @@ module.exports = {
   deleteAttendanceById,
   checkIn,
   checkOut,
+  getAllAttendances,
   getAllAttendancesOfEmployee
 };
