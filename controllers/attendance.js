@@ -127,34 +127,43 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 const getAllAttendances = async (req, res, next) => {
   try {
     let token;
+    console.log(req)
 
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith('bearer')
+      req.headers.authorization.startsWith('Bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
     }
 
     if (!token) {
+      console.log("مفيش زفت توكين")
       return res.status(401).json({
         status :  'error',
         message : 'Unauthorized access',
       });
     }
-
+    
     const payload = jwt.verify(token, process.env.TOKEN_KEY);
+
+    // if (payload.role !== 'admin') {
+    //   return res.status(403).json({
+    //     status :  'error',
+    //     message : 'Access forbidden. Admin role required.',
+    //   });
+    // }
 
     const page = parseInt(req.query.page) || 1; // Current page (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
     const skip = (page - 1) * limit; // Number of documents to skip
 
     const attendances = await Attendance.find({
-      employee : payload.userId })
+
+  employee : payload.userId })
       .populate({
         path :   'employee',
         select : 'firstName lastName',
-    })
-      .skip(skip)
+      }) .skip(skip)
       .limit(limit);
 
     const totalPages = Math.ceil(

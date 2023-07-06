@@ -146,6 +146,15 @@ router.get( '/myMessage', Auth, async (req, res, next) => {
   res.status(201).json({ status: "success", data });
 });
 
+router.get( '/myLastMessage', Auth, async (req, res, next) => {  
+  const messages = communicationsController.findMyLastMessage(req.user._id.toString());
+  const [err, data] = await asycnWrapper(messages);
+  if (err) return next(err);
+  if(!data) 
+    return res.status(400).json({status: "fail",message: []});
+  res.status(201).json({ status: "success", data });
+});
+
 router.get( '/EmpolyeeMessages/:Emp', adminAuth, async (req, res, next) => {  
           const messages = communicationsController.findEmpMessages(req.params.Emp,req.user._id.toString());
           const [err, data] = await asycnWrapper(messages);
