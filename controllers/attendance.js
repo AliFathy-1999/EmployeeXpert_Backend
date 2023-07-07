@@ -108,9 +108,9 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 
     const skip = (page - 1) * limit; // Number of documents to skip
 
-    // const attendances = await Attendance.find({ employee : payload.userId})
+    const attendances = await Attendance.find({ employee : payload.userId})
 
-    const attendances = await Attendance.find({ employee: req.user._id}).skip(skip).limit(limit);
+    // const attendances = await Attendance.find({ employee: req.user._id}).skip(skip).limit(limit);
     const totalPages = Math.ceil(attendances.length / limit);
 
     res.status(200).json({
