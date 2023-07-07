@@ -20,12 +20,27 @@ const employeeDetails = (empId) => Employee.find({_id : empId}).populate('depId'
 const getMe = (empId) => Employee.findOne({_id : empId});
 
 const createEmployee = (data) => {
-  return Employee.create(data).then((data)=>{
-    Payroll.create({ 
-      grossSalary : data.salary,
-      employeeId :  data._id,
-      daysWorked :  0,
-     })
+  // return Employee.create(data).then((data)=>{
+  //   Payroll.create({ 
+  //     grossSalary : data.salary,
+  //     employeeId :  data._id,
+  //     daysWorked :  0,
+  //    })
+  // });
+  return new Promise((resolve, reject) => {
+    Employee.create(data).then((employee) => {
+      Payroll.create({
+        grossSalary: employee.salary,
+        employeeId: employee._id,
+        daysWorked: 0
+      }).then(() => {
+        resolve(employee);
+      }).catch((error) => {
+        reject(error);
+      });
+    }).catch((error) => {
+      reject(error);
+    });
   });
 }
 
