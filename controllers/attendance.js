@@ -203,6 +203,7 @@ const DEFAULT_END_TIME = 23; // 6:00 PM
 const checkIn = async (req, res, next) => {
   try {
     // Check if the employee ID is valid
+
     let token;
 
     if (
