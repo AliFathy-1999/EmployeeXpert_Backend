@@ -9,6 +9,10 @@ const findMyMessage = async ( userId) => {
         return messages  
     }
     
+    const findMyLastMessage = async ( userId) => {
+        const messages = Communications.find({ employee : userId}).sort({ createdAt : -1}).limit(1);
+        return messages  
+    }
 const findEmpMessages = async (data, userId) => {
     const messages = Communications.find({ employee : data, sender : userId})
     return messages   
@@ -35,5 +39,6 @@ module.exports = {
   findEmpMessages,
   findLastAouncement,
   findAllAnouncements,
-  findMyMessage
+  findMyMessage,
+  findMyLastMessage
 };

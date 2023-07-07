@@ -8,6 +8,13 @@ const getSelectedDepartments = () =>{
 const getManagers = () =>{
   return Department.find({}).populate('managerId', '_id firstName lastName').select('managerId');
 }
+
+const countDepartment = () => {
+  const department = Department.find({}).countDocuments();
+  return department;
+}
+
+
 const getDepartments = (page, limit) =>{
   if (!limit) limit = 10;
   if (!page) page = 1;
@@ -36,5 +43,6 @@ module.exports = {
   getDepartmentDetails,
   fetchDepEmployees,
   getSelectedDepartments,
-  getManagers
+  getManagers,
+  countDepartment
 };
