@@ -7,16 +7,21 @@ const router = express.Router();
 
 // Check-in route
 
-router.post('/checkin/', attendanceController.checkIn);
+router.post('/checkin/', adminAuth, attendanceController.checkIn);
 
 // Check-out route
 
-router.post('/checkout/', attendanceController.checkOut);
+router.post('/checkout/', adminAuth, attendanceController.checkOut);
 
 // get all attendances for employee 
 
-router.get('/all/', attendanceController.getAllAttendancesOfEmployee);
-router.get('/allEmployees/',adminAuth,attendanceController.getAllAttendances);
+router.get('/getAllAttendancesOfEmployee/', Auth, attendanceController.getAllAttendancesOfEmployee);
+
+// router.get('/all/',Auth, attendanceController.getAllAttendancesOfEmployee);
+
+router.get('/allEmployees/', adminAuth, attendanceController.getAllAttendances);
+
+// get all attendances for employee 
 
 // Create a new attendance record
 
@@ -33,6 +38,12 @@ router.put('/:id', adminAuth, attendanceController.updateAttendanceById);
 // Delete a specific attendance record by ID
 
 router.delete('/:id', adminAuth, attendanceController.deleteAttendanceById);
+
+// Check-in route
+// router.post('/checkin/', adminAuth,  attendanceController.checkIn);
+
+// // Check-out route
+// router.post('/checkout/', adminAuth, attendanceController.checkOut);
 
 
 module.exports = router;

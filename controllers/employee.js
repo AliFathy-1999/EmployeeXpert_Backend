@@ -46,7 +46,9 @@ const searchOnEmployee = (searchText, page, limit)=> {
   )
   
 }
-
+const getSelectedEmployees = ()=>{
+  return Employee.find({}).select('_id firstName lastName')
+}
 const signIn = async (employee) => {
   const user = await Employee.findOne({ userName : employee.userName})
   if(!user) throw new AppError('Invalid username', 400);
@@ -64,4 +66,5 @@ module.exports = {
   deleteEmployee,
   searchOnEmployee,
   signIn,
+  getSelectedEmployees
 };

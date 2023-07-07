@@ -74,7 +74,7 @@ const getVacationWithemployeeId = async (req, res) => {
       limit = req.query.limit ;
     }
     const count = await Vacation.countDocuments({});
-    const { employeeId } = req.params;
+    const { employeeId } = req.user._id;
     
     const vacations = await Vacation.find({ employeeId : employeeId }).skip(page * limit).limit(limit);
     const totalPages = Math.ceil(count / limit);
@@ -449,6 +449,7 @@ const removeVacation = async (req, res) => {
 
 const applyForVacationByAdmin = async (req, res) => {
   try {
+    console.log("req",req.body)
     const { employeeId } = req.body;
     const empVacation = await Vacation.find({ employeeId });
     let totalDaysSum;
@@ -473,23 +474,15 @@ const applyForVacationByAdmin = async (req, res) => {
     }
     if (newTotalDays <= 21) {
       const vacation = new Vacation(req.body);
-      const now = Date.now();
-      const date = new Date(now);
-      if (vacation.fromDay > date) {
         TotalDays = newTotalDays;
         vacation.totalDays=TotalDays;
         console.log("vacation.totalDays",vacation.totalDays);
-
   console.log("TotalDays",TotalDays);
+  console.log(req.body);
         const Vacations = await vacation.save();
         const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
         await updateAttendence;
         return res.status(200).json(Vacations);
-      } else {
-        res.json({
-          message : 'the start date of a vacation should be after today',
-        });
-      }
     } else {
       const maxDaysLimit = 22;
       const exceededDays = newTotalDaysMax - maxDaysLimit;
@@ -501,14 +494,13 @@ const applyForVacationByAdmin = async (req, res) => {
       vacation.employeeId = employeeId;
       vacation.maxDays += exceededDays;
 
+      console.log(req.body);
 
       const Vacations = await vacation.save();
 
       return res.status(200).json(Vacations);
     }
   } catch (error) {
-    // console.log(error.message);
-
     return res.status(500).json({ message : error.message });
   }
 };

@@ -93,12 +93,13 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 
         if (
             req.headers.authorization
-              && req.headers.authorization.startsWith('brearer')
+              && req.headers.authorization.startsWith('bearer')
         ) {
             // eslint-disable-next-line prefer-destructuring
             token = req.headers.authorization.split(' ')[1];
         }
         if (!token) {
+          console.log('no token')
             return false;
         }
         const payload = jwt.verify(token, process.env.TOKEN_KEY);
@@ -127,44 +128,38 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 const getAllAttendances = async (req, res, next) => {
   try {
     let token;
-    console.log(req)
 
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer')
+      req.headers.authorization.startsWith('bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
     }
 
     if (!token) {
-      console.log("مفيش زفت توكين")
       return res.status(401).json({
         status :  'error',
         message : 'Unauthorized access',
       });
     }
-    
-    const payload = jwt.verify(token, process.env.TOKEN_KEY);
 
-    // if (payload.role !== 'admin') {
-    //   return res.status(403).json({
-    //     status :  'error',
-    //     message : 'Access forbidden. Admin role required.',
-    //   });
-    // }
+    const payload = jwt.verify(token, process.env.TOKEN_KEY);
 
     const page = parseInt(req.query.page) || 1; // Current page (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
     const skip = (page - 1) * limit; // Number of documents to skip
 
     const attendances = await Attendance.find({
-
-  employee : payload.userId })
+      employee : payload.userId })
       .populate({
         path :   'employee',
         select : 'firstName lastName',
-      }) .skip(skip)
+    })
+      .skip(skip)
       .limit(limit);
+
+      // const nextPage = page < totalPages - 1 ? page + 1 : null;
+      // const prevPage = page > 0 ? page - 1 : null;
 
     const totalPages = Math.ceil(
       (await Attendance.countDocuments({})) / limit
@@ -202,12 +197,27 @@ const updateDeductions = async (employeeId, deduction) => {
 
 // Check-in route
 // Set the default workday start and end times
-const DEFAULT_START_TIME = 9; // 9:00 AM
-const DEFAULT_END_TIME = 22; // 6:00 PM
+const DEFAULT_START_TIME = 1; // 9:00 AM
+const DEFAULT_END_TIME = 23; // 6:00 PM
 
 const checkIn = async (req, res, next) => {
   try {
     // Check if the employee ID is valid
+    let token;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({
+        status :  'error',
+        message : 'Unauthorized access',
+      });
+    }
+    const payload = jwt.verify(token, process.env.TOKEN_KEY);
 
     const employee = await Employee.findById(req.body.employee);
     if (!employee) {
@@ -472,6 +482,6 @@ module.exports = {
   deleteAttendanceById,
   checkIn,
   checkOut,
+  getAllAttendancesOfEmployee,
   getAllAttendances,
-  getAllAttendancesOfEmployee
 };

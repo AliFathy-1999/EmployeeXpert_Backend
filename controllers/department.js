@@ -6,7 +6,7 @@ const getSelectedDepartments = () =>{
   return Department.find({}).select('name');
 }
 const getManagers = () =>{
-  return Department.find({}).populate('managerId', '_id firstName lastName').select('managerId- _id');
+  return Department.find({}).populate('managerId', '_id firstName lastName').select('managerId');
 }
 const getDepartments = (page, limit) =>{
   if (!limit) limit = 10;
