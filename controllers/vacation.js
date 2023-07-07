@@ -319,7 +319,7 @@ const applyForVacationByAdmin = async (req, res) => {
 
 const modifyVacationByAdmin = async (req, res) => {
   try {
-    const{id} = req.params;
+    const  { id } = req.params;
     const { employeeId } = req.body;
     const empVacation = await Vacation.find({ employeeId : employeeId });
     let totalDaysSum;
@@ -338,8 +338,9 @@ const modifyVacationByAdmin = async (req, res) => {
       if(acceptedVacations){
       const lastObjectOfAcceptedVacationIndex = acceptedVacations.length - 1;
       const lastObjectOfAcceptedVacation = acceptedVacations[lastObjectOfAcceptedVacationIndex];
-      // console.log('acceptedVacations', acceptedVacations)
+
       console.log('lastObject', lastObject);
+
       totalDaysSum = lastObjectOfAcceptedVacation.totalDays
       console.log('totalDaysSum', totalDaysSum);
       totalDaysMaxSum = lastObjectOfAcceptedVacation.maxDays;

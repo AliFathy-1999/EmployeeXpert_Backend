@@ -67,11 +67,24 @@ const schema = new Schema(
             enum :    ['Pending', 'Accepted', 'Declined'],
             default : 'Pending'
         },
+        casualVacation:{
+          type: Number,
+          default:0,
+          validate : {
+            validator : function(value) {
+              if (value <= 7) {
+                return true;
+              }
+              return false;
+
+            },
+          }
+        },
         employeeId : {
             type :     Schema.Types.ObjectId,
             ref :      'Employee',
             required : true
-        }
+        },
     });
     schema.pre('save', function(next) {
         if (this.reasonForVacation) {

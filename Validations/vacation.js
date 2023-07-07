@@ -26,14 +26,24 @@ const vacation = {
       'date.isoDate' : 'End date must be in ISO format (YYYY-MM-DD)',
       'date.greater' : 'End date must be after start date'
     }),
-  totalDays : Joi.number().min(1).required().max(21).messages({
+  totalDays : Joi.number().min(0).required().max(21).messages({
     'number.base' :  'Total days must be a number',
     'number.min' :   'Total days must be at least 1',
-    'number.max' :   'Total days must be less than 21',
+    'number.max' :   'Total days must be less than 21 or equal',
     'any.required' : 'Total days is required'
   }),
   status : Joi.string().valid('Pending', 'Accepted', 'Declined').default('Pending'),
-})
+}),
+casualVacation:Joi.number().min(0).max(7).messages({
+  'number.base' :  'casual Vacations must be a number',
+  'number.min' :   'casual Vacations must be at least 0',
+  'number.max' :   'casual Vacations must be less than or equal 7',
+  'any.required' : 'casual Vacations is required'
+}),
+maxDays:Joi.number().min(22).messages({
+  'number.base' :  'maxDays Vacations must be a number',
+  'number.min' :   'maxDays Vacations must be at least 22',
+}),
 }
 
 module.exports = {vacation}
