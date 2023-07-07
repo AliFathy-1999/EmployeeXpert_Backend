@@ -331,15 +331,24 @@ const modifyVacationByAdmin = async (req, res) => {
     if (empVacation) {
       const lastObjectIndex = empVacation.length - 1;
       const lastObject = empVacation[lastObjectIndex];
+
+      const acceptedVacations = empVacation.filter(
+        (vacation) => vacation.status === 'Accepted'
+      );
+      if(acceptedVacations){
+      const lastObjectOfAcceptedVacationIndex = acceptedVacations.length - 1;
+      const lastObjectOfAcceptedVacation = acceptedVacations[lastObjectOfAcceptedVacationIndex];
+      // console.log('acceptedVacations', acceptedVacations)
       console.log('lastObject', lastObject);
-      totalDaysSum = lastObject.totalDays
+      totalDaysSum = lastObjectOfAcceptedVacation.totalDays
       console.log('totalDaysSum', totalDaysSum);
-      totalDaysMaxSum = lastObject.maxDays;
+      totalDaysMaxSum = lastObjectOfAcceptedVacation.maxDays;
       console.log('totalDaysMaxSum', totalDaysMaxSum);
       newTotalDays = totalDaysSum + req.body.totalDays;
       console.log('newTotalDays', newTotalDays);
       newTotalDaysMax = totalDaysMaxSum + req.body.totalDays;
       console.log('newTotalDays', newTotalDaysMax);
+      }
     }
     const vacation = await Vacation.findByIdAndUpdate(id);
     console.log('vacation', vacation);
@@ -363,10 +372,6 @@ const vacations = vacation.save()
         await updateAttendence;
         return res.status(200).json(vacation);
       
-      } else {
-        res.json({
-          message : 'Sorry Your Vacation has not been accepted',
-        });
       }
     } else {
       const maxDaysLimit = 22;

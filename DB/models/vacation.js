@@ -2,18 +2,17 @@ let mongoose, { Schema, model } = require('mongoose');
 
 const schema = new Schema(
     {
-        reasonForVacation : {
-            type : String,
-
-            // required :  [true, 'Reason for this Vacation is required'],
-
-            trim :      true,
-            minLength : [5, 'Reason must be at least 5 characters'],
-            maxLength : [200, 'Reason must be less than  100 characters'],
-        },
+      reasonForVacation: {
+        type: String,
+        trim: true,
+        minlength: [5, 'Reason must be at least 5 characters'],
+        maxlength: [200, 'Reason must be less than 200 characters'],
+      },
         fromDay : {
-          type :     Date,
+          type : Date,
+
           // required : [true, 'Start date of vacation is required'],
+
           validate : {
               validator : function(value) {
                   return value <= this.toDay;
@@ -22,8 +21,10 @@ const schema = new Schema(
           }
       },
       toDay : {
-          type :     Date,
+          type : Date,
+
           // required : [true, 'End date of vacation is required'],
+
           validate : {
               validator : function(value) {
                   return value >= this.fromDay;

@@ -3,14 +3,14 @@ const Joi = require('joi');
 const vacation = {
   body : Joi.object().keys({
   
-  // reasonForVacation : Joi.string().trim().min(5).max(200).required()
-  //   .messages({
-  //     'string.base' :  'Reason must be a string',
-  //     'string.empty' : 'Reason is required',
-  //     'string.min' :   'Reason must be at least 5 characters',
-  //     'string.max' :   'Reason must be less than 200 characters',
-  //     'any.required' : 'Reason is required'
-  //   }),
+  reasonForVacation : Joi.string().trim().min(5).max(200)
+    .messages({
+      'string.base' :  'Reason must be a string',
+      'string.empty' : 'Reason is required',
+      'string.min' :   'Reason must be at least 5 characters',
+      'string.max' :   'Reason must be less than 200 characters',
+      'any.required' : 'Reason is required'
+    }),
     fromDay : Joi.date().required().iso()
     .messages({
       'date.base' :    'Start date must be a valid date',
