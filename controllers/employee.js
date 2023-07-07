@@ -57,6 +57,11 @@ const signIn = async (employee) => {
   return {token : generateToken(user), user}
 }
 
+const countEmployee = () => {
+  const employee = Employee.find({}).countDocuments();
+  return employee;
+}
+
 module.exports = {
   getEmployees,
   employeeDetails,
@@ -66,5 +71,6 @@ module.exports = {
   deleteEmployee,
   searchOnEmployee,
   signIn,
-  getSelectedEmployees
+  getSelectedEmployees,
+  countEmployee
 };

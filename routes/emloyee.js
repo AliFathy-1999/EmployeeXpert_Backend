@@ -50,5 +50,12 @@ router.get('/:id', Auth, validate(employeesValidator.checkvalidID), async (req, 
   if (!data) return next(new AppError (`No Employee with ID ${id}`, 400));
   res.status(201).json({ status : 'success', data });
 })
+
+router.get('/count/all', async (req, res, next) => {
+  const employee = employeeController.countEmployee();
+  const [err, data] = await asycnWrapper(employee);
+  if (err) return next(err);
+  res.status(201).json({ status: 'success', data });
+});
 module.exports = router;
 

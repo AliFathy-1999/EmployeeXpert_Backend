@@ -29,6 +29,11 @@ router.get('/emp/:id', async (req, res, next) => {
   res.status(201).json({ status : 'success', data });
 });
 
-
+router.get('/count/all', async (req, res, next) => {
+  const department = departmentController.countDepartment();
+  const [err, data] = await asycnWrapper(department);
+  if (err) return next(err);
+  res.status(201).json({ status: 'success', data });
+});
 module.exports = router;
 
