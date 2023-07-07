@@ -16,32 +16,31 @@ router.use(adminAuth)
 
 // Add Employee
 
-router.post('/', validate(employeesValidator.signUp),upload.single("pImage"), async (req, res, next) => {
-   
+router.post('/', upload.single('pImage'),validate(employeesValidator.signUp), async (req, res, next) => {
+  const pImage = req.file? req.file.path : undefined 
   const { body: {
       firstName, lastName, userName, email, password, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender, address,
-      academicQualifications:{college, degree, institution, year}, 
+      academicQualifications, 
     }} = req;
     
-    const pImage = req.file? req.file.path : undefined 
     // Detect If Entered Department is existed or not
-
-    const department = await Department.findOne({_id : depId});
-    if (!department) 
+    const department = await Department.findOne({_id : depId}).exec();
+    console.log("Department ", department);
+    if (!department) {
+      console.log("Departmentasasdasdsad");
       return next(new AppError (`No Department with ID ${depId}`, 400));
-
+    }
     const user = employeeController.createEmployee({
       firstName, lastName, userName, email, password, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender,
-      address, academicQualifications : {college, degree, institution, year}, pImage, 
+      address, academicQualifications, pImage, 
     });
-    const createdEmployee =  await user;
     const [err, data] = await asycnWrapper(user);
     if (err) return next(err);
-    res.status(201).json({ status : 'success',data : createdEmployee });
+    res.status(201).json({ status : 'success',data });
   });
-  
+
   // Get All Employee (USER or ADMIN)
 
   router.get('/', async (req, res, next) => {
@@ -67,7 +66,7 @@ router.post('/', validate(employeesValidator.signUp),upload.single("pImage"), as
     const { params : { id }} = req;
     const {  
       firstName, lastName, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
+      role, hireDate, position, depId, salary, phoneNumber, jobType, gender, 
       address, academicQualifications, 
     } = req.body;
     const pImage = req.file? req.file.path : undefined 
@@ -78,7 +77,7 @@ router.post('/', validate(employeesValidator.signUp),upload.single("pImage"), as
     }
     const user = employeeController.updateEmployee(id, {
       firstName, lastName, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
+      hireDate, position, depId, salary, phoneNumber, jobType, gender,
       address, academicQualifications, pImage
     });
     const [err, data] = await asycnWrapper(user);
