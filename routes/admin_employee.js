@@ -46,6 +46,15 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
     res.status(201).json({ status : 'success', data });
   })
   
+   // Get All Employee (USER or ADMIN)
+
+   router.get('/getselected', async (req, res, next) => {
+    const user = employeeController.getSelectedEmployees();
+    const [err, data] = await asycnWrapper(user);
+    if (err) return next(err); 
+    res.status(201).json({ status : 'success', data });
+  })
+
   // Admin update employee data
 
   router.put('/:id', validate(employeesValidator.signUp), validate(employeesValidator.checkvalidID), async (req, res, next) => {

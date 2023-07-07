@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const Excuse = require('../DB/models/Excuse');
 const Attendance = require('../DB/models/attendance');
+const Employee = require('../DB/models/employee');
 
 const createExcuse = (data) => Excuse.create(data);
 
@@ -38,6 +39,13 @@ const getAllExcuses = async (page, limit) => {
   }
 }
 
+const updateExcuseDaysinAttendence = async (employeeId, noOfExcuses) => {
+  const employee = await Employee.findById(employeeId);
+  const attendance = await Attendance.updateMany({employee:employee._id} ,
+    { lateExcuse : noOfExcuses }
+  );
+  return attendance;
+}
 
 const updateExcussion = async(id, data)=> {
   const Excuses = await Excuse.findOneAndUpdate({_id : id}, data, {
@@ -70,5 +78,6 @@ module.exports = {
     updateExcussion,
     updateExcussionByAdmin,
     getOneExcuse,
-    updateLateExcussion
+    updateLateExcussion,
+    updateExcuseDaysinAttendence
 }
