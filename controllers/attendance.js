@@ -86,14 +86,13 @@ const deleteAttendanceById = async (req, res, next) => {
 };
 
 const getAllAttendancesOfEmployee = async (req, res, next) => { 
+  console.log(`req ${req.headers.authorization}`);
   try {
         let token;
-
         // const token = req.cookies.jwt;
-
         if (
             req.headers.authorization
-              && req.headers.authorization.startsWith('bearer')
+              && req.headers.authorization.startsWith('Bearer')
         ) {
             // eslint-disable-next-line prefer-destructuring
             token = req.headers.authorization.split(' ')[1];
@@ -111,6 +110,7 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 
     const attendances = await Attendance.find({ employee : payload.userId})
 
+    // const attendances = await Attendance.find({ employee: req.user._id}).skip(skip).limit(limit);
     const totalPages = Math.ceil(attendances.length / limit);
 
     res.status(200).json({
@@ -126,12 +126,15 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 } 
 
 const getAllAttendances = async (req, res, next) => {
+  console.log('====================================');
+  console.log(`req ${req.headers.authorization}`);
+  console.log('====================================');
   try {
     let token;
 
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith('bearer')
+      req.headers.authorization.startsWith('Bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
     }
@@ -201,6 +204,8 @@ const DEFAULT_START_TIME = 1; // 9:00 AM
 const DEFAULT_END_TIME = 23; // 6:00 PM
 
 const checkIn = async (req, res, next) => {
+  console.log(`req ${req.headers.authorization}`);
+
   try {
     // Check if the employee ID is valid
 
@@ -208,7 +213,7 @@ const checkIn = async (req, res, next) => {
 
     if (
       req.headers.authorization &&
-      req.headers.authorization.startsWith('bearer')
+      req.headers.authorization.startsWith('Bearer')
     ) {
       token = req.headers.authorization.split(' ')[1];
     }
@@ -350,6 +355,20 @@ const checkIn = async (req, res, next) => {
 
 const checkOut = async (req, res, next) => {
   try {
+    let token;
+
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    }
+    if (!token) {
+      return res.status(401).json({
+        status :  'error',
+        message : 'Unauthorized access',
+      });
+    }
     const employee = await Employee.findById(req.body.employee);
     const date = new Date();
     const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());

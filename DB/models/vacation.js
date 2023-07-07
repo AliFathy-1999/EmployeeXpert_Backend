@@ -3,33 +3,34 @@ let mongoose, { Schema, model } = require('mongoose');
 const schema = new Schema(
     {
         reasonForVacation : {
-            type :      String,
+            type : String,
+
             // required :  [true, 'Reason for this Vacation is required'],
+
             trim :      true,
             minLength : [5, 'Reason must be at least 5 characters'],
             maxLength : [200, 'Reason must be less than  100 characters'],
         },
         fromDay : {
-            type :     Date,
-            // required : [true, 'Start date of vacation is required'],
-            validate : {
-                validator : function(value) {
-                    return value <= this.toDay;
-                },
-                message : 'Start date must be before end date'
-            }
-        },
-        toDay : {
-            type :     Date,
-            // required : [true, 'End date of vacation is required'],
-            validate : {
-                validator : function(value) {
-                    return value >= this.fromDay;
-                },
-                message : 'End date must be after start date'
-            }
-
-        },
+          type :     Date,
+          // required : [true, 'Start date of vacation is required'],
+          validate : {
+              validator : function(value) {
+                  return value <= this.toDay;
+              },
+              message : 'from date must be before end date'
+          }
+      },
+      toDay : {
+          type :     Date,
+          // required : [true, 'End date of vacation is required'],
+          validate : {
+              validator : function(value) {
+                  return value >= this.fromDay;
+              },
+              message : 'End date must be after start date'
+          }
+      },
 
         totalDays : {
             type :     Number,

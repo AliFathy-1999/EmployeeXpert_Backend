@@ -19,7 +19,7 @@ router.get('/getAllAttendancesOfEmployee/', Auth, attendanceController.getAllAtt
 
 // router.get('/all/',Auth, attendanceController.getAllAttendancesOfEmployee);
 
-router.get('/allEmployees/', adminAuth, attendanceController.getAllAttendances);
+router.get('/getAllAttendances/', adminAuth, attendanceController.getAllAttendances);
 
 // get all attendances for employee 
 

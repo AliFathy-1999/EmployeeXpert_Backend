@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const schedule = require('node-schedule');
 const Vacation = require('../DB/models/vacation');
 
