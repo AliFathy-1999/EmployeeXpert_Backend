@@ -1,5 +1,5 @@
 let mongoose, { Schema, model, now } = require('mongoose');
-
+const moment = require('moment');
 const schema = new Schema(
     {
       reasonForVacation: {
@@ -8,21 +8,23 @@ const schema = new Schema(
         default: "casual Vacation"
       },
         Day : {
-          type : Date,
-          default:  new Date(now)
-      },
+            type: Date,
+            default: new Date(Date.now() + 24 * 60 * 60 * 1000)
+
+    },
     //   toDay : {
     //       type : Date,
+    //       default: Date.now(),
 
     //       // required : [true, 'End date of vacation is required'],
+    //       max: moment().add(1, 'day').endOf('day').toDate(),
 
-    //       validate : {
-    //           validator : function(value) {
-    //               return value >= this.fromDay;
-    //           },
-    //           message : 'End date must be after start date'
-    //       }
     //   },
+    totalCasDays:{
+        type:Number,
+        default:1,
+        max:2,
+    },
 
 
         status : {

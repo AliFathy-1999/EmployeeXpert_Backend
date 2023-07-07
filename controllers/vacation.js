@@ -114,6 +114,7 @@ const applyForVacation = async (req, res) => {
     const today = new Date(now);
     const tomorrow = new Date(now);
     tomorrow.setDate(today.getDate() + 1);
+    
     console.log('empVacation', empVacation);
     if (empVacation.length > 0) {
       const lastObjectIndex = empVacation.length - 1;

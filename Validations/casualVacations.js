@@ -3,17 +3,13 @@ const Joi = require('joi');
 const casualVacation = {
   body : Joi.object().keys({
   
-  reasonForVacation : Joi.string().trim().default('casual Vacation').required()
+  reasonForVacation : Joi.string().trim().default('casual Vacation')
     .messages({
       'string.base' :  'Reason must be a string',
     }),
-    Day : Joi.date().required().iso()
-    .messages({
-      'date.base' :    'Start date must be a valid date',
-      'date.empty' :   'Start date is required',
-      'any.required' : 'Start date is required',
-      'date.isoDate' : 'Start date must be in ISO format (YYYY-MM-DD)'
-    }),
+    Day: Joi.date().iso().default(() => new Date(Date.now() + 24 * 60 * 60 * 1000)),
+    totalCasDays: Joi.number().max(2).default(1),
+
 //   toDay : Joi.date().required().iso().greater(Joi.ref('fromDay'))
 //     .messages({
 //       'date.base' :    'End date must be a valid date',
@@ -24,11 +20,10 @@ const casualVacation = {
 //     }),
   status : Joi.string().default('Accepted'),
 }),
-casualVacation:Joi.number().min(0).max(7).messages({
+casualVacation:Joi.number().min(0).max(7).default(0).messages({
   'number.base' :  'casual Vacations must be a number',
   'number.min' :   'casual Vacations must be at least 0',
   'number.max' :   'casual Vacations must be less than or equal 7',
-  'any.required' : 'casual Vacations is required'
 }),
 }
 
