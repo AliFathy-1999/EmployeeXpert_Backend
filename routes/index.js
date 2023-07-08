@@ -13,6 +13,7 @@ const lateExcuseRoutes = require ('./excuse');
 const vacationReportRoutes = require ('./vacationReport');
 const holidayRoutes = require('./holiday');
 const leaveReportsVacation = require ('./leaveReport')
+const casualVacations = require ('./casualVacations')
 
 router.use('/admin-emp', adminEmpRoutes);
 router.use('/admin-dep', adminDepRoutes);
@@ -26,7 +27,8 @@ router.use('/attendance', attendanceRoutes); // Use the attendance routes
 router.use('/excuse' , lateExcuseRoutes);
 router.use('/vReport' , vacationReportRoutes);
 router.use('/holiday' , holidayRoutes);
-router.use('/lReport' , leaveReportsVacation)
+router.use('/lReport' , leaveReportsVacation);
+router.use('/casVacations' , casualVacations);
 
 
 module.exports = router;
