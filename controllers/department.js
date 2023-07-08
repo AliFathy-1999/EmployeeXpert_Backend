@@ -19,7 +19,7 @@ const getDepartments = (page, limit) =>{
   if (!limit) limit = 10;
   if (!page) page = 1;
  
-  return Department.paginate({}, { page, limit });
+  return Department.paginate({}, { page, limit,  populate: { path: 'managerId', select: 'firstName lastName' } });
 }
 const getDepartmentDetails = (depId) => Department.findOne({ _id : depId}).populate('managerId', 'firstName lastName position')
 

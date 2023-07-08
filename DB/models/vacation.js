@@ -36,15 +36,7 @@ const schema = new Schema(
         totalDays : {
             type :     Number,
             default :  0,
-            validate : {
-              validator : function(value) {
-                if (value <= 21) {
-                  return true;
-                }
-                return false
-
-              },
-            }
+            min:0,
           },
 
           maxDays : {
