@@ -8,8 +8,10 @@ const { holidayValidator } = require('../Validations/index');
 
 const router = express.Router();
 
-router.post('/' , adminAuth, validate(holidayValidator.holiday), async(req,res,next)=>{
-    const { holidayName , holidayDate , noOfDays } = req.body
+router.post('/' ,validate(holidayValidator.holiday),adminAuth, async(req,res,next)=>{
+    const { body: {
+        holidayName , holidayDate , noOfDays
+      }} = req;
     const createHoliday = holidayController.creteHoliday({
         holidayName , holidayDate , noOfDays
     })
