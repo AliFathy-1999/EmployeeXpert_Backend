@@ -4,6 +4,8 @@ const { AppError } = require("./lib");
 const cron = require("node-cron");
 const MongoClient = require("mongodb").MongoClient;
 const handleResponseError = require("./lib/handlingErrors");
+const bodyParser = require('body-parser');
+
 const app = express();
 const cors = require("cors");
 
@@ -22,6 +24,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use("/", routes);
 

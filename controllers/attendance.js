@@ -109,14 +109,20 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
     const skip = (page - 1) * limit; // Number of documents to skip
 
     const attendances = await Attendance.find({ employee : payload.userId})
-
-    // const attendances = await Attendance.find({ employee: req.user._id}).skip(skip).limit(limit);
     const totalPages = Math.ceil(attendances.length / limit);
-
+    let prevPage, nextPage;
+    if (page > 1) {
+      prevPage = `/attendance/getAllAttendances?page=${page - 1}&limit=${limit}`;
+    }
+    if (page < totalPages) {
+      nextPage = `/attendance/getAllAttendances?page=${page + 1}&limit=${limit}`;
+    }
     res.status(200).json({
       status : 'success',
       page,
       totalPages,
+      prevPage,
+      nextPage,
       data :   attendances
     });
 
@@ -126,12 +132,9 @@ const getAllAttendancesOfEmployee = async (req, res, next) => {
 } 
 
 const getAllAttendances = async (req, res, next) => {
-  console.log('====================================');
   console.log(`req ${req.headers.authorization}`);
-  console.log('====================================');
   try {
     let token;
-
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith('Bearer')
@@ -147,13 +150,14 @@ const getAllAttendances = async (req, res, next) => {
     }
 
     const payload = jwt.verify(token, process.env.TOKEN_KEY);
-
     const page = parseInt(req.query.page) || 1; // Current page (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Number of documents per page (default: 10)
     const skip = (page - 1) * limit; // Number of documents to skip
 
     const attendances = await Attendance.find({
-      employee : payload.userId })
+      // employee : payload.userId
+
+     })
       .populate({
         path :   'employee',
         select : 'firstName lastName',
@@ -161,17 +165,23 @@ const getAllAttendances = async (req, res, next) => {
       .skip(skip)
       .limit(limit);
 
-      // const nextPage = page < totalPages - 1 ? page + 1 : null;
-      // const prevPage = page > 0 ? page - 1 : null;
-
     const totalPages = Math.ceil(
       (await Attendance.countDocuments({})) / limit
     );
 
+    let prevPage, nextPage;
+    if (page > 1) {
+      prevPage = `/attendance/getAllAttendances?page=${page - 1}&limit=${limit}`;
+    }
+    if (page < totalPages) {
+      nextPage = `/attendance/getAllAttendances?page=${page + 1}&limit=${limit}`;
+    }
     res.status(200).json({
       status : 'success',
       page,
       totalPages,
+      prevPage,
+      nextPage,
       data :   attendances,
     });
   } catch (error) {
@@ -231,14 +241,17 @@ const checkIn = async (req, res, next) => {
     }
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set the time to midnight
+    
     const attendance = await Attendance.findOne({
       employee : employee._id,
       checkIn :  { $gte : today },
     });
+    
     const pre = await Attendance.findOne({
       employee : employee._id,
     }).sort({ checkIn : -1 });
     console.log( 'pre ' + pre);
+    
     if (attendance) {
       return res.status(400).json({
         message : 'Employee has already checked in today',
@@ -286,11 +299,18 @@ const checkIn = async (req, res, next) => {
     const startWorking = new Date();
     startWorking.setHours(DEFAULT_START_TIME, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to the start time
     startWorking.setHours(startWorking.getHours() + 2);
+    if(pre ){
+    
     attendances[0].lateCounter = attendances[0].lateCounter + pre.lateCounter;
     attendances[0].deduction = attendances[0].deduction + pre.deduction;
     attendances[0].lateExcuse = attendances[0].lateExcuse + pre.lateExcuse;
     attendances[0].BalanceVacations = attendances[0].BalanceVacations + pre.BalanceVacations;
-
+    }else{
+      attendances[0].lateCounter = attendances[0].lateCounter 
+      attendances[0].deduction = attendances[0].deduction
+      attendances[0].lateExcuse = attendances[0].lateExcuse 
+      attendances[0].BalanceVacations = attendances[0].BalanceVacations
+    }
     if (attendances[0].checkIn.getTime() >= startWorking.getTime()) {
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
 
@@ -305,7 +325,7 @@ const checkIn = async (req, res, next) => {
       const lateArrivals = attendances.filter(
         (a) => a.checkIn.getTime() <= lateThreshold.getTime()
       ).length;
-      if (lateArrivals == 1 ) {
+      if (lateArrivals >= 1  ) {
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
           console.log(

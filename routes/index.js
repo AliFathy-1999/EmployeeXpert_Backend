@@ -14,6 +14,7 @@ const vacationReportRoutes = require ('./vacationReport');
 const holidayRoutes = require('./holiday');
 const leaveReportsVacation = require ('./leaveReport')
 const casualVacations = require ('./casualVacations')
+const payrollHistory = require ('./payrollHistory')
 
 router.use('/admin-emp', adminEmpRoutes);
 router.use('/admin-dep', adminDepRoutes);
@@ -29,6 +30,7 @@ router.use('/vReport' , vacationReportRoutes);
 router.use('/holiday' , holidayRoutes);
 router.use('/lReport' , leaveReportsVacation);
 router.use('/casVacations' , casualVacations);
+router.use('/pHistory',payrollHistory);
 
 
 module.exports = router;
