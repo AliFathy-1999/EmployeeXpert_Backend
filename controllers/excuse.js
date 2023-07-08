@@ -39,6 +39,7 @@ const getAllExcuses = async (page, limit) => {
   }
 }
 
+
 const updateExcuseDaysinAttendence = async (employeeId, noOfExcuses) => {
   const employee = await Employee.findById(employeeId);
   const attendance = await Attendance.updateMany({employee:employee._id} ,
@@ -79,5 +80,5 @@ module.exports = {
     updateExcussionByAdmin,
     getOneExcuse,
     updateLateExcussion,
-    updateExcuseDaysinAttendence
+    updateExcuseDaysinAttendence,
 }
