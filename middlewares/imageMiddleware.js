@@ -27,7 +27,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 1024 * 1024 * 0.5, // 500KB
+    fileSize: 1024 * 1024 * 0.5 * 10, // 5MB
   },
   fileFilter: function (req, file, cb) {   
       if (!['png', 'jpg', 'jpeg'].includes(file.mimetype.split('/')[1])) {

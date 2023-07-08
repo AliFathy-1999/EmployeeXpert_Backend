@@ -101,13 +101,13 @@ const signUp = {
               'string.pattern.base' : 'Address must contain at least one alphabetic characters',
           }),    
           role : Joi.string().valid('ADMIN', 'USER').default('USER'),
-          pImage: Joi.string(),
-          // confirmPassword:Joi.string()
-          // .valid(Joi.ref('password'))
-          // .messages({
-          //     "string.empty": 'Confirm Password is required',
-          //     'any.only': 'Confirm password must match password',
-          // }),
+          pImage: Joi.any(),
+          confirmPassword:Joi.string()
+          .valid(Joi.ref('password'))
+          .messages({
+              "string.empty": 'Confirm Password is required',
+              'any.only': 'Confirm password must match password',
+          }),
     }),  
 }
 

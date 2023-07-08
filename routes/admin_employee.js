@@ -23,10 +23,8 @@ router.post('/', upload.single('pImage'),validate(employeesValidator.signUp), as
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender, address,
       academicQualifications, 
     }} = req;
-    
     // Detect If Entered Department is existed or not
     const department = await Department.findOne({_id : depId}).exec();
-    console.log("Department ", department);
     if (!department) {
       console.log("Departmentasasdasdsad");
       return next(new AppError (`No Department with ID ${depId}`, 400));
