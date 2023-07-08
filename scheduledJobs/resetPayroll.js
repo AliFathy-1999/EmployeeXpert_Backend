@@ -3,7 +3,7 @@ const Payroll = require("../DB/models/payroll");
 const payrollHistory = require ('../DB/models/payrollHistory');
 
 module.exports = function() {
-  schedule.scheduleJob('0 0 8 * *', async function() {
+  schedule.scheduleJob('0 0 1 * *', async function() {
     try {
       const payrollHistoryDoc = await Payroll.find({});
       const payroll = await payrollHistory.insertMany(payrollHistoryDoc);
