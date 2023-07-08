@@ -26,7 +26,6 @@ router.post('/', upload.single('pImage'),validate(employeesValidator.signUp), as
     // Detect If Entered Department is existed or not
     const department = await Department.findOne({_id : depId}).exec();
     if (!department) {
-      console.log("Departmentasasdasdsad");
       return next(new AppError (`No Department with ID ${depId}`, 400));
     }
     const user = employeeController.createEmployee({
@@ -64,8 +63,8 @@ router.post('/', upload.single('pImage'),validate(employeesValidator.signUp), as
     const { params : { id }} = req;
     const {  
       firstName, lastName, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender, 
-      address, academicQualifications, 
+      hireDate, position, depId, salary, phoneNumber, jobType, gender, 
+      address, academicQualifications,  
     } = req.body;
     const pImage = req.file? req.file.path : undefined 
     if(depId){
