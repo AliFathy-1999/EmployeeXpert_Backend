@@ -143,6 +143,9 @@ console.log("age",age);
       newTotalDaysMax = totalDaysMaxSum + req.body.totalDays;
       console.log('newTotalDays', newTotalDaysMax);
     }
+    else{
+      newTotalDays = req.body.totalDays;
+    }
 if(noOfYears<10){
   if (newTotalDays <= 21) {
     const diffInDays = Math.ceil((new Date(req.body.toDay).getTime() - new Date(req.body.fromDay).getTime()) / (1000 * 60 * 60 * 24));
@@ -192,9 +195,10 @@ else if(noOfYears >=10){
   if (newTotalDays <= 30) {
     const diffInDays = Math.ceil((new Date(req.body.toDay).getTime() - new Date(req.body.fromDay).getTime()) / (1000 * 60 * 60 * 24));
     if(new Date(req.body.fromDay) > today && diffInDays === req.body.totalDays){
+      const vacation = new Vacation(req.body);
+
       vacation.employeeId = employeeId;
 
-      const vacation = new Vacation(req.body);
 
       console.log(req.body);
 
@@ -392,13 +396,21 @@ console.log("age",age);
     console.log('empVacation', empVacation);
     if (empVacation) {
       const lastObjectIndex = empVacation.length - 1;
+      console.log("lastObjectIndex",lastObjectIndex);
+
       const lastObject = empVacation[lastObjectIndex];
+      console.log("lastObject",lastObject);
+
       const acceptedVacations = empVacation.filter(
         (vacation) => vacation.status === 'Accepted'
       );
-      if(acceptedVacations){
+      console.log("acceptedVacations",acceptedVacations);
+
+      if(acceptedVacations && acceptedVacations.length > 0){
       const lastObjectOfAcceptedVacationIndex = acceptedVacations.length - 1;
+      console.log("lastObjectOfAcceptedVacationIndex",lastObjectOfAcceptedVacationIndex);
       const lastObjectOfAcceptedVacation = acceptedVacations[lastObjectOfAcceptedVacationIndex];
+      console.log("lastObjectOfAcceptedVacation",lastObjectOfAcceptedVacation);
 
       console.log('lastObject', lastObject);
       totalDaysSum = lastObjectOfAcceptedVacation.totalDays
@@ -410,6 +422,20 @@ console.log("age",age);
       newTotalDaysMax = totalDaysMaxSum + req.body.totalDays;
       console.log('newTotalDaysMax', newTotalDaysMax);
       }
+      else if(acceptedVacations.length ===0){
+        totalDaysSum = lastObject.totalDays
+        console.log('totalDaysSum in else', totalDaysSum);
+        totalDaysMaxSum = lastObject.maxDays;
+        console.log('totalDaysMaxSum in else', totalDaysMaxSum);
+        newTotalDays = totalDaysSum ;
+        console.log('newTotalDays in else', newTotalDays);
+        newTotalDaysMax = totalDaysMaxSum;
+        console.log('newTotalDays in else', newTotalDaysMax);
+      }
+    }
+    else{
+      newTotalDays = req.body.totalDays;
+      console.log("newTotalDays",newTotalDays);
     }
     if(noOfYears<10){
       if (newTotalDays <= 21) {
@@ -463,7 +489,7 @@ console.log("age",age);
         const maxDaysLimit = 31;
           const exceededDays = newTotalDaysMax - maxDaysLimit;
           console.log('exceededDays', exceededDays);
-          console.log('newTotalDays', newTotalDaysMax);
+          console.log('newTotalDaysMax', newTotalDaysMax);
           const vacation = new Vacation(req.body);
           vacation.totalDays = 30;
     
@@ -557,21 +583,36 @@ console.log("age",age);
       const acceptedVacations = empVacation.filter(
         (vacation) => vacation.status === 'Accepted'
       );
-      if(acceptedVacations){
+      if(acceptedVacations && acceptedVacations.length >0){
       const lastObjectOfAcceptedVacationIndex = acceptedVacations.length - 1;
       const lastObjectOfAcceptedVacation = acceptedVacations[lastObjectOfAcceptedVacationIndex];
 
       console.log('lastObject', lastObject);
+      console.log('acceptedVacations', acceptedVacations);
+
+      console.log('lastObjectOfAcceptedVacation', lastObjectOfAcceptedVacation);
+      console.log('lastObjectOfAcceptedVacationIndex', lastObjectOfAcceptedVacationIndex);
 
       totalDaysSum = lastObjectOfAcceptedVacation.totalDays
-      console.log('totalDaysSum', totalDaysSum);
+      console.log('totalDaysSum in accepted', totalDaysSum);
       totalDaysMaxSum = lastObjectOfAcceptedVacation.maxDays;
-      console.log('totalDaysMaxSum', totalDaysMaxSum);
+      console.log('totalDaysMaxSum in accepted', totalDaysMaxSum);
       newTotalDays = totalDaysSum + req.body.totalDays;
-      console.log('newTotalDays', newTotalDays);
+      console.log('newTotalDays in accepted', newTotalDays);
       newTotalDaysMax = totalDaysMaxSum + req.body.totalDays;
-      console.log('newTotalDays', newTotalDaysMax);
+      console.log('newTotalDays in accepted', newTotalDaysMax);
+      }else if(acceptedVacations.length ===0){
+        totalDaysSum = lastObject.totalDays
+        console.log('totalDaysSum in else', totalDaysSum);
+        totalDaysMaxSum = lastObject.maxDays;
+        console.log('totalDaysMaxSum in else', totalDaysMaxSum);
+        newTotalDays = totalDaysSum ;
+        console.log('newTotalDays in else', newTotalDays);
+        newTotalDaysMax = totalDaysMaxSum;
+        console.log('newTotalDays in else', newTotalDaysMax);
       }
+
+      
     }
     const vacation = await Vacation.findByIdAndUpdate(id);
     console.log('vacation', vacation);
@@ -597,6 +638,12 @@ console.log("age",age);
             return res.status(200).json(vacation);
           
           }
+          else{
+            vacation.status = req.body.status;
+       const vacations = vacation.save()    
+         console.log('TotalDays', TotalDays);
+               return res.status(200).json(vacations);
+             }
                 
         }else {
           const maxDaysLimit = 22;
@@ -622,25 +669,34 @@ console.log("age",age);
       if (newTotalDays <= 30) {
         if(req.body.status === 'Accepted')
         {
+          console.log("req.body",req.body);
           TotalDays = newTotalDays;
           vacation.totalDays = TotalDays;
          vacation.status = req.body.status;
-    const vacations = vacation.save()
-            console.log('vacation.totalDays', vacations.totalDays);
+           const vacations = await  vacation.save()
+           console.log("vacations",vacations);
+            console.log('vacation.totalDays', vacation.totalDays);
     
       console.log('TotalDays', TotalDays);
            
             const updateAttendence = updateVacationDaysinAttendence(vacation.employeeId, vacation.totalDays);
             await updateAttendence;
-            return res.status(200).json(vacation);
+            return res.status(200).json(vacations);
           
           }
+          else{
+            vacation.status = req.body.status;
+            console.log("req.body",req.body);
+
+       const vacations = vacation.save()    
+               return res.status(200).json(vacations);
+             }
         }
       else {
         const maxDaysLimit = 31;
         const exceededDays = newTotalDaysMax - maxDaysLimit;
-        console.log('exceededDays', exceededDays);
-        console.log('newTotalDays', newTotalDaysMax);
+        console.log('exceededDays in second condition', exceededDays);
+        console.log('newTotalDays in second condition', newTotalDaysMax);
         const vacation = new Vacation(req.body);
         vacation.totalDays = 30;
   

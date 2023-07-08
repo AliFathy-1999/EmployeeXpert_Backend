@@ -36,6 +36,7 @@ const schema = new Schema(
         totalDays : {
             type :     Number,
             default :  0,
+            min:0,
           },
 
           maxDays : {
