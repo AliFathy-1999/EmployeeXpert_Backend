@@ -241,14 +241,17 @@ const checkIn = async (req, res, next) => {
     }
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set the time to midnight
+    
     const attendance = await Attendance.findOne({
       employee : employee._id,
       checkIn :  { $gte : today },
     });
+    
     const pre = await Attendance.findOne({
       employee : employee._id,
     }).sort({ checkIn : -1 });
     console.log( 'pre ' + pre);
+    
     if (attendance) {
       return res.status(400).json({
         message : 'Employee has already checked in today',
@@ -296,11 +299,18 @@ const checkIn = async (req, res, next) => {
     const startWorking = new Date();
     startWorking.setHours(DEFAULT_START_TIME, 0, 0, 0); // Set the hours, minutes, seconds, and milliseconds to the start time
     startWorking.setHours(startWorking.getHours() + 2);
+    if(pre ){
+    
     attendances[0].lateCounter = attendances[0].lateCounter + pre.lateCounter;
     attendances[0].deduction = attendances[0].deduction + pre.deduction;
     attendances[0].lateExcuse = attendances[0].lateExcuse + pre.lateExcuse;
     attendances[0].BalanceVacations = attendances[0].BalanceVacations + pre.BalanceVacations;
-
+    }else{
+      attendances[0].lateCounter = attendances[0].lateCounter 
+      attendances[0].deduction = attendances[0].deduction
+      attendances[0].lateExcuse = attendances[0].lateExcuse 
+      attendances[0].BalanceVacations = attendances[0].BalanceVacations
+    }
     if (attendances[0].checkIn.getTime() >= startWorking.getTime()) {
       attendances[0].lateExcuse = attendances[0].lateExcuse + 1;
 
@@ -315,7 +325,7 @@ const checkIn = async (req, res, next) => {
       const lateArrivals = attendances.filter(
         (a) => a.checkIn.getTime() <= lateThreshold.getTime()
       ).length;
-      if (lateArrivals == 1 ) {
+      if (lateArrivals >= 1  ) {
         if (attendances[0].lateCounter == 0) {
           attendances[0].lateCounter = 1;
           console.log(
