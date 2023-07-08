@@ -1,5 +1,6 @@
 const express = require('express');
 const { asycnWrapper, AppError } = require('../lib/index');
+const { extractPublicId } = require('cloudinary-build-url')
 
 const { employeeController } = require('../controllers/index');
 const { employeesValidator } = require('../Validations/index');
@@ -8,34 +9,38 @@ const {adminAuth} = require('../middlewares/auth');
 const Department = require('../DB/models/department')
 const Payroll = require('../DB/models/payroll')
 const router = express.Router();
+const {upload,removeImage} = require("../middlewares/imageMiddleware");
+const Employee = require('../DB/models/employee');
 
 router.use(adminAuth)
 
 // Add Employee
 
-router.post('/', validate(employeesValidator.signUp), async (req, res, next) => {
-    const { body: {
+router.post('/', upload.single('pImage'),validate(employeesValidator.signUp), async (req, res, next) => {
+  const pImage = req.file? req.file.path : undefined 
+  const { body: {
       firstName, lastName, userName, email, password, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender, address,
-      academicQualifications:{college, degree, institution, year}, pImage, 
+      academicQualifications, 
     }} = req;
-
+    
     // Detect If Entered Department is existed or not
-
-    const department = await Department.findOne({_id : depId});
-    if (!department) 
+    const department = await Department.findOne({_id : depId}).exec();
+    console.log("Department ", department);
+    if (!department) {
+      console.log("Departmentasasdasdsad");
       return next(new AppError (`No Department with ID ${depId}`, 400));
-
+    }
     const user = employeeController.createEmployee({
       firstName, lastName, userName, email, password, nationalId,
       role, hireDate, position, depId, salary, phoneNumber, jobType, DOB, gender,
-      address, academicQualifications : {college, degree, institution, year}, pImage, 
+      address, academicQualifications, pImage, 
     });
     const [err, data] = await asycnWrapper(user);
     if (err) return next(err);
-    res.status(201).json({ status : 'success' });
+    res.status(201).json({ status : 'success',data });
   });
-  
+
   // Get All Employee (USER or ADMIN)
 
   router.get('/', async (req, res, next) => {
@@ -57,13 +62,14 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
 
   // Admin update employee data
 
-  router.put('/:id', validate(employeesValidator.signUp), validate(employeesValidator.checkvalidID), async (req, res, next) => {
+  router.put('/:id', upload.single("pImage"),validate(employeesValidator.signUp), validate(employeesValidator.checkvalidID), async (req, res, next) => {
     const { params : { id }} = req;
     const {  
       firstName, lastName, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
-      address, academicQualifications, pImage, 
+      role, hireDate, position, depId, salary, phoneNumber, jobType, gender, 
+      address, academicQualifications, 
     } = req.body;
+    const pImage = req.file? req.file.path : undefined 
     if(depId){
       const department = await Department.findOne({_id : depId});
       if (!department) 
@@ -71,7 +77,7 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
     }
     const user = employeeController.updateEmployee(id, {
       firstName, lastName, nationalId,
-      role, hireDate, position, depId, salary, phoneNumber, jobType, gender,
+      hireDate, position, depId, salary, phoneNumber, jobType, gender,
       address, academicQualifications, pImage
     });
     const [err, data] = await asycnWrapper(user);
@@ -84,6 +90,14 @@ router.post('/', validate(employeesValidator.signUp), async (req, res, next) => 
 
   router.delete('/:id', validate(employeesValidator.checkvalidID), async (req, res, next) => {
     const { params : { id }} = req;
+    const employee = await Employee.findOne({_id:id});
+    if(!employee)
+      return next(new AppError (`No Employee with ID ${id}`, 400));
+    if (employee?.role === 'ADMIN') 
+        return next(new AppError ('You cannot delete any Admin',401));
+    const imageUrl = employee.pImage; 
+    const publicId = extractPublicId(imageUrl);
+    removeImage(publicId)
     const user = employeeController.deleteEmployee(id);
     await Payroll.deleteOne({ employeeId : id });
     const [err, data] = await asycnWrapper(user);
