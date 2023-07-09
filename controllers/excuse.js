@@ -43,7 +43,8 @@ const getAllExcuses = async (page, limit) => {
 
 const getMyExcuses = async (req, res) => {
   try {
-const {employeeId }= req.user._id;
+const employeeId = req.user._id;
+console.log(employeeId);
 const page = req.query.page || 0;
 let limit = req.query.limit || 10;
 
@@ -63,8 +64,8 @@ let limit = req.query.limit || 10;
     const paginationInfo = {
       totalCount : count,
       totalPages,
-      nextPage :   nextPage ? `/myExcuses?page=${nextPage}` : null,
-      prevPage :   prevPage ? `/myExcuses?page=${prevPage}` : null,
+      nextPage :   nextPage ? `/myExcuses/all?page=${nextPage}` : null,
+      prevPage :   prevPage ? `/myExcuses/all?page=${prevPage}` : null,
     };
     res.status(200).json({myExcuses, paginationInfo});
   } catch (error) {
