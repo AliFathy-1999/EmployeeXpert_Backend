@@ -28,7 +28,7 @@ router.use('/attendance', attendanceRoutes); // Use the attendance routes
 router.use('/excuse' , lateExcuseRoutes);
 router.use('/vReport' , vacationReportRoutes);
 router.use('/holiday' , holidayRoutes);
-router.use('/lReport' , leaveReportsVacation);
+router.use('/leave' , leaveReportsVacation);
 router.use('/casVacations' , casualVacations);
 router.use('/pHistory',payrollHistory);
 

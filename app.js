@@ -14,6 +14,7 @@ const routes = require('./routes/index.js');
 require('./DB/connects');
 const resetPayroll = require('./scheduledJobs/resetPayroll');
 const scheduleVacationJob = require('./scheduledJobs/vacationSchedule');
+const excuseSchedule = require('./scheduledJobs/excuseSchedule');
 
 
 const corsOptions = {
@@ -34,7 +35,7 @@ app.all("*", (req, res, next) => {
 
 resetPayroll();
 scheduleVacationJob();
-
+excuseSchedule();
 async function resetField() {
   try {
     const collectionName = "attendances";

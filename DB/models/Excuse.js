@@ -1,4 +1,5 @@
 let mongoose, { Schema, model } = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const excuse = new Schema({
 
@@ -57,7 +58,7 @@ excuse.pre('save', function(next) {
 // excuse.path('from').validate(function(value) {
 //     return this.to > value;
 //   }, 'Start hour must be before end hour');
-
+// excuse.plugin(mongoosePaginate);
 const Excuse = model('Excuse', excuse);
 
 module.exports = Excuse;

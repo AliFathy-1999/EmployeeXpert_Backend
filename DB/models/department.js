@@ -25,10 +25,10 @@ const schema = new Schema({
         trim :      true,
         minlength : 5, 
         maxlength : 255,
-        match :     /^(?=.*[a-zA-Z])[a-zA-Z0-9\s]*$/,
+        match :     /^[a-zA-Z0-9\s]+/,
         validate :  {
           validator : function (value) {
-            if (!value.match(/^(?=.*[a-zA-Z])[a-zA-Z0-9\s]*$/)) {
+            if (!value.match(/^[a-zA-Z0-9\s]+/)) {
               throw new AppError('Description must contains at least one letter and numbers', 400);
             }
           },
