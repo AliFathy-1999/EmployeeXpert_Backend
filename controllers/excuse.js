@@ -41,9 +41,9 @@ const getAllExcuses = async (page, limit) => {
 
 
 
-const getMyExcuses = async (page, limit) => {
+const getMyExcuses = async (req, res) => {
   try {
-const employeeId = req.user._id;
+const {employeeId }= req.user._id;
     if(!page) page = 0;
     if(!limit) limit = 10;
 

@@ -45,7 +45,7 @@ router.get('/all', adminAuth, async (req, res, next) => {
         res.status(200).json({ status : 'success', data });
       });
 
-router.get('/myExcuses',userAuth,excuseController.getMyExcuses);
+router.get('/myExcuses/all',userAuth,excuseController.getMyExcuses);
 
 router.put('/:id', userAuth, async(req, res, next)=>{
   const { id } = req.params;
