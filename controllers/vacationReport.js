@@ -15,60 +15,77 @@ const VacationReport = require('../DB/models/vacationReport');
 //       }
 // }
 
-const getVacationReport = async (req, res) => {
-    try {
-      const vacationReports = await VacationReport.find({}).populate({
-        path :   'employeeId',
-        select : 'pImage userName firstName lastName',
-      }).populate({
-        path :   'vacationId',
-        select : 'totalDays maxDays',
-      });
-    const employeeVacations = {};
-    vacationReports.forEach((report) => {
-      const { employeeId, vacationId } = report;
-      const { pImage, userName, firstName, lastName } = employeeId;
-      const { totalDays, maxDays } = vacationId;
+// const getVacationReport = async (req, res) => {
+//     try {
+//       const vacationReports = await VacationReport.find({}).populate({
+//         path :   'employeeId',
+//         select : 'pImage userName firstName lastName',
+//       }).populate({
+//         path :   'vacationId',
+//         select : 'totalDays maxDays',
+//       });
+//     const employeeVacations = {};
+//     vacationReports.forEach((report) => {
+//       const { employeeId, vacationId } = report;
+//       const { pImage, userName, firstName, lastName } = employeeId;
+//       const { totalDays, maxDays } = vacationId;
 
-      if (!employeeVacations[userName]) {
-        employeeVacations[userName] = {        
-          pImage,
-          userName,
-          firstName,
-          lastName,
-          vacations : []
-        };
-      }
+//       if (!employeeVacations[userName]) {
+//         employeeVacations[userName] = {        
+//           pImage,
+//           userName,
+//           firstName,
+//           lastName,
+//           vacations : []
+//         };
+//       }
 
-      employeeVacations[userName].vacations.push({ totalDays, maxDays });
-    });
+//       employeeVacations[userName].vacations.push({ totalDays, maxDays });
+//     });
 
-    const reportData = Object.values(employeeVacations);
+//     const reportData = Object.values(employeeVacations);
 
-    return res.status(200).json(reportData);
+//     return res.status(200).json(reportData);
 
-    } catch (error) {
-      res.status(500).json({ message : error.message });
-    }
-  };
+//     } catch (error) {
+//       res.status(500).json({ message : error.message });
+//     }
+//   };
 
-  const getEmployeeVacationReport = async (req, res) => {
-    try {
-        const {employeeId} = req.user._id;
-        const vacationReports = await VacationReport.find(employeeId).populate({
-        path :   'employeeId',
-        select : 'pImage userName firstName lastName',
-      }).populate({
-        path :   'vacationId',
-        select : 'totalDays maxDays',
-      });
-      console.log(employeeId);
-      console.log(vacationReports);
+//   const getEmployeeVacationReport = async (req, res) => {
+//     try {
+//         const {employeeId} = req.user._id;
+//         const vacationReports = await VacationReport.find(employeeId).populate({
+//         path :   'employeeId',
+//         select : 'pImage userName firstName lastName',
+//       }).populate({
+//         path :   'vacationId',
+//         select : 'totalDays maxDays',
+//       });
+//       console.log(employeeId);
+//       console.log(vacationReports);
 
-      return res.status(200).json(vacationReports);
-    } catch (error) {
-      res.status(500).json({ message : error.message });
-    }
-  };
+//       return res.status(200).json(vacationReports);
+//     } catch (error) {
+//       res.status(500).json({ message : error.message });
+//     }
+//   };
 
-  module.exports = {getVacationReport, getEmployeeVacationReport}
+
+const getAllEmployeeVacationReport = async (limit , page)=>{
+  if(!limit) limit =10;
+  if(!page) page = 1 ;
+  const options = {
+      page: page,
+      limit: limit,
+      populate: {
+        path: "employeeId",
+        select: "pImage userName firstName lastName",
+      },
+    };
+  const paginatedReport = await VacationReport.paginate({} , options)
+  return paginatedReport;
+}
+
+
+  module.exports = {getAllEmployeeVacationReport}
