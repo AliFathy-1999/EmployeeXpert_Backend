@@ -40,6 +40,38 @@ const getAllExcuses = async (page, limit) => {
 }
 
 
+
+const getMyExcuses = async (page, limit) => {
+  try {
+const employeeId = req.user._id;
+    if(!page) page = 0;
+    if(!limit) limit = 10;
+
+    if(limit > 20){
+      limit = 10;
+    }
+    else{
+      limit = limit ;
+    }
+    const count = await Excuse.countDocuments({});
+
+    const myExcuses = await Excuse.find({employeeId:employeeId}).skip(page * limit).limit(limit);
+
+    const totalPages = Math.ceil(count / limit);
+    const nextPage = page < totalPages - 1 ? page + 1 : null;
+    const prevPage = page > 0 ? page - 1 : null;
+    const paginationInfo = {
+      totalCount : count,
+      totalPages,
+      nextPage :   nextPage ? `/myExcuses?page=${nextPage}` : null,
+      prevPage :   prevPage ? `/myExcuses?page=${prevPage}` : null,
+    };
+    res.status(200).json({myExcuses, paginationInfo});
+  } catch (error) {
+    res.status(500).json({ message : error.message });
+  }
+}
+
 const updateExcuseDaysinAttendence = async (employeeId, noOfExcuses) => {
   const employee = await Employee.findById(employeeId);
   const attendance = await Attendance.updateMany({employee:employee._id} ,
@@ -81,4 +113,5 @@ module.exports = {
     getOneExcuse,
     updateLateExcussion,
     updateExcuseDaysinAttendence,
+    getMyExcuses
 }
