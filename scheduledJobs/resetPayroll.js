@@ -9,7 +9,7 @@ module.exports = function() {
       const payroll = await payrollHistory.insertMany(payrollHistoryDoc);
       const result = await Payroll.updateMany({}, { $set: { bonus: 0, deduction: 0 } });
       console.log("Payroll Reset");
-      return result,payroll;
+      return payroll,result;
     } catch (error) {
       console.error(error);
     }

@@ -9,7 +9,7 @@ module.exports = function() {
         const leave = await leaveReport.insertMany(leaveReportDoc);
         const result = await Excuse.deleteMany({});
         console.log("Excuse Reset");
-        return result, leave;
+        return leave,result;
       } catch (error) {
         console.error(error);
       }
