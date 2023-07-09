@@ -13,13 +13,11 @@ const Excuse = {
     }),
     from : Joi.date().required()
     .messages({
-      'date.base' :    'Start time must be a valid time',
       'date.empty' :   'Start time is required',
       'any.required' : 'Start time is required',
     }),
   to : Joi.date().required().greater(Joi.ref('from'))
     .messages({
-      'date.base' :    'End time must be a valid time',
       'date.empty' :   'End time is required',
       'any.required' : 'End time is required',
       'date.greater' : 'End time must be after start time'
